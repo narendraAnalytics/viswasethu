@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(dir \"C:\\\\Users\\\\ES\\\\Desktop\\\\2025\\\\viswasethu\\\\.env*\" /b)"
+    ]
+  }
+}
