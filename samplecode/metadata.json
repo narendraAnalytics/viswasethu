@@ -1,0 +1,7 @@
+{
+  "name": "LinguoVoice: Gemini-Powered Language Tutor",
+  "description": "An immersive, voice-first language learning platform using Gemini Live API to help users learn foreign languages through their native tongue.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
