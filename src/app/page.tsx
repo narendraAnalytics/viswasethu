@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
 import { SYSTEM_INSTRUCTION } from '@/constants/vishwasetu';
 import { AppState, TranscriptionEntry } from '@/types/vishwasetu';
-import { VoiceOrb } from '@/components/VoiceOrb';
 import { createPcmBlob, decodeBase64, decodeAudioData } from '@/services/audioUtils';
 import { Mic, Sparkles, ArrowRight } from 'lucide-react';
 
@@ -293,13 +292,8 @@ export default function Home() {
 
         {appState === AppState.SESSION && (
           <div className="w-full flex flex-col items-center space-y-8 animate-in fade-in zoom-in-95 duration-700 h-full">
-            <div className="flex-1 flex flex-col items-center justify-center w-full min-h-[300px]">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-indigo-200/20 blur-3xl rounded-full scale-150 group-hover:scale-110 transition-transform duration-1000" />
-                <VoiceOrb isListening={isListening} isSpeaking={isSpeaking} />
-              </div>
-
-              <div className="mt-12 w-full bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-10 border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col">
+            <div className="flex-1 flex flex-col items-center justify-center w-full">
+              <div className="mt-6 w-full bg-gradient-to-br from-white/90 to-slate-50/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 border border-slate-200 shadow-[0_20px_60px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col">
                 <div className="relative flex items-center justify-center mb-10 shrink-0">
                   {/* Left Side Info */}
                   <div className="absolute left-0 hidden md:block">
@@ -333,7 +327,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="flex-1 space-y-6 max-h-[45vh] overflow-y-auto pr-2 scroll-smooth custom-scrollbar">
+                <div className="flex-1 space-y-6 max-h-[70vh] overflow-y-auto pr-2 scroll-smooth custom-scrollbar">
                   {transcriptions.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-24 space-y-6 text-slate-400">
                       <div className="relative">
@@ -353,7 +347,7 @@ export default function Home() {
                         <div className={`text-[9px] mb-2 font-black uppercase tracking-widest ${entry.role === 'user' ? 'text-indigo-500 mr-4' : 'text-emerald-600 ml-4'}`}>
                           {entry.role === 'user' ? 'Your Voice' : 'Teacher VishwaSetu'}
                         </div>
-                        <div className={`max-w-[85%] rounded-[1.75rem] px-6 py-4 text-base md:text-xl leading-relaxed shadow-md transition-all ${entry.role === 'user'
+                        <div className={`max-w-[85%] rounded-[1.75rem] px-6 py-4 text-base md:text-xl leading-relaxed shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300 ${entry.role === 'user'
                           ? 'bg-gradient-to-br from-indigo-600 to-indigo-700 text-white border border-indigo-400/20 rounded-tr-none shadow-indigo-200/30'
                           : 'bg-white text-teal-600 border border-slate-100 rounded-tl-none font-medium'
                           }`}>
@@ -370,10 +364,43 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="w-full text-center pb-6">
-              <p className="text-slate-400 text-xs font-bold tracking-widest uppercase opacity-60">
-                Always Recording • Just Speak and VishwaSetu Will Answer
-              </p>
+            {/* Bottom Microphone Status Bar */}
+            <div className="w-full py-6 flex flex-col items-center justify-center relative">
+              {/* Small animated microphone orb */}
+              <div className="relative flex items-center justify-center">
+                {/* Outer concentric ring */}
+                <div className={`absolute w-24 h-24 rounded-full border-2 transition-all duration-700 ${
+                  isListening ? 'border-blue-400/40 animate-ping' :
+                  isSpeaking ? 'border-purple-400/40 animate-pulse' :
+                  'border-slate-300/30'
+                }`} />
+
+                {/* Middle concentric ring */}
+                <div className={`absolute w-20 h-20 rounded-full border-2 transition-all duration-500 ${
+                  isListening ? 'border-blue-400/60' :
+                  isSpeaking ? 'border-purple-400/60' :
+                  'border-slate-300/50'
+                }`} />
+
+                {/* Core microphone circle */}
+                <div className={`relative w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${
+                  isListening ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-500/30' :
+                  isSpeaking ? 'bg-gradient-to-br from-purple-500 to-purple-600 shadow-purple-500/30' :
+                  'bg-gradient-to-br from-slate-400 to-slate-500 shadow-slate-500/20'
+                }`}>
+                  {/* Microphone icon */}
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Dynamic status text */}
+              <div className="mt-6">
+                <p className="text-slate-400 text-xs font-bold tracking-widest uppercase opacity-60">
+                  {isListening ? 'Listening...' : isSpeaking ? 'Speaking...' : 'Always Recording • Just Speak and VishwaSetu Will Answer'}
+                </p>
+              </div>
             </div>
           </div>
         )}
