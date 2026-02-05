@@ -259,8 +259,8 @@ export default function Home() {
           <div className="w-full text-center space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
             <div className="space-y-6">
               <h2 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-tight flex flex-col items-center">
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400 flex items-center gap-4">
-                  Your Voice <Mic className="w-12 h-12 md:w-16 md:h-16 text-violet-400 drop-shadow-sm" />
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-cyan-400 flex items-center gap-4">
+                  Your Voice <Mic className="w-12 h-12 md:w-16 md:h-16 text-sky-400 drop-shadow-sm" />
                 </span>
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500 flex items-center gap-4">
                   Your Future <Sparkles className="w-12 h-12 md:w-16 md:h-16 text-emerald-500 drop-shadow-sm" />
@@ -279,7 +279,7 @@ export default function Home() {
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer" />
 
-                <span className="relative z-10 flex items-center space-x-5 text-indigo-50">
+                <span className="relative z-10 flex items-center space-x-5 text-sky-50">
                   <span>Start Learning</span>
                   <ArrowRight className="w-10 h-10 transition-transform group-hover:translate-x-2" />
                 </span>
@@ -300,13 +300,36 @@ export default function Home() {
               </div>
 
               <div className="mt-12 w-full bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-10 border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col">
-                <div className="flex items-center justify-between mb-6 shrink-0">
-                  <h4 className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] flex items-center">
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full mr-3 animate-pulse shadow-[0_0_8px_#10b981]" />
-                    Live Language Transaction
-                  </h4>
-                  <div className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100">
-                    Sustained Session
+                <div className="relative flex items-center justify-center mb-10 shrink-0">
+                  {/* Left Side Info */}
+                  <div className="absolute left-0 hidden md:block">
+                    <h4 className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                      Live Session
+                    </h4>
+                  </div>
+
+                  {/* Centered Live Indicator */}
+                  <div className="flex flex-col items-center space-y-3">
+                    <div className="flex items-center space-x-3 bg-emerald-50/50 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-100/50 shadow-sm">
+                      <div className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                      </div>
+                      <span className="text-[11px] font-black text-emerald-600 uppercase tracking-[0.25em]">VishwaSetu Live</span>
+
+                      <div className="flex items-center space-x-1 h-3 ml-1">
+                        <div className="w-0.5 bg-emerald-400 rounded-full animate-wave-1"></div>
+                        <div className="w-0.5 bg-emerald-500 rounded-full animate-wave-2"></div>
+                        <div className="w-0.5 bg-emerald-400 rounded-full animate-wave-3"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Side Info */}
+                  <div className="absolute right-0">
+                    <div className="text-[10px] text-sky-600 font-bold bg-sky-50 px-4 py-1.5 rounded-full border border-sky-100 uppercase tracking-wider">
+                      Sustained
+                    </div>
                   </div>
                 </div>
 
@@ -332,7 +355,7 @@ export default function Home() {
                         </div>
                         <div className={`max-w-[85%] rounded-[1.75rem] px-6 py-4 text-base md:text-xl leading-relaxed shadow-md transition-all ${entry.role === 'user'
                           ? 'bg-gradient-to-br from-indigo-600 to-indigo-700 text-white border border-indigo-400/20 rounded-tr-none shadow-indigo-200/30'
-                          : 'bg-white text-slate-800 border border-slate-100 rounded-tl-none'
+                          : 'bg-white text-teal-600 border border-slate-100 rounded-tl-none font-medium'
                           }`}>
                           {entry.text}
                           {(idx === transcriptions.length - 1 && (isListening || isSpeaking)) && (
@@ -409,6 +432,13 @@ export default function Home() {
         .animate-shimmer {
           animation: shimmer 1.5s infinite;
         }
+        @keyframes wave {
+          0%, 100% { height: 4px; }
+          50% { height: 14px; }
+        }
+        .animate-wave-1 { animation: wave 1s ease-in-out infinite; }
+        .animate-wave-2 { animation: wave 1.2s ease-in-out infinite; delay: 0.1s; }
+        .animate-wave-3 { animation: wave 0.8s ease-in-out infinite; delay: 0.2s; }
       `}} />
     </div>
   );
