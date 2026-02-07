@@ -7,6 +7,9 @@ import { AppState, TranscriptionEntry } from '@/types/vishwasetu';
 import { createPcmBlob, decodeBase64, decodeAudioData } from '@/services/audioUtils';
 import { Mic, Sparkles, ArrowRight } from 'lucide-react';
 
+// Maximum transcription entries to keep (prevents memory buildup)
+const MAX_TRANSCRIPTIONS = 50;
+
 export default function Home() {
   const [appState, setAppState] = useState<AppState>(AppState.SETUP);
   const [isListening, setIsListening] = useState(false);
@@ -20,6 +23,9 @@ export default function Home() {
   const audioContextsRef = useRef<{ input: AudioContext; output: AudioContext } | null>(null);
   const nextStartTimeRef = useRef(0);
   const activeSourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
+  const scriptProcessorRef = useRef<ScriptProcessorNode | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const mediaSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
 
   // Buffers for incremental transcription
   const currentInputText = useRef('');
@@ -30,6 +36,24 @@ export default function Home() {
       sessionRef.current.close();
       sessionRef.current = null;
     }
+
+    // Clean up audio nodes to prevent memory leaks
+    if (scriptProcessorRef.current) {
+      scriptProcessorRef.current.disconnect();
+      scriptProcessorRef.current.onaudioprocess = null;
+      scriptProcessorRef.current = null;
+    }
+
+    if (mediaSourceRef.current) {
+      mediaSourceRef.current.disconnect();
+      mediaSourceRef.current = null;
+    }
+
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
+    }
+
     if (audioContextsRef.current) {
       try {
         audioContextsRef.current.input.close();
@@ -39,6 +63,14 @@ export default function Home() {
       }
       audioContextsRef.current = null;
     }
+
+    // Stop and clear all active audio sources
+    activeSourcesRef.current.forEach(source => {
+      try { source.stop(); } catch (e) {}
+    });
+    activeSourcesRef.current.clear();
+    activeSourcesRef.current = new Set();
+
     setAppState(AppState.SETUP);
     setSessionActive(false);
     setIsListening(false);
@@ -68,6 +100,7 @@ export default function Home() {
       audioContextsRef.current = { input: inputCtx, output: outputCtx };
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream; // Store for cleanup
 
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
@@ -88,6 +121,10 @@ export default function Home() {
             const source = inputCtx.createMediaStreamSource(stream);
             const scriptProcessor = inputCtx.createScriptProcessor(4096, 1, 1);
 
+            // Store for cleanup
+            mediaSourceRef.current = source;
+            scriptProcessorRef.current = scriptProcessor;
+
             scriptProcessor.onaudioprocess = (e) => {
               const inputData = e.inputBuffer.getChannelData(0);
               const pcmBlob = createPcmBlob(inputData);
@@ -105,7 +142,7 @@ export default function Home() {
             // Trigger initial greeting
             sessionPromise.then((session) => {
               session.sendRealtimeInput({
-                text: "Namaste VishwaSetu. Please start the session by introducing yourself and asking for my native language as per your instructions."
+                text: "Namaste VishwaSetu. Please start the session by introducing yourself in English and asking for my native language. Remember: Once I tell you my native language, you must switch completely to that language for all future responses. This is critical."
               });
             });
           },
@@ -116,12 +153,17 @@ export default function Home() {
               // We update the last entry if it was user, or add a new one
               setTranscriptions(prev => {
                 const last = prev[prev.length - 1];
+                let updated: TranscriptionEntry[];
                 if (last && last.role === 'user') {
-                  const updated = [...prev];
+                  updated = [...prev];
                   updated[updated.length - 1] = { ...last, text: currentInputText.current };
-                  return updated;
+                } else {
+                  updated = [...prev, { role: 'user', text: currentInputText.current, timestamp: Date.now() }];
                 }
-                return [...prev, { role: 'user', text: currentInputText.current, timestamp: Date.now() }];
+                // Limit array size to prevent memory buildup
+                return updated.length > MAX_TRANSCRIPTIONS
+                  ? updated.slice(-MAX_TRANSCRIPTIONS)
+                  : updated;
               });
             }
 
@@ -130,12 +172,17 @@ export default function Home() {
               currentOutputText.current += msg.serverContent.outputTranscription.text;
               setTranscriptions(prev => {
                 const last = prev[prev.length - 1];
+                let updated: TranscriptionEntry[];
                 if (last && last.role === 'model') {
-                  const updated = [...prev];
+                  updated = [...prev];
                   updated[updated.length - 1] = { ...last, text: currentOutputText.current };
-                  return updated;
+                } else {
+                  updated = [...prev, { role: 'model', text: currentOutputText.current, timestamp: Date.now() }];
                 }
-                return [...prev, { role: 'model', text: currentOutputText.current, timestamp: Date.now() }];
+                // Limit array size to prevent memory buildup
+                return updated.length > MAX_TRANSCRIPTIONS
+                  ? updated.slice(-MAX_TRANSCRIPTIONS)
+                  : updated;
               });
             }
 
@@ -208,12 +255,16 @@ export default function Home() {
     }
   };
 
-  // Scroll to bottom effect
+  // Scroll to bottom effect (debounced for performance)
   useEffect(() => {
-    const anchor = document.getElementById('scroll-anchor');
-    if (anchor) {
-      anchor.scrollIntoView({ behavior: 'smooth' });
-    }
+    const timeoutId = setTimeout(() => {
+      const anchor = document.getElementById('scroll-anchor');
+      if (anchor) {
+        anchor.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100); // Wait 100ms before scrolling
+
+    return () => clearTimeout(timeoutId);
   }, [transcriptions]);
 
   return (
