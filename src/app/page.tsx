@@ -99,7 +99,19 @@ export default function Home() {
 
       audioContextsRef.current = { input: inputCtx, output: outputCtx };
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          // Disable automatic processing that distorts Indian languages
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+
+          // Preferred constraints
+          sampleRate: 16000,
+          sampleSize: 16,
+          channelCount: 1,
+        }
+      });
       mediaStreamRef.current = stream; // Store for cleanup
 
       const sessionPromise = ai.live.connect({
@@ -257,6 +269,9 @@ export default function Home() {
 
   // Scroll to bottom effect (debounced for performance)
   useEffect(() => {
+    // Only auto-scroll when there are actual transcriptions to display
+    if (transcriptions.length === 0) return;
+
     const timeoutId = setTimeout(() => {
       const anchor = document.getElementById('scroll-anchor');
       if (anchor) {
