@@ -3,7 +3,10 @@
     "allow": [
       "Bash(ls:*)",
       "Bash(dir \"C:\\\\Users\\\\ES\\\\Desktop\\\\2025\\\\viswasethu\\\\.env*\" /b)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(cat:*)",
+      "Bash(npx tsc:*)",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }
