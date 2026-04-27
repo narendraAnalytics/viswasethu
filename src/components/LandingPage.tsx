@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
+import { useUser, UserButton } from "@clerk/nextjs";
 
 const TOTAL = 7;
 
@@ -26,6 +28,7 @@ const sectionVariants = {
 // ── NAVBAR ──
 function Navbar({ current, goTo }: { current: number; goTo: (i: number) => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isSignedIn } = useUser();
   const links = [
     { label: "Problem", idx: 1 },
     { label: "Solution", idx: 2 },
@@ -73,19 +76,20 @@ function Navbar({ current, goTo }: { current: number; goTo: (i: number) => void 
             {l.label}
           </a>
         ))}
-        <a
-          href="#"
-          onClick={(e) => { e.preventDefault(); goTo(6); }}
-          style={{
-            background: "linear-gradient(135deg,#D97706,#B45309)", color: "#fff",
-            padding: "10px 24px", borderRadius: 50, fontWeight: 700, fontSize: "0.88rem",
-            textDecoration: "none", transition: "all 0.3s", letterSpacing: "0.02em",
-          }}
-          onMouseEnter={(e) => { (e.target as HTMLElement).style.background = "linear-gradient(135deg,#EA580C,#C2410C)"; }}
-          onMouseLeave={(e) => { (e.target as HTMLElement).style.background = "linear-gradient(135deg,#D97706,#B45309)"; }}
-        >
-          Try Free →
-        </a>
+        {isSignedIn && (
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: {
+                  width: 38,
+                  height: 38,
+                  border: "2px solid #D97706",
+                  borderRadius: "50%",
+                },
+              },
+            }}
+          />
+        )}
       </div>
 
       {/* Mobile burger */}
@@ -116,8 +120,6 @@ function Navbar({ current, goTo }: { current: number; goTo: (i: number) => void 
               {l.label}
             </a>
           ))}
-          <a href="#" onClick={(e) => { e.preventDefault(); goTo(6); }}
-            style={{ color: "#D97706", fontWeight: 700, textDecoration: "none" }}>Try Free →</a>
         </div>
       )}
 
@@ -158,6 +160,8 @@ function DotNav({ current, goTo }: { current: number; goTo: (i: number) => void 
 // ── S1: HERO ──
 function HeroSection({ goTo }: { goTo: (i: number) => void }) {
   const pCanvasRef = useRef<HTMLCanvasElement>(null);
+  const { isSignedIn, user } = useUser();
+  const displayName = user?.username ?? user?.firstName ?? "there";
 
   // Particle system
   useEffect(() => {
@@ -249,7 +253,7 @@ function HeroSection({ goTo }: { goTo: (i: number) => void }) {
             fontFamily: ff.playfair,
             fontSize: "clamp(2.8rem, 5vw, 5rem)",
             fontWeight: 900, lineHeight: 1.08,
-            color: "#FFF8ED",
+            color: "#FDE68A",
             textShadow: "0 0 60px rgba(245,158,11,0.35)",
             margin: 0,
           }}>
@@ -267,19 +271,19 @@ function HeroSection({ goTo }: { goTo: (i: number) => void }) {
           </div>
 
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 8 }}>
-            <a
-              href="#"
-              onClick={(e) => { e.preventDefault(); goTo(6); }}
+            <Link
+              href="/sign-up"
               style={{
                 background: "linear-gradient(135deg,#D97706,#E07B00)", color: "#0D1F0D",
                 padding: "16px 36px", borderRadius: 50, fontWeight: 700, fontSize: "1rem",
                 textDecoration: "none", boxShadow: "0 8px 32px rgba(245,158,11,0.35)", transition: "all 0.3s",
+                display: "inline-block",
               }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-3px)"; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; }}
             >
               Start Learning Free
-            </a>
+            </Link>
             <a
               href="#"
               onClick={(e) => { e.preventDefault(); goTo(2); }}
@@ -296,6 +300,25 @@ function HeroSection({ goTo }: { goTo: (i: number) => void }) {
         </div>
 
       </div>
+
+      {/* Welcome message */}
+      {isSignedIn && (
+        <div style={{
+          position: "absolute", bottom: 88, left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 20, textAlign: "center", whiteSpace: "nowrap",
+        }}>
+          <span style={{
+            fontFamily: ff.jakarta, fontSize: "1rem", fontWeight: 600,
+            color: "#FDE68A", letterSpacing: "0.04em",
+            background: "rgba(13,5,2,0.45)", backdropFilter: "blur(8px)",
+            border: "1px solid rgba(217,119,6,0.35)",
+            padding: "8px 22px", borderRadius: 50,
+          }}>
+            Welcome back, <span style={{ color: "#D97706" }}>{displayName}</span> 👋
+          </span>
+        </div>
+      )}
 
       {/* Scroll hint */}
       <button
@@ -744,8 +767,8 @@ function CTASection() {
         ))}
       </div>
 
-      <a
-        href="#"
+      <Link
+        href="/sign-up"
         style={{
           background: "linear-gradient(135deg,#D97706,#B45309)", color: "#fff",
           padding: "22px 56px", borderRadius: 50, fontWeight: 800, fontSize: "1.2rem",
@@ -756,7 +779,7 @@ function CTASection() {
         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "linear-gradient(135deg,#D97706,#B45309)"; (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}
       >
         Try ViswaSethu Free →
-      </a>
+      </Link>
 
       <div style={{ display: "flex", gap: 28, justifyContent: "center", flexWrap: "wrap" }}>
         {["About", "Privacy", "Terms", "Contact", "Instagram", "LinkedIn"].map((l) => (
