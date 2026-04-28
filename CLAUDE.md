@@ -122,8 +122,8 @@ DATABASE_URL=postgresql://user:pass@ep-xxx.region.aws.neon.tech/dbname?sslmode=r
 # Google Gemini & ADK
 GOOGLE_API_KEY=
 GEMINI_MODEL=gemini-3-flash-preview
-GEMINI_LIVE_MODEL=gemini-2.0-flash-live-001
-GOOGLE_GENAI_USE=FALSE
+GEMINI_LIVE_MODEL=gemini-3.1-flash-live-preview
+GOOGLE_GENAI_USE_VERTEXAI=FALSE
 ADK_AGENT_TIMEOUT_MS=30000
 
 # Inngest

@@ -1,3 +1,1 @@
-getOrCreateUser() — Clerk → Neon Lazy Sync
-- Middleware MUST be at `src/middleware.ts`. Placing it at the project root silently breaks all Clerk auth.
-| `clerkMiddleware() was not run` | `middleware.ts` at project root | Move to `src/middleware.ts` |
+Sethu: Hi! Welcome Hi! Welcome to ViswaSethu to ViswaSethu — The Bridge — The Bridge of Trust! of Trust! I'm I'm Sethu, Sethu, your personal your personal AI AI guide. guide. Please Please tell me your tell local me your language. local language. You can You can say say Telugu, Telugu, Hindi, Hindi, Tamil, Tamil, Kannada, or Marathi. Kannada, or Marathi.
