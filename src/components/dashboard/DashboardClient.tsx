@@ -32,21 +32,43 @@ const COUNTRIES = [
   { code: 'china', label: 'China', flag: '🇨🇳', lang: 'Mandarin' },
 ]
 
-const LANG_SYSTEM_PROMPT = `You are Sethu — a warm, friendly male voice assistant for ViswaSethu, an AI platform that helps Indian migrant workers learn job-specific language skills abroad.
+const ONBOARDING_SYSTEM_PROMPT = `You are Sethu — a warm, friendly male voice assistant for ViswaSethu, an AI platform that helps Indian migrant workers learn job-specific language skills abroad.
 
-IMPORTANT: Begin speaking IMMEDIATELY when the session opens. Do not wait for the user. Greet them warmly and naturally, like this:
-"Namaste! I'm Sethu, your personal guide at ViswaSethu — The Bridge of Trust. I'm here to help you learn exactly the words you'll need on your very first day of work abroad. To get started, please tell me your home language — Telugu, Hindi, Tamil, Kannada, or Marathi?"
+IMPORTANT: Begin speaking IMMEDIATELY when the session opens.
 
-Then listen carefully. When the user tells you their language:
-1. Confirm warmly — for example: "Great choice! Setting up Telugu for you right away."
-2. Then output EXACTLY one of these tags on its own line (required — do not skip):
-   [LANG:te] for Telugu
-   [LANG:hi] for Hindi
-   [LANG:ta] for Tamil
-   [LANG:kn] for Kannada
-   [LANG:mr] for Marathi
+STEP 1 — HOME LANGUAGE (speak in English):
+Greet warmly: "Namaste! I'm Sethu, your personal guide at ViswaSethu — The Bridge of Trust. I'm here to help you learn exactly the words you'll need on your working days abroad. To get started, please tell me your home language — Telugu, Hindi, Tamil, Kannada, or Marathi?"
+When the user responds, confirm warmly in THEIR detected language (e.g. if Telugu say "చాలా బాగుంది!"), then output EXACTLY one tag on its own line:
+[LANG:te] for Telugu | [LANG:hi] for Hindi | [LANG:ta] for Tamil | [LANG:kn] for Kannada | [LANG:mr] for Marathi
 
-If the user is unclear, ask once more gently. Keep it brief and warm. Speak naturally like a helpful friend.`
+STEP 2 — JOB TYPE (speak ENTIRELY in the user's detected language from now on):
+Immediately switch to speaking in the user's language. Ask what type of work they will be doing abroad.
+Job options: Driver, Plumber, Construction worker, Cleaner, Painter — say these naturally in the user's language.
+When detected, confirm warmly in their language, then output EXACTLY one tag on its own line:
+[JOB:driver] | [JOB:plumber] | [JOB:construction] | [JOB:cleaner] | [JOB:painter]
+
+STEP 3 — DESTINATION (continue in the user's language):
+Still in the user's language, ask where they are going to work.
+Country options: Dubai, Japan, UK, USA, Russia, China.
+When detected, confirm warmly in their language, then output EXACTLY one tag on its own line:
+[COUNTRY:dubai] | [COUNTRY:japan] | [COUNTRY:uk] | [COUNTRY:usa] | [COUNTRY:russia] | [COUNTRY:china]
+
+CLOSING MESSAGE (speak in the user's language):
+After all 3 steps, give an encouraging closing message in the user's native language. Mention that you are now handing them over to the expert for the foreign language of their destination:
+- Dubai → Arabic (అరబిక్ / अरबी / அரபிக் / ಅರೇಬಿಕ್ / अरबी)
+- Japan → Japanese (జపనీస్ / जापानी / ஜப்பானியம் / ಜಪಾನೀಸ್ / जपानी)
+- UK or USA → English (ఇంగ్లీష్ / अंग्रेज़ी / ஆங்கிலம் / ಇಂಗ್ಲಿಷ್ / इंग्रजी)
+- Russia → Russian (రష్యన్ / रूसी / ரஷ்யன் / ರಷ್ಯನ್ / रशियन)
+- China → Mandarin (మాండరిన్ / मंदारिन / மாண்டரின் / ಮ್ಯಾಂಡರಿನ್ / मंदारिन)
+
+Example closing for a Telugu speaker going to Dubai:
+"అద్భుతం! మేము ఇప్పుడు మీకు మా నిపుణ అరబిక్ భాషా నిపుణుడికి అప్పగిస్తున్నాము. మీ మొదటి పని దినానికి మీకు శుభకామనలు!"
+
+Rules:
+- Tags must ALWAYS be output in English format — never translate or modify the tags
+- All spoken words after step 1 must be in the user's native language
+- Keep responses warm, brief, and natural like a helpful friend
+- If unclear at any step, ask once more gently in the appropriate language`
 
 // ── Main Component ──────────────────────────────────────────────────────────
 
@@ -85,22 +107,28 @@ export default function DashboardClient({ userName, totalSessions }: Props) {
     setVoiceMode(v => !v)
   }
 
-  function handleLanguageDetected(code: string) {
-    setLanguage(code)
+  function handleVoiceComplete(lang: string, jobType: string, dest: string) {
+    setLanguage(lang)
+    setJob(jobType)
+    setCountry(dest)
     setVoiceMode(false)
-    setTimeout(() => setStep(2), 800)
+    launchSessionWith(lang, jobType, dest)
   }
 
-  async function launchSession() {
-    if (!language || !job || !country) return
+  async function launchSessionWith(lang: string, jobType: string, dest: string) {
     setLaunching(true)
     const res = await fetch('/api/session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nativeLanguage: language, jobType: job, country }),
+      body: JSON.stringify({ nativeLanguage: lang, jobType, country: dest }),
     })
     const data = await res.json()
     router.push(`/session/${data.sessionId}`)
+  }
+
+  async function launchSession() {
+    if (!language || !job || !country) return
+    launchSessionWith(language, job, country)
   }
 
   return (
@@ -171,8 +199,8 @@ export default function DashboardClient({ userName, totalSessions }: Props) {
                 </div>
 
                 {voiceMode && audioCtxsRef.current ? (
-                  <VoiceLanguageDetector
-                    onDetected={handleLanguageDetected}
+                  <VoiceOnboardingFlow
+                    onComplete={handleVoiceComplete}
                     inputCtx={audioCtxsRef.current.input}
                     outputCtx={audioCtxsRef.current.output}
                   />
@@ -324,18 +352,18 @@ export default function DashboardClient({ userName, totalSessions }: Props) {
   )
 }
 
-// ── Voice Language Detector ─────────────────────────────────────────────────
+// ── Voice Onboarding Flow ───────────────────────────────────────────────────
 
-interface VoiceDetectorProps {
-  onDetected: (code: string) => void
+interface VoiceOnboardingProps {
+  onComplete: (lang: string, job: string, country: string) => void
   inputCtx: AudioContext   // pre-created in onClick (user gesture) — Chrome requires this
   outputCtx: AudioContext
 }
 
-function VoiceLanguageDetector({ onDetected, inputCtx, outputCtx }: VoiceDetectorProps) {
+function VoiceOnboardingFlow({ onComplete, inputCtx, outputCtx }: VoiceOnboardingProps) {
   const [status, setStatus] = useState<'idle' | 'connecting' | 'listening' | 'detected' | 'error'>('idle')
   const [statusText, setStatusText] = useState('Connecting to Sethu…')
-  const [detectedLang, setDetectedLang] = useState('')
+  const [flowStep, setFlowStep] = useState<1 | 2 | 3>(1)
   const [aiSpeaking, setAiSpeaking] = useState(false)
 
   const sessionRef = useRef<ReturnType<InstanceType<typeof GoogleGenAI>['live']['connect']> extends Promise<infer T> ? T : never>(null)
@@ -344,6 +372,9 @@ function VoiceLanguageDetector({ onDetected, inputCtx, outputCtx }: VoiceDetecto
   const aiBufferRef = useRef('')
   const intentionalCloseRef = useRef(false)
   const detectedRef = useRef(false)
+  const detectedLangRef = useRef('')
+  const detectedJobRef = useRef('')
+  const pendingCompleteRef = useRef<{ lang: string; job: string; country: string } | null>(null)
   const startedRef = useRef(false)
 
   const cleanup = useCallback(() => {
@@ -415,9 +446,9 @@ function VoiceLanguageDetector({ onDetected, inputCtx, outputCtx }: VoiceDetecto
             if (sc?.outputTranscription?.text?.trim()) {
               const chunk = sc.outputTranscription.text.trim()
               aiBufferRef.current += (aiBufferRef.current ? ' ' : '') + chunk
-              const display = aiBufferRef.current.replace(/\[LANG:[a-z]+\]/g, '').trim()
+              const display = aiBufferRef.current.replace(/\[(LANG|JOB|COUNTRY):[a-z]+\]/g, '').trim()
               if (display) setStatusText(`Sethu: ${display}`)
-              checkForLangTag(aiBufferRef.current)
+              checkForTags(aiBufferRef.current)
             }
 
             // 4. audio parts — only setAiSpeaking when audio actually arrives (skill §3)
@@ -430,7 +461,7 @@ function VoiceLanguageDetector({ onDetected, inputCtx, outputCtx }: VoiceDetecto
               const partText = part.text?.trim()
               if (partText && !sc?.outputTranscription?.text) {
                 aiBufferRef.current += (aiBufferRef.current ? ' ' : '') + partText
-                setStatusText(`Sethu: ${aiBufferRef.current.replace(/\[LANG:[a-z]+\]/g, '').trim()}`)
+                setStatusText(`Sethu: ${aiBufferRef.current.replace(/\[(LANG|JOB|COUNTRY):[a-z]+\]/g, '').trim()}`)
               }
             }
 
@@ -438,10 +469,16 @@ function VoiceLanguageDetector({ onDetected, inputCtx, outputCtx }: VoiceDetecto
             if (sc?.turnComplete) {
               const aiText = aiBufferRef.current.trim()
               if (aiText) {
-                checkForLangTag(aiText)
+                checkForTags(aiText)
                 aiBufferRef.current = ''
               }
               setAiSpeaking(false)
+              // If country was detected this turn, Sethu just finished the closing message — now safe to complete
+              if (pendingCompleteRef.current) {
+                const { lang, job, country } = pendingCompleteRef.current
+                pendingCompleteRef.current = null
+                setTimeout(() => { cleanup(); onComplete(lang, job, country) }, 1000)
+              }
             }
           },
           onclose: () => {
@@ -462,7 +499,7 @@ function VoiceLanguageDetector({ onDetected, inputCtx, outputCtx }: VoiceDetecto
           speechConfig: {
             voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Charon' } }, // male voice
           },
-          systemInstruction: { parts: [{ text: LANG_SYSTEM_PROMPT }] },
+          systemInstruction: { parts: [{ text: ONBOARDING_SYSTEM_PROMPT }] },
           inputAudioTranscription: {},
           outputAudioTranscription: {},
         } as any, // skill §1 — cast required, Gemini SDK types are loose
@@ -502,21 +539,38 @@ function VoiceLanguageDetector({ onDetected, inputCtx, outputCtx }: VoiceDetecto
     }
   }
 
-  function checkForLangTag(text: string) {
-    const match = text.match(/\[LANG:([a-z]{2})\]/)
-    if (match && !detectedRef.current) {
-      detectedRef.current = true
-      const code = match[1]
-      const found = LANGUAGES.find(l => l.code === code)
-      if (found) {
+  function checkForTags(text: string) {
+    // Step 1: language
+    if (!detectedLangRef.current) {
+      const m = text.match(/\[LANG:([a-z]{2})\]/)
+      if (m) {
+        detectedLangRef.current = m[1]
+        setFlowStep(2)
+        const found = LANGUAGES.find(l => l.code === m[1])
+        if (found) setStatusText(`✓ ${found.label} detected — now tell me your job`)
+      }
+    }
+    // Step 2: job (only after lang)
+    if (detectedLangRef.current && !detectedJobRef.current) {
+      const m = text.match(/\[JOB:([a-z]+)\]/)
+      if (m) {
+        detectedJobRef.current = m[1]
+        setFlowStep(3)
+        const found = JOBS.find(j => j.code === m[1])
+        if (found) setStatusText(`✓ ${found.label} — now tell me your destination`)
+      }
+    }
+    // Step 3: country (only after lang + job)
+    if (detectedLangRef.current && detectedJobRef.current && !detectedRef.current) {
+      const m = text.match(/\[COUNTRY:([a-z]+)\]/)
+      if (m) {
+        detectedRef.current = true
+        const country = m[1]
+        const found = COUNTRIES.find(c => c.code === country)
         setStatus('detected')
-        setDetectedLang(found.label)
-        setStatusText(`✓ Detected: ${found.label}`)
-        // Let AI finish speaking, then fire callback after 1.5s
-        setTimeout(() => {
-          cleanup()
-          onDetected(code)
-        }, 1500)
+        setStatusText(`✓ All set! ${found ? found.label : country} — launching your session…`)
+        // Store for turnComplete — Sethu is still speaking the closing message, don't cut it off
+        pendingCompleteRef.current = { lang: detectedLangRef.current, job: detectedJobRef.current, country }
       }
     }
   }
@@ -524,11 +578,13 @@ function VoiceLanguageDetector({ onDetected, inputCtx, outputCtx }: VoiceDetecto
   function stop() {
     cleanup()
     detectedRef.current = false
+    detectedLangRef.current = ''
+    detectedJobRef.current = ''
+    pendingCompleteRef.current = null
     aiBufferRef.current = ''
-    // The parent toggles voiceMode off — just call onDetected with empty to signal cancel
-    // Actually we only cancel — parent's "Use Buttons" button handles the toggle
     setStatus('idle')
     setStatusText('Connecting to Sethu…')
+    setFlowStep(1)
   }
 
   const isActive = status === 'connecting' || status === 'listening'
@@ -585,16 +641,18 @@ function VoiceLanguageDetector({ onDetected, inputCtx, outputCtx }: VoiceDetecto
         </div>
       )}
 
+      {/* Step progress indicator */}
+      {status !== 'error' && (
+        <div style={{ fontSize: 11, color: '#D97706', fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase' }}>
+          Step {flowStep} of 3 — {flowStep === 1 ? 'Your Language' : flowStep === 2 ? 'Job Type' : 'Destination'}
+        </div>
+      )}
+
       {/* Status text */}
       <div style={{ textAlign: 'center' }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: status === 'detected' ? '#059669' : status === 'error' ? '#EF4444' : '#1C2B1A', lineHeight: 1.5 }}>
           {statusText}
         </div>
-        {status === 'detected' && (
-          <div style={{ fontSize: 13, color: '#5A4A2A', marginTop: 4 }}>
-            Setting up <strong style={{ color: '#D97706' }}>{detectedLang}</strong> for you…
-          </div>
-        )}
         {status === 'listening' && !aiSpeaking && (
           <div style={{ fontSize: 11, color: '#5A4A2A', marginTop: 4 }}>
             Speak clearly — Sethu is listening
@@ -613,7 +671,7 @@ function VoiceLanguageDetector({ onDetected, inputCtx, outputCtx }: VoiceDetecto
       {/* Error retry */}
       {status === 'error' && (
         <button
-          onClick={() => { detectedRef.current = false; aiBufferRef.current = ''; intentionalCloseRef.current = false; start() }}
+          onClick={() => { detectedRef.current = false; detectedLangRef.current = ''; detectedJobRef.current = ''; pendingCompleteRef.current = null; aiBufferRef.current = ''; intentionalCloseRef.current = false; setFlowStep(1); start() }}
           style={{ fontSize: 12, color: '#D97706', background: 'transparent', border: '1px solid rgba(217,119,6,0.35)', padding: '5px 16px', borderRadius: 20, cursor: 'pointer', fontWeight: 600 }}
         >
           Retry
