@@ -1,0 +1,32 @@
+Yes, you can deploy your Next.js project using Google ADK to Vercel.
+However, because @google/adk is a complex framework that uses Node.js-specific features (and internal dependencies like @google/genai), you must configure your project correctly to avoid bundling errors during the Vercel build process.
+1. Update next.config.js
+You should add @google/adk to serverExternalPackages. This tells Next.js to treat the package as an external dependency rather than trying to bundle it into a single JavaScript file, which often fails for AI SDKs that use native Node.js APIs or grpc.
+code
+JavaScript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Required for @google/adk to work correctly in Server Components/API Routes
+  serverExternalPackages: ['@google/adk'],
+};
+
+export default nextConfig;
+[1]
+2. Use the Node.js Runtime (Not Edge)
+Google ADK is an "Agent Execution Framework" and is generally too heavy for the Vercel Edge Runtime. It requires a full Node.js environment. Ensure your API routes or Server Actions are using the default Node.js runtime.
+Avoid this in your ADK routes:
+code
+TypeScript
+// ❌ Do NOT use this for ADK agents
+export const runtime = 'edge';
+3. Environment Variables in Vercel
+When you deploy to Vercel, you must manually add your keys in the Vercel Dashboard (Settings > Environment Variables):
+GOOGLE_API_KEY: Your Gemini API Key.[2]
+GOOGLE_GENAI_USE_VERTEXAI: Set to FALSE.
+4. Why serverExternalPackages is necessary
+Google ADK (and the underlying @google/genai library) often performs dynamic imports or uses specific Node.js networking protocols to handle the high-performance streaming required for models like gemini-3.1-flash-live-preview. Standard bundling (Webpack/Turbopack) can "break" these internal references. Marking it as an external package ensures Vercel installs it as a standard node_module on the server, maintaining its functionality.
+Summary Checklist for Vercel:
+Command: npm install @google/adk @google/genai
+Config: Add @google/adk to serverExternalPackages in next.config.js.
+Runtime: Use the standard Node.js runtime (default).[3]
+Env: Set GOOGLE_GENAI_USE_VERTEXAI=FALSE in the Vercel Dashboard.
