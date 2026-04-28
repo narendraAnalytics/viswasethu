@@ -70,14 +70,56 @@ npx inngest-cli@latest dev
 | Landing page (7 sections, Framer Motion scroll) | ✅ Done |
 | Clerk auth — provider, middleware, sign-in/sign-up pages | ✅ Done |
 | shadcn/ui primitives, GlobeCanvas (Three.js) | ✅ Done |
-| Neon DB — `users` table, Drizzle schema + client, `getOrCreateUser()` | ✅ Done |
-| Minimal `/dashboard` page (Server Component, triggers user sync) | ✅ Done |
-| Agents, Tools directories | ⏳ Not yet created |
-| Session, reports pages | ⏳ Not yet created |
-| API routes (agents, voice, session, inngest) | ⏳ Not yet created |
-| Inngest functions | ⏳ Not yet created |
+| Neon DB — `users` + `sessions` tables, Drizzle schema + client | ✅ Done |
+| `/dashboard` page — 3-step voice onboarding (language → job → country) | ✅ Done |
+| Voice onboarding — Gemini Live, single session, all 3 steps, native language switch | ✅ Done |
+| `/api/token` — serves `GOOGLE_API_KEY` to authenticated browser clients | ✅ Done |
+| `/api/session` — POST creates session, GET fetches sessions | ✅ Done |
+| `/api/agents` — POST returns SteeringManager system prompt for session page | ✅ Done |
+| `/session/[sessionId]` — placeholder page showing session context | ✅ Done |
+| `agents/steeringManager.ts` — ADK `LlmAgent`, `buildSessionSystemPrompt()` | ✅ Done |
+| `next.config.ts` — `serverExternalPackages` for `@google/adk` + `@google/genai` | ✅ Done |
+| Deployed to Vercel — https://viswasethu.vercel.app/ | ✅ Done |
+| NativeLingo agents (Telugu, Hindi, Tamil, Kannada, Marathi) | ⏳ Next |
+| GlobalVocation agents (Dubai-Driver, Japan-Construction, etc.) | ⏳ Pending |
+| Tools (VocationalSearch, TechnicalDictionary, ContextCulture) | ⏳ Pending |
+| Session voice component — learning session powered by SteeringManager | ⏳ Pending |
+| Session Report Agent + Inngest function | ⏳ Pending |
+| Reports page | ⏳ Pending |
 
 > **Next.js version:** package.json uses `16.2.4` (canary). APIs may differ from training data — check `node_modules/next/dist/docs/` before writing framework-specific code. See also `AGENTS.md`.
+
+---
+
+## Next Steps (Build Order)
+
+### Step 1 — NativeLingo Agents (do next)
+Create all 5 language agents and register them in SteeringManager `subAgents`:
+- `src/agents/nativeLingo/teluguAgent.ts`
+- `src/agents/nativeLingo/hindiAgent.ts`
+- `src/agents/nativeLingo/tamilAgent.ts`
+- `src/agents/nativeLingo/kannadaAgent.ts`
+- `src/agents/nativeLingo/marathiAgent.ts`
+
+### Step 2 — GlobalVocation Agents
+Create job + country specific agents (e.g. Dubai-Driver, Japan-Construction):
+- `src/agents/globalVocation/dubaiDriverAgent.ts` etc.
+
+### Step 3 — Tools
+- `src/tools/vocationalSearch.ts`
+- `src/tools/technicalDictionary.ts`
+- `src/tools/contextCulture.ts`
+
+### Step 4 — Session Voice Component
+Wire `/session/[sessionId]` page to call `POST /api/agents`, get SteeringManager system prompt, and start a Gemini Live voice learning session (same pattern as onboarding voice).
+
+### Step 5 — Session Report Agent + Inngest
+- `src/agents/sessionReport/reportAgent.ts`
+- `src/inngest/generateReport.ts`
+- `src/app/api/inngest/route.ts`
+
+### Step 6 — Reports Page
+- `src/app/(dashboard)/reports/page.tsx`
 
 ---
 
@@ -153,18 +195,23 @@ viswasethu/
 │   │   │   └── sign-up/[[...sign-up]]/page.tsx
 │   │   ├── (dashboard)/
 │   │   │   ├── dashboard/page.tsx     ← ✅ Server Component — calls getOrCreateUser()
-│   │   │   ├── session/[sessionId]/   ← ⏳ not yet created
+│   │   │   ├── session/[sessionId]/   ← ✅ placeholder, wires to SteeringManager next
 │   │   │   └── reports/               ← ⏳ not yet created
 │   │   ├── api/
-│   │   │   ├── agents/route.ts        ← ⏳ ADK agent endpoint
-│   │   │   ├── voice/route.ts         ← ⏳ Gemini Live WebSocket handler
-│   │   │   ├── session/route.ts       ← ⏳ Session CRUD
+│   │   │   ├── agents/route.ts        ← ✅ POST returns SteeringManager system prompt
+│   │   │   ├── token/route.ts         ← ✅ serves GOOGLE_API_KEY to browser
+│   │   │   ├── session/route.ts       ← ✅ POST create, GET fetch sessions
+│   │   │   ├── voice/route.ts         ← ⏳ Gemini Live WebSocket handler (future)
 │   │   │   └── inngest/route.ts       ← ⏳ Inngest webhook (must stay public)
 │   │   ├── globals.css
 │   │   ├── layout.tsx                 ← ClerkProvider wraps children
 │   │   └── page.tsx                   ← Renders <LandingPage />
-│   ├── agents/                        ← ⏳ not yet created
-│   ├── tools/                         ← ⏳ not yet created
+│   ├── agents/
+│   │   ├── steeringManager.ts         ← ✅ ADK LlmAgent — brain, buildSessionSystemPrompt()
+│   │   ├── nativeLingo/               ← ⏳ teluguAgent, hindiAgent, tamilAgent, kannadaAgent, marathiAgent
+│   │   ├── globalVocation/            ← ⏳ dubaiDriverAgent, japanConstructionAgent, etc.
+│   │   └── sessionReport/             ← ⏳ reportAgent.ts
+│   ├── tools/                         ← ⏳ vocationalSearch, technicalDictionary, contextCulture
 │   ├── db/
 │   │   ├── schema.ts                  ← ✅ users table (Clerk ID as text PK)
 │   │   └── index.ts                   ← ✅ neon-http Drizzle client
@@ -251,6 +298,7 @@ User Input (Voice / Text)
 
 ```ts
 users          id (text PK = Clerk user_xxx), email, name, native_language, plan, created_at
+sessions       id (uuid PK), userId (text FK), nativeLanguage, jobType, country, status, startedAt, endedAt
 ```
 
 **Critical rules — never deviate:**
@@ -263,7 +311,6 @@ users          id (text PK = Clerk user_xxx), email, name, native_language, plan
 
 ### ⏳ Still to create
 
-- **sessions** — session ID, user ID, target language, job type, country, status, started_at, ended_at
 - **session_progress** — session ID, vocabulary learned, fluency score, strengths, weak areas, readiness level
 - **agent_logs** — session ID, agent name, input, output, timestamp
 - **reports** — session ID, user ID, report JSON, created_at
@@ -339,6 +386,12 @@ Practice → Get Feedback → Improve → Reinforce → Retain → Apply in Real
 - `GOOGLE_GENAI_USE=FALSE` — ADK uses the Gemini API directly, not Vertex AI
 - Keep voice session state in memory per `sessionId` (not DB — too slow for real-time)
 - Audio format: PCM 16-bit, 16kHz, mono for input; handle output audio chunks in streaming fashion
+
+## Vercel / Next.js Config Notes
+
+- `next.config.ts` must include `serverExternalPackages: ['@google/adk', '@google/genai']` — prevents Webpack/Turbopack from trying to bundle them, which breaks in Vercel's serverless environment because ADK uses Node.js-specific APIs and dynamic imports
+- Never add `export const runtime = 'edge'` to any route that uses ADK agents — ADK requires full Node.js runtime
+- `GOOGLE_GENAI_USE_VERTEXAI=FALSE` must be set in Vercel Dashboard (Settings → Environment Variables)
 
 ---
 
