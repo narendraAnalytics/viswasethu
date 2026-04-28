@@ -272,7 +272,7 @@ function HeroSection({ goTo }: { goTo: (i: number) => void }) {
 
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 8 }}>
             <Link
-              href="/sign-up"
+              href={isSignedIn ? "/dashboard" : "/sign-up"}
               style={{
                 background: "linear-gradient(135deg,#D97706,#E07B00)", color: "#0D1F0D",
                 padding: "16px 36px", borderRadius: 50, fontWeight: 700, fontSize: "1rem",
@@ -739,6 +739,7 @@ function TechSection() {
 
 // ── S7: CTA ──
 function CTASection() {
+  const { isSignedIn } = useUser();
   const bars = [12, 28, 40, 50, 40, 28, 16, 36, 44];
   return (
     <section style={{
@@ -768,7 +769,7 @@ function CTASection() {
       </div>
 
       <Link
-        href="/sign-up"
+        href={isSignedIn ? "/dashboard" : "/sign-up"}
         style={{
           background: "linear-gradient(135deg,#D97706,#B45309)", color: "#fff",
           padding: "22px 56px", borderRadius: 50, fontWeight: 800, fontSize: "1.2rem",

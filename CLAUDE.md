@@ -1,4 +1,6 @@
-# CLAUDE.md — ViswaSethu Project
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 > This file is the single source of truth for Claude Code working on this project.
 > Read this entire file before doing anything in this codebase.
@@ -34,6 +36,46 @@ For ALL Google ADK agent work — writing agent code, building agents, adding to
 `C:\Users\ES\.claude\skills\google-agents-cli-workflow`
 `C:\Users\ES\.claude\skills\google-agents-cli-scaffold`
 `C:\Users\ES\.claude\skills\google-agents-cli-eval`
+
+---
+
+## Deployed URL
+        https://viswasethu.vercel.app/
+
+---
+
+## Commands
+
+```bash
+npm run dev          # Start dev server at http://localhost:3000
+npm run build        # Production build
+npm run start        # Serve production build
+npx tsc --noEmit     # Type check (no lint script — run npx eslint src if needed)
+
+# Database (once Drizzle is configured):
+npx drizzle-kit generate
+npx drizzle-kit migrate
+
+# Inngest (separate terminal, once functions exist):
+npx inngest-cli@latest dev
+```
+
+---
+
+## What Is Currently Built
+
+| Area | Status |
+|---|---|
+| Landing page (7 sections, Framer Motion scroll) | ✅ Done |
+| Clerk auth — provider, middleware, sign-in/sign-up pages | ✅ Done |
+| shadcn/ui primitives, GlobeCanvas (Three.js) | ✅ Done |
+| Database schema, Drizzle config | ⏳ Not yet created |
+| Agents, Tools directories | ⏳ Not yet created |
+| Dashboard, session, reports pages | ⏳ Not yet created |
+| API routes (agents, voice, session, inngest) | ⏳ Not yet created |
+| Inngest functions | ⏳ Not yet created |
+
+> **Next.js version:** package.json uses `16.2.4` (canary). APIs may differ from training data — check `node_modules/next/dist/docs/` before writing framework-specific code. See also `AGENTS.md`.
 
 ---
 
@@ -309,7 +351,6 @@ Practice → Get Feedback → Improve → Reinforce → Retain → Apply in Real
 ## Voice Integration Notes
 
 - Gemini Live API uses **WebSocket** (not REST) — handle in `app/api/voice/route.ts`
-- Use `GEMINI_LIVE_MODEL=gemini-2.0-flash-live-001` specifically for voice sessions
 - The main text/agent model is `GEMINI_MODEL=gemini-3-flash-preview`
 - `GOOGLE_GENAI_USE=FALSE` — ADK uses the Gemini API directly, not Vertex AI
 - Keep voice session state in memory per `sessionId` (not DB — too slow for real-time)
