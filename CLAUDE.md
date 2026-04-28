@@ -52,9 +52,10 @@ npm run build        # Production build
 npm run start        # Serve production build
 npx tsc --noEmit     # Type check (no lint script — run npx eslint src if needed)
 
-# Database (once Drizzle is configured):
-npx drizzle-kit generate
-npx drizzle-kit migrate
+# Database
+npm run db:push      # Push schema changes to Neon (no migration files)
+npm run db:generate  # Generate migration SQL files
+npm run db:studio    # Open Drizzle Studio to browse DB
 
 # Inngest (separate terminal, once functions exist):
 npx inngest-cli@latest dev
@@ -69,9 +70,10 @@ npx inngest-cli@latest dev
 | Landing page (7 sections, Framer Motion scroll) | ✅ Done |
 | Clerk auth — provider, middleware, sign-in/sign-up pages | ✅ Done |
 | shadcn/ui primitives, GlobeCanvas (Three.js) | ✅ Done |
-| Database schema, Drizzle config | ⏳ Not yet created |
+| Neon DB — `users` table, Drizzle schema + client, `getOrCreateUser()` | ✅ Done |
+| Minimal `/dashboard` page (Server Component, triggers user sync) | ✅ Done |
 | Agents, Tools directories | ⏳ Not yet created |
-| Dashboard, session, reports pages | ⏳ Not yet created |
+| Session, reports pages | ⏳ Not yet created |
 | API routes (agents, voice, session, inngest) | ⏳ Not yet created |
 | Inngest functions | ⏳ Not yet created |
 
@@ -103,7 +105,7 @@ npx inngest-cli@latest dev
 
 ## Environment Variables
 
-All secrets live in `.env.local`. Never hardcode keys. Never commit `.env.local`.
+All secrets live in `.env`. Never hardcode keys. Never commit `.env`.
 
 ```env
 # Clerk
@@ -111,12 +113,11 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/        # lands on landing page after login
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/        # lands on landing page after sign-up
 
-# Neon PostgreSQL
-DATABASE_URL=
-DATABASE_URL_UNPOOLED=
+# Neon PostgreSQL — DIRECT URL only (no -pooler, no &channel_binding=require)
+DATABASE_URL=postgresql://user:pass@ep-xxx.region.aws.neon.tech/dbname?sslmode=require
 
 # Google Gemini & ADK
 GOOGLE_API_KEY=
@@ -128,13 +129,14 @@ ADK_AGENT_TIMEOUT_MS=30000
 # Inngest
 INNGEST_EVENT_KEY=
 INNGEST_SIGNING_KEY=
+# INNGEST_DEV=1   ← LOCAL ONLY, never set on Vercel
 
 # Resend
 RESEND_API_KEY=
 RESEND_FROM_EMAIL=noreply@viswasethu.app
 
 # App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=https://viswasethu.vercel.app/
 NODE_ENV=development
 ```
 
@@ -147,76 +149,36 @@ viswasethu/
 ├── src/
 │   ├── app/
 │   │   ├── (auth)/
-│   │   │   ├── sign-in/
-│   │   │   └── sign-up/
+│   │   │   ├── sign-in/[[...sign-in]]/page.tsx
+│   │   │   └── sign-up/[[...sign-up]]/page.tsx
 │   │   ├── (dashboard)/
-│   │   │   ├── dashboard/
-│   │   │   ├── session/
-│   │   │   │   └── [sessionId]/
-│   │   │   └── reports/
+│   │   │   ├── dashboard/page.tsx     ← ✅ Server Component — calls getOrCreateUser()
+│   │   │   ├── session/[sessionId]/   ← ⏳ not yet created
+│   │   │   └── reports/               ← ⏳ not yet created
 │   │   ├── api/
-│   │   │   ├── agents/
-│   │   │   │   └── route.ts           ← ADK agent API endpoint
-│   │   │   ├── voice/
-│   │   │   │   └── route.ts           ← Gemini Live WebSocket handler
-│   │   │   ├── session/
-│   │   │   │   └── route.ts           ← Session CRUD
-│   │   │   └── inngest/
-│   │   │       └── route.ts           ← Inngest webhook handler
-│   │   ├── icon.png                   ← App favicon (logo)
+│   │   │   ├── agents/route.ts        ← ⏳ ADK agent endpoint
+│   │   │   ├── voice/route.ts         ← ⏳ Gemini Live WebSocket handler
+│   │   │   ├── session/route.ts       ← ⏳ Session CRUD
+│   │   │   └── inngest/route.ts       ← ⏳ Inngest webhook (must stay public)
 │   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   ├── agents/
-│   │   ├── steeringManager.ts         ← Central routing agent
-│   │   ├── nativeLingo/
-│   │   │   ├── teluguAgent.ts
-│   │   │   ├── hindiAgent.ts
-│   │   │   ├── tamilAgent.ts
-│   │   │   ├── kannadaAgent.ts
-│   │   │   └── marathiAgent.ts
-│   │   ├── globalVocation/
-│   │   │   ├── dubaiAgent.ts          ← e.g. Dubai-Driver, Dubai-Plumber
-│   │   │   ├── japanAgent.ts
-│   │   │   ├── ukAgent.ts
-│   │   │   ├── usaAgent.ts
-│   │   │   ├── russiaAgent.ts
-│   │   │   └── chinaAgent.ts
-│   │   └── sessionReport/
-│   │       └── reportAgent.ts
-│   ├── tools/
-│   │   ├── vocationalSearch.ts        ← Job phrase search tool
-│   │   ├── technicalDictionary.ts     ← Technical term lookup tool
-│   │   └── contextCulture.ts          ← Cultural guidance tool
+│   │   ├── layout.tsx                 ← ClerkProvider wraps children
+│   │   └── page.tsx                   ← Renders <LandingPage />
+│   ├── agents/                        ← ⏳ not yet created
+│   ├── tools/                         ← ⏳ not yet created
 │   ├── db/
-│   │   ├── schema.ts                  ← Drizzle schema
-│   │   ├── index.ts                   ← DB client
-│   │   └── migrations/
-│   ├── inngest/
-│   │   ├── client.ts
-│   │   └── functions/
-│   │       ├── generateReport.ts
-│   │       └── syncUser.ts
+│   │   ├── schema.ts                  ← ✅ users table (Clerk ID as text PK)
+│   │   └── index.ts                   ← ✅ neon-http Drizzle client
+│   ├── inngest/                       ← ⏳ not yet created
 │   ├── lib/
-│   │   ├── gemini.ts                  ← Gemini client setup
-│   │   ├── voice.ts                   ← Gemini Live WebSocket helpers
+│   │   ├── auth.ts                    ← ✅ getOrCreateUser() lazy sync
 │   │   └── utils.ts
 │   └── components/
-│       ├── ui/
-│       ├── LandingPage.tsx            ← Landing page ✓ implemented
-│       ├── GlobeCanvas.tsx            ← Three.js globe ✓ implemented
-│       ├── VoiceInterface.tsx
-│       ├── LanguageSelector.tsx
-│       ├── JobSelector.tsx
-│       └── SessionReport.tsx
+│       ├── ui/                        ← shadcn/ui primitives
+│       ├── LandingPage.tsx            ← ✅ 7-section client component
+│       └── GlobeCanvas.tsx            ← ✅ Three.js globe
 ├── public/
-│   ├── logo.png                       ← App logo
-│   ├── bannerimage1.png               ← Hero banner bg
-│   └── hero-person.png                ← Hero portrait image
-├── CLAUDE.md                          ← This file
-├── .env.local
-├── .gitignore
-├── drizzle.config.ts
+├── drizzle.config.ts                  ← ✅ points to src/db/schema.ts
+├── .env                               ← secrets (never commit)
 ├── next.config.ts
 ├── package.json
 └── tsconfig.json
@@ -285,13 +247,35 @@ User Input (Voice / Text)
 
 ## Database Schema (Drizzle)
 
-Core tables to define in `db/schema.ts`:
+### ✅ Implemented — `src/db/schema.ts`
 
-- **users** — Clerk user ID, name, email, native language preference, created_at
+```ts
+users          id (text PK = Clerk user_xxx), email, name, native_language, plan, created_at
+```
+
+**Critical rules — never deviate:**
+- `users.id` is `text`, not `uuid` — Clerk IDs are strings like `user_2abc...`
+- All FK columns referencing `users.id` must also be `text`
+- All other PKs use `uuid().defaultRandom()`
+- All FKs use `{ onDelete: 'cascade' }`
+- Drizzle driver is `drizzle-orm/neon-http` — never `pg` or WebSocket driver
+- DATABASE_URL must be the **direct** Neon URL: no `-pooler` in hostname, no `&channel_binding=require`
+
+### ⏳ Still to create
+
 - **sessions** — session ID, user ID, target language, job type, country, status, started_at, ended_at
 - **session_progress** — session ID, vocabulary learned, fluency score, strengths, weak areas, readiness level
-- **agent_logs** — session ID, agent name, input, output, timestamp (for debugging)
+- **agent_logs** — session ID, agent name, input, output, timestamp
 - **reports** — session ID, user ID, report JSON, created_at
+
+### `getOrCreateUser()` — `src/lib/auth.ts`
+
+Lazy sync pattern — call at the top of every protected Server Component or API route. Uses `currentUser()` (not `sessionClaims`) to reliably get email and name from Clerk. Creates the DB row on first visit; backfills missing fields on subsequent visits.
+
+```ts
+import { getOrCreateUser } from '@/lib/auth'
+const user = await getOrCreateUser()  // throws if unauthenticated
+```
 
 ---
 
@@ -367,15 +351,16 @@ npm run dev
 # Inngest dev server (separate terminal)
 npx inngest-cli@latest dev
 
-# Database migrations
-npx drizzle-kit generate
-npx drizzle-kit migrate
+# Database
+npm run db:push      # apply schema to Neon instantly (dev workflow)
+npm run db:generate  # generate migration SQL
+npm run db:studio    # browse Neon data locally
 
 # Type check
 npx tsc --noEmit
 
 # Lint
-npm run lint
+npx eslint src
 ```
 
 ---
@@ -388,4 +373,6 @@ npm run lint
 - Do not put business logic in components — keep components UI-only
 - Do not call one agent directly from another — always route through Steering Manager
 - Do not store voice session audio in the database
-- Do not commit `.env.local`
+- Do not commit `.env`
+- Do not use `sessionClaims` to read email/name — use `currentUser()` from `@clerk/nextjs/server`
+- Do not add `&channel_binding=require` or `-pooler` to the Neon DATABASE_URL
