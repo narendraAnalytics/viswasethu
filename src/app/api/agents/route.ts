@@ -4,7 +4,7 @@ import { getOrCreateUser } from '@/lib/auth'
 import { db } from '@/db'
 import { sessions } from '@/db/schema'
 import { eq, and } from 'drizzle-orm'
-import { buildSessionSystemPrompt } from '@/agents/steeringManager'
+import { buildNativeLingoSystemPrompt } from '@/agents/nativeLingo'
 
 const schema = z.object({ sessionId: z.string().uuid() })
 
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
 
-    const systemPrompt = buildSessionSystemPrompt(
+    const systemPrompt = buildNativeLingoSystemPrompt(
       session.nativeLanguage,
       session.jobType,
       session.country,

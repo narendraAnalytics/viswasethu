@@ -79,43 +79,23 @@ interface Props {
 
 export default function DashboardClient({ userName, totalSessions }: Props) {
   const router = useRouter()
-  const [step, setStep] = useState(1)
-  const [language, setLanguage] = useState('')
-  const [job, setJob] = useState('')
-  const [country, setCountry] = useState('')
+  const [voiceStarted, setVoiceStarted] = useState(false)
   const [launching, setLaunching] = useState(false)
-  const [voiceMode, setVoiceMode] = useState(false)
 
-  // Pre-created inside the click handler (user gesture) so Chrome allows audio
+  // AudioContext MUST be created inside onClick — Chrome blocks it otherwise
   const audioCtxsRef = useRef<{ input: AudioContext; output: AudioContext } | null>(null)
 
   const greeting = getGreeting()
-  const canProceed = step === 1 ? !!language : step === 2 ? !!job : !!country
 
-  function handleVoiceToggle() {
-    if (!voiceMode) {
-      // MUST create AudioContext inside onClick — Chrome blocks it elsewhere
-      audioCtxsRef.current = {
-        input: new AudioContext({ sampleRate: 16000 }),
-        output: new AudioContext({ sampleRate: 24000 }),
-      }
-    } else {
-      audioCtxsRef.current?.input.close().catch(() => {})
-      audioCtxsRef.current?.output.close().catch(() => {})
-      audioCtxsRef.current = null
+  function handleStartVoice() {
+    audioCtxsRef.current = {
+      input: new AudioContext({ sampleRate: 16000 }),
+      output: new AudioContext({ sampleRate: 24000 }),
     }
-    setVoiceMode(v => !v)
+    setVoiceStarted(true)
   }
 
-  function handleVoiceComplete(lang: string, jobType: string, dest: string) {
-    setLanguage(lang)
-    setJob(jobType)
-    setCountry(dest)
-    setVoiceMode(false)
-    launchSessionWith(lang, jobType, dest)
-  }
-
-  async function launchSessionWith(lang: string, jobType: string, dest: string) {
+  async function handleVoiceComplete(lang: string, jobType: string, dest: string) {
     setLaunching(true)
     const res = await fetch('/api/session', {
       method: 'POST',
@@ -124,11 +104,6 @@ export default function DashboardClient({ userName, totalSessions }: Props) {
     })
     const data = await res.json()
     router.push(`/session/${data.sessionId}`)
-  }
-
-  async function launchSession() {
-    if (!language || !job || !country) return
-    launchSessionWith(language, job, country)
   }
 
   return (
@@ -142,7 +117,7 @@ export default function DashboardClient({ userName, totalSessions }: Props) {
           <span style={{ fontSize: 28 }}>🙏</span>
         </div>
         <p style={{ color: '#5A4A2A', fontSize: 15, marginTop: 6, fontWeight: 500 }}>
-          Ready to learn today's job vocabulary? Pick your path below.
+          Ready to learn? Talk to Sethu — your voice-first AI guide.
         </p>
       </div>
 
@@ -159,161 +134,61 @@ export default function DashboardClient({ userName, totalSessions }: Props) {
         {/* Start Session card */}
         <div style={{ background: '#fff', borderRadius: 20, border: '1px solid rgba(217, 119, 6, 0.18)', boxShadow: '0 4px 32px rgba(217, 119, 6, 0.08)', overflow: 'hidden' }}>
           {/* Card header */}
-          <div style={{ background: 'linear-gradient(135deg, #FFF3E0 0%, #FFF8ED 100%)', borderBottom: '1px solid rgba(217, 119, 6, 0.15)', padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 16, color: '#1C2B1A' }}>🚀 Start New Learning Session</div>
-              <div style={{ fontSize: 13, color: '#5A4A2A', marginTop: 2 }}>
-                Step {step} of 3 — {step === 1 ? 'Your Language' : step === 2 ? 'Job Type' : 'Destination'}
-              </div>
-            </div>
-            {/* Step dots */}
-            <div style={{ display: 'flex', gap: 6 }}>
-              {[1, 2, 3].map(s => (
-                <div key={s} style={{ width: s < step ? 24 : 10, height: 10, borderRadius: 10, background: s <= step ? '#D97706' : 'rgba(217, 119, 6, 0.25)', transition: 'all 0.3s' }} />
-              ))}
+          <div style={{ background: 'linear-gradient(135deg, #FFF3E0 0%, #FFF8ED 100%)', borderBottom: '1px solid rgba(217, 119, 6, 0.15)', padding: '20px 24px' }}>
+            <div style={{ fontWeight: 700, fontSize: 16, color: '#1C2B1A' }}>🎤 Start Your Learning Session</div>
+            <div style={{ fontSize: 13, color: '#5A4A2A', marginTop: 2 }}>
+              Speak with Sethu — he'll learn your language, job, and destination
             </div>
           </div>
 
           <div style={{ padding: '24px' }}>
-            {/* ── Step 1 — Language (with voice option) ── */}
-            {step === 1 && (
-              <div>
-                {/* Voice / Manual toggle */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                  <p style={{ fontSize: 13, color: '#5A4A2A', margin: 0, fontWeight: 500 }}>
-                    {voiceMode ? 'Listening… speak your language' : 'Which language do you speak at home?'}
-                  </p>
-                  <button
-                    onClick={handleVoiceToggle}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 6,
-                      padding: '6px 14px', borderRadius: 20,
-                      border: `1.5px solid ${voiceMode ? '#D97706' : 'rgba(217,119,6,0.30)'}`,
-                      background: voiceMode ? 'rgba(217,119,6,0.10)' : 'transparent',
-                      color: '#D97706', fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    {voiceMode ? '⌨️ Use Buttons' : '🎤 Speak Instead'}
-                  </button>
+            {launching ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '56px 0', gap: 16 }}>
+                <div style={{ fontSize: 48 }}>⏳</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#1C2B1A' }}>Launching your session…</div>
+                <div style={{ fontSize: 13, color: '#5A4A2A' }}>Setting up your personalised AI tutor</div>
+              </div>
+            ) : voiceStarted && audioCtxsRef.current ? (
+              <VoiceOnboardingFlow
+                onComplete={handleVoiceComplete}
+                inputCtx={audioCtxsRef.current.input}
+                outputCtx={audioCtxsRef.current.output}
+              />
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, padding: '40px 20px', background: 'linear-gradient(160deg, #FFFBF0 0%, #FFF6E0 55%, #FEF0C7 100%)', borderRadius: 14, border: '1px solid rgba(217,119,6,0.12)' }}>
+                {/* Decorative orb */}
+                <div style={{ width: 96, height: 96, borderRadius: '50%', background: 'linear-gradient(135deg, #FED97020, #FEF3C7)', border: '2px solid rgba(217,119,6,0.30)', boxShadow: '0 4px 20px rgba(217,119,6,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44 }}>
+                  🎙️
                 </div>
-
-                {voiceMode && audioCtxsRef.current ? (
-                  <VoiceOnboardingFlow
-                    onComplete={handleVoiceComplete}
-                    inputCtx={audioCtxsRef.current.input}
-                    outputCtx={audioCtxsRef.current.output}
-                  />
-                ) : voiceMode ? null : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
-                    {LANGUAGES.map(l => (
-                      <button
-                        key={l.code}
-                        onClick={() => setLanguage(l.code)}
-                        style={{
-                          padding: '14px 12px', borderRadius: 14, cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s',
-                          border: language === l.code ? '2px solid #D97706' : '2px solid rgba(217, 119, 6, 0.15)',
-                          background: language === l.code ? 'rgba(217, 119, 6, 0.08)' : '#FFFBF5',
-                          transform: language === l.code ? 'scale(1.02)' : 'scale(1)',
-                        }}
-                      >
-                        <div style={{ fontSize: 22, marginBottom: 4 }}>{l.flag}</div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: '#1C2B1A' }}>{l.label}</div>
-                        <div style={{ fontSize: 12, color: '#D97706', fontWeight: 600 }}>{l.script}</div>
-                      </button>
-                    ))}
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 17, fontWeight: 800, color: '#B45309', marginBottom: 8, letterSpacing: '-0.2px' }}>
+                    Talk to Sethu
                   </div>
-                )}
-              </div>
-            )}
-
-            {/* ── Step 2 — Job ── */}
-            {step === 2 && (
-              <div>
-                <p style={{ fontSize: 13, color: '#5A4A2A', marginTop: 0, marginBottom: 16, fontWeight: 500 }}>
-                  What type of work will you be doing?
-                </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
-                  {JOBS.map(j => (
-                    <button
-                      key={j.code}
-                      onClick={() => setJob(j.code)}
-                      style={{
-                        padding: '18px 12px', borderRadius: 14, cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s',
-                        border: job === j.code ? '2px solid #059669' : '2px solid rgba(5, 150, 105, 0.15)',
-                        background: job === j.code ? 'rgba(5, 150, 105, 0.08)' : '#F0FDF4',
-                        transform: job === j.code ? 'scale(1.02)' : 'scale(1)',
-                      }}
-                    >
-                      <div style={{ fontSize: 28, marginBottom: 6 }}>{j.icon}</div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#1C2B1A' }}>{j.label}</div>
-                    </button>
-                  ))}
+                  <div style={{ fontSize: 13, color: '#78450F', lineHeight: 1.7, maxWidth: 300 }}>
+                    Sethu will greet you, detect your language, ask your job and destination — all by voice. No buttons needed.
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {/* ── Step 3 — Country ── */}
-            {step === 3 && (
-              <div>
-                <p style={{ fontSize: 13, color: '#5A4A2A', marginTop: 0, marginBottom: 16, fontWeight: 500 }}>
-                  Where are you going to work?
-                </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
-                  {COUNTRIES.map(c => (
-                    <button
-                      key={c.code}
-                      onClick={() => setCountry(c.code)}
-                      style={{
-                        padding: '14px 12px', borderRadius: 14, cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s',
-                        border: country === c.code ? '2px solid #EA580C' : '2px solid rgba(234, 88, 12, 0.15)',
-                        background: country === c.code ? 'rgba(234, 88, 12, 0.07)' : '#FFF7F0',
-                        transform: country === c.code ? 'scale(1.02)' : 'scale(1)',
-                      }}
-                    >
-                      <div style={{ fontSize: 28, marginBottom: 4 }}>{c.flag}</div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#1C2B1A' }}>{c.label}</div>
-                      <div style={{ fontSize: 11, color: '#EA580C', fontWeight: 600 }}>{c.lang}</div>
-                    </button>
-                  ))}
+                <button
+                  onClick={handleStartVoice}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '14px 36px', borderRadius: 50,
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #D97706, #EA580C)',
+                    color: '#fff', fontWeight: 700, fontSize: 15,
+                    cursor: 'pointer',
+                    boxShadow: '0 6px 24px rgba(217, 119, 6, 0.40)',
+                    transition: 'transform 0.15s, box-shadow 0.15s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.04)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)' }}
+                >
+                  🎤 Talk to Sethu
+                </button>
+                <div style={{ fontSize: 11, color: '#92400E', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 500 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669', display: 'inline-block' }} />
+                  Powered by Gemini Live · Voice AI
                 </div>
-              </div>
-            )}
-
-            {/* Summary chips (step 2+) */}
-            {step > 1 && (
-              <div style={{ display: 'flex', gap: 8, marginTop: 16, padding: '10px 14px', background: '#FFFBF5', borderRadius: 12, border: '1px solid rgba(217, 119, 6, 0.15)', flexWrap: 'wrap' }}>
-                {language && <Chip color="#D97706" bg="rgba(217,119,6,0.10)">{LANGUAGES.find(l => l.code === language)?.flag} {LANGUAGES.find(l => l.code === language)?.label}</Chip>}
-                {job && <Chip color="#059669" bg="rgba(5,150,105,0.10)">{JOBS.find(j => j.code === job)?.icon} {JOBS.find(j => j.code === job)?.label}</Chip>}
-                {country && <Chip color="#EA580C" bg="rgba(234,88,12,0.10)">{COUNTRIES.find(c => c.code === country)?.flag} {COUNTRIES.find(c => c.code === country)?.label}</Chip>}
-              </div>
-            )}
-
-            {/* Navigation buttons */}
-            {!voiceMode && (
-              <div style={{ display: 'flex', gap: 10, marginTop: 20, justifyContent: 'flex-end' }}>
-                {step > 1 && (
-                  <button onClick={() => setStep(s => s - 1)} style={{ padding: '10px 20px', borderRadius: 24, border: '1.5px solid rgba(217, 119, 6, 0.30)', background: 'transparent', color: '#D97706', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
-                    ← Back
-                  </button>
-                )}
-                {step < 3 ? (
-                  <button
-                    onClick={() => setStep(s => s + 1)}
-                    disabled={!canProceed}
-                    style={{ padding: '10px 28px', borderRadius: 24, border: 'none', background: canProceed ? '#D97706' : 'rgba(217, 119, 6, 0.30)', color: canProceed ? '#fff' : 'rgba(255,255,255,0.6)', fontWeight: 700, fontSize: 14, cursor: canProceed ? 'pointer' : 'not-allowed', transition: 'all 0.15s' }}
-                  >
-                    Next →
-                  </button>
-                ) : (
-                  <button
-                    onClick={launchSession}
-                    disabled={!canProceed || launching}
-                    style={{ padding: '11px 28px', borderRadius: 24, border: 'none', background: canProceed ? 'linear-gradient(135deg, #D97706, #EA580C)' : 'rgba(217, 119, 6, 0.30)', color: '#fff', fontWeight: 700, fontSize: 14, cursor: canProceed && !launching ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 8, boxShadow: canProceed ? '0 4px 20px rgba(217, 119, 6, 0.35)' : 'none', transition: 'all 0.2s' }}
-                  >
-                    {launching ? '⏳ Launching...' : '🎤 Launch Learning Session'}
-                  </button>
-                )}
               </div>
             )}
           </div>
@@ -710,13 +585,6 @@ function StatCard({ icon, label, value, color, suffix = '' }: {
   )
 }
 
-function Chip({ children, color, bg }: { children: React.ReactNode; color: string; bg: string }) {
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600, color, background: bg }}>
-      {children}
-    </span>
-  )
-}
 
 function AgentArchitectureCard() {
   return (

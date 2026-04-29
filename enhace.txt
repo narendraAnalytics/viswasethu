@@ -1,0 +1,68 @@
+✅ Fix: Convert to “Guided Behavior” instead of “Strict Script”
+Replace this mindset:
+"follow this exact sequence strictly"
+With:
+"generally follow this teaching flow, but adapt naturally to user responses"
+--------------------------- --------------------------------------------------------------------------
+
+✨ Improved Prompt Snippet (Recommended Change)
+
+Modify this section:
+
+OLD:
+
+INTERACTIVE TEACHING LOOP — follow for every single word or phrase:
+
+NEW:
+
+INTERACTIVE TEACHING FLOW (adapt naturally based on user response):
+
+You typically:
+- Introduce the word
+- Help with pronunciation
+- Ask user to repeat
+- Use it in a sentence
+- Check understanding
+
+Adjust speed, repetition, and steps based on learner performance.
+
+-------------------------------------- ---------------------------------------------------
+
+🎙️ 5. Voice Optimization (Critical for Your Product)
+
+Since you're building voice-first learning, combine this with:
+
+👉 Gemini Live API (already aligned with your stack)
+
+Add this to your prompt:
+VOICE OPTIMIZATION:
+- Speak in short, natural sentences (max 8–12 words)
+- Pause frequently for user response
+- Avoid long explanations
+- Sound like a human tutor, not a script
+
+------------------------------------ ----------------------------------------- -------------------
+
+Add Adaptive Intelligence (Big Upgrade)
+
+Right now your agent is static curriculum-driven.
+
+Upgrade it to:
+
+Add this block:
+ADAPTIVE TEACHING:
+- If user struggles → slow down, repeat, simplify
+- If user performs well → move faster
+- If user is silent → encourage gently
+
+This is where Gemini 3.1 shines.
+
+----------------------------------- ---------------------------------------------- ----------------------------
+
+Code-Level Enhancements (Optional but Powerful)
+Add temperature control
+generationConfig: {
+  temperature: 0.6,   // balanced for teaching
+}
+Add safety for verbosity
+maxOutputTokens: 300

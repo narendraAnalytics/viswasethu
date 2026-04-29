@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getOrCreateUser } from '@/lib/auth'
 import { db } from '@/db'
-import { sessions } from '@/db/schema'
+import { sessions, users } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 
 const createSchema = z.object({
@@ -21,6 +21,13 @@ export async function POST(req: Request) {
       .insert(sessions)
       .values({ userId: user.id, nativeLanguage, jobType, country })
       .returning()
+
+    // Backfill user's primary language if not yet set
+    if (!user.nativeLanguage) {
+      await db.update(users)
+        .set({ nativeLanguage })
+        .where(eq(users.id, user.id))
+    }
 
     return NextResponse.json({ sessionId: session.id })
   } catch (err) {

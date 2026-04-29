@@ -15,32 +15,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Mission:** Voice-first language learning for migrant workers — teaching job-specific foreign language communication from native Indian languages.
 **Tagline:** *"Learn exactly what you need to speak on your first day of work abroad."*
 
-### Core Problems Solved
-- Language barriers preventing migrant workers from getting or keeping jobs abroad
-- No job-specific communication training for professions like drivers, plumbers, and cleaners
-- Safety risks caused by misunderstanding instructions in a foreign language
-- Lack of affordable, accessible voice-based learning for low-literacy users
-
 ---
 
 ## Skills
 
 ### Frontend & UI
-For ALL frontend/UI work — landing page, dashboard, session page, exam page, components — use the skill at:
+For ALL frontend/UI work — landing page, dashboard, session page, components — use the skill at:
 `C:\Users\ES\.claude\skills\nextstack.skill`
 `C:\Users\ES\.claude\skills\geminivoiceai.skill`
 
 ### Google ADK Agent Work
-For ALL Google ADK agent work — writing agent code, building agents, adding tools, creating callbacks, defining agents — use the skill at:
+For ALL Google ADK agent work — writing agent code, building agents, adding tools, creating callbacks — use the skill at:
 `C:\Users\ES\.claude\skills\google-agents-cli-adk-code`
 `C:\Users\ES\.claude\skills\google-agents-cli-workflow`
-`C:\Users\ES\.claude\skills\google-agents-cli-scaffold`
-`C:\Users\ES\.claude\skills\google-agents-cli-eval`
 
 ---
 
 ## Deployed URL
-        https://viswasethu.vercel.app/
+`https://viswasethu.vercel.app/`
 
 ---
 
@@ -71,54 +63,43 @@ npx inngest-cli@latest dev
 | Clerk auth — provider, middleware, sign-in/sign-up pages | ✅ Done |
 | shadcn/ui primitives, GlobeCanvas (Three.js) | ✅ Done |
 | Neon DB — `users` + `sessions` tables, Drizzle schema + client | ✅ Done |
-| `/dashboard` page — 3-step voice onboarding (language → job → country) | ✅ Done |
-| Voice onboarding — Gemini Live, single session, all 3 steps, native language switch | ✅ Done |
+| `/dashboard` — voice-only onboarding via Sethu (no manual buttons) | ✅ Done |
+| Voice onboarding — Gemini Live, Sethu (male/Charon), detects lang+job+country | ✅ Done |
 | `/api/token` — serves `GOOGLE_API_KEY` to authenticated browser clients | ✅ Done |
-| `/api/session` — POST creates session, GET fetches sessions | ✅ Done |
-| `/api/agents` — POST returns SteeringManager system prompt for session page | ✅ Done |
-| `/session/[sessionId]` — placeholder page showing session context | ✅ Done |
-| `agents/steeringManager.ts` — ADK `LlmAgent`, `buildSessionSystemPrompt()` | ✅ Done |
+| `/api/session` — POST creates session + backfills `users.native_language` | ✅ Done |
+| `/api/agents` — POST returns NativeLingo system prompt for the session | ✅ Done |
+| `/session/[sessionId]` — live voice learning session page | ✅ Done |
+| `VoiceLearningSession` component — female AI tutor (Aoede), Gemini Live | ✅ Done |
+| `agents/steeringManager.ts` — ADK LlmAgent with NativeLingo subAgent | ✅ Done |
+| NativeLingo agents — Padma/Telugu, Priya/Hindi, Kavya/Tamil, Kaveri/Kannada, Gauri/Marathi | ✅ Done |
 | `next.config.ts` — `serverExternalPackages` for `@google/adk` + `@google/genai` | ✅ Done |
-| Deployed to Vercel — https://viswasethu.vercel.app/ | ✅ Done |
-| NativeLingo agents (Telugu, Hindi, Tamil, Kannada, Marathi) | ⏳ Next |
-| GlobalVocation agents (Dubai-Driver, Japan-Construction, etc.) | ⏳ Pending |
+| Deployed to Vercel | ✅ Done |
+| GlobalVocation agents (Dubai-Driver, Japan-Construction, etc.) | ⏳ Next |
 | Tools (VocationalSearch, TechnicalDictionary, ContextCulture) | ⏳ Pending |
-| Session voice component — learning session powered by SteeringManager | ⏳ Pending |
 | Session Report Agent + Inngest function | ⏳ Pending |
 | Reports page | ⏳ Pending |
-
-> **Next.js version:** package.json uses `16.2.4` (canary). APIs may differ from training data — check `node_modules/next/dist/docs/` before writing framework-specific code. See also `AGENTS.md`.
 
 ---
 
 ## Next Steps (Build Order)
 
-### Step 1 — NativeLingo Agents (do next)
-Create all 5 language agents and register them in SteeringManager `subAgents`:
-- `src/agents/nativeLingo/teluguAgent.ts`
-- `src/agents/nativeLingo/hindiAgent.ts`
-- `src/agents/nativeLingo/tamilAgent.ts`
-- `src/agents/nativeLingo/kannadaAgent.ts`
-- `src/agents/nativeLingo/marathiAgent.ts`
+### Step 1 — GlobalVocation Agents ← do next
+Create job + country specific agents:
+- `src/agents/globalVocation/dubaiDriverAgent.ts`
+- `src/agents/globalVocation/japanConstructionAgent.ts`
+- (etc. per job × country combination)
 
-### Step 2 — GlobalVocation Agents
-Create job + country specific agents (e.g. Dubai-Driver, Japan-Construction):
-- `src/agents/globalVocation/dubaiDriverAgent.ts` etc.
-
-### Step 3 — Tools
+### Step 2 — Tools
 - `src/tools/vocationalSearch.ts`
 - `src/tools/technicalDictionary.ts`
 - `src/tools/contextCulture.ts`
 
-### Step 4 — Session Voice Component
-Wire `/session/[sessionId]` page to call `POST /api/agents`, get SteeringManager system prompt, and start a Gemini Live voice learning session (same pattern as onboarding voice).
-
-### Step 5 — Session Report Agent + Inngest
+### Step 3 — Session Report Agent + Inngest
 - `src/agents/sessionReport/reportAgent.ts`
 - `src/inngest/generateReport.ts`
 - `src/app/api/inngest/route.ts`
 
-### Step 6 — Reports Page
+### Step 4 — Reports Page
 - `src/app/(dashboard)/reports/page.tsx`
 
 ---
@@ -129,25 +110,21 @@ Wire `/session/[sessionId]` page to call `POST /api/agents`, get SteeringManager
 |---|---|
 | Framework | Next.js 15 (App Router) |
 | Language | TypeScript (strict mode) |
-| Styling | Tailwind CSS |
+| Styling | Tailwind CSS + inline styles |
 | Auth | Clerk |
 | Database | Neon PostgreSQL (serverless) |
-| ORM | Drizzle ORM |
-| AI Model | gemini-3-flash-preview |
-| Voice AI | Gemini Live API (real-time bidirectional voice) |
-| Agent Orchestration | Google ADK (TypeScript) |
-| Voice WebSocket | ws (Node.js WebSocket server) |
+| ORM | Drizzle ORM (`drizzle-orm/neon-http`) |
+| AI Model | `gemini-2.0-flash` (via `GEMINI_MODEL` env) |
+| Voice AI | Gemini Live API (`gemini-3.1-flash-live-preview`) |
+| Agent Orchestration | Google ADK TypeScript (`@google/adk`) |
 | Background Jobs | Inngest |
 | Email | Resend |
 | Deployment | Vercel |
 | Validation | Zod |
-| IDs | uuid / @paralleldrive/cuid2 |
 
 ---
 
 ## Environment Variables
-
-All secrets live in `.env`. Never hardcode keys. Never commit `.env`.
 
 ```env
 # Clerk
@@ -155,15 +132,15 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/        # lands on landing page after login
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/        # lands on landing page after sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
 
 # Neon PostgreSQL — DIRECT URL only (no -pooler, no &channel_binding=require)
 DATABASE_URL=postgresql://user:pass@ep-xxx.region.aws.neon.tech/dbname?sslmode=require
 
 # Google Gemini & ADK
 GOOGLE_API_KEY=
-GEMINI_MODEL=gemini-3-flash-preview
+GEMINI_MODEL=gemini-2.0-flash
 GEMINI_LIVE_MODEL=gemini-3.1-flash-live-preview
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 ADK_AGENT_TIMEOUT_MS=30000
@@ -184,248 +161,125 @@ NODE_ENV=development
 
 ---
 
-## Folder Structure
-
-```
-viswasethu/
-├── src/
-│   ├── app/
-│   │   ├── (auth)/
-│   │   │   ├── sign-in/[[...sign-in]]/page.tsx
-│   │   │   └── sign-up/[[...sign-up]]/page.tsx
-│   │   ├── (dashboard)/
-│   │   │   ├── dashboard/page.tsx     ← ✅ Server Component — calls getOrCreateUser()
-│   │   │   ├── session/[sessionId]/   ← ✅ placeholder, wires to SteeringManager next
-│   │   │   └── reports/               ← ⏳ not yet created
-│   │   ├── api/
-│   │   │   ├── agents/route.ts        ← ✅ POST returns SteeringManager system prompt
-│   │   │   ├── token/route.ts         ← ✅ serves GOOGLE_API_KEY to browser
-│   │   │   ├── session/route.ts       ← ✅ POST create, GET fetch sessions
-│   │   │   ├── voice/route.ts         ← ⏳ Gemini Live WebSocket handler (future)
-│   │   │   └── inngest/route.ts       ← ⏳ Inngest webhook (must stay public)
-│   │   ├── globals.css
-│   │   ├── layout.tsx                 ← ClerkProvider wraps children
-│   │   └── page.tsx                   ← Renders <LandingPage />
-│   ├── agents/
-│   │   ├── steeringManager.ts         ← ✅ ADK LlmAgent — brain, buildSessionSystemPrompt()
-│   │   ├── nativeLingo/               ← ⏳ teluguAgent, hindiAgent, tamilAgent, kannadaAgent, marathiAgent
-│   │   ├── globalVocation/            ← ⏳ dubaiDriverAgent, japanConstructionAgent, etc.
-│   │   └── sessionReport/             ← ⏳ reportAgent.ts
-│   ├── tools/                         ← ⏳ vocationalSearch, technicalDictionary, contextCulture
-│   ├── db/
-│   │   ├── schema.ts                  ← ✅ users table (Clerk ID as text PK)
-│   │   └── index.ts                   ← ✅ neon-http Drizzle client
-│   ├── inngest/                       ← ⏳ not yet created
-│   ├── lib/
-│   │   ├── auth.ts                    ← ✅ getOrCreateUser() lazy sync
-│   │   └── utils.ts
-│   └── components/
-│       ├── ui/                        ← shadcn/ui primitives
-│       ├── LandingPage.tsx            ← ✅ 7-section client component
-│       └── GlobeCanvas.tsx            ← ✅ Three.js globe
-├── public/
-├── drizzle.config.ts                  ← ✅ points to src/db/schema.ts
-├── .env                               ← secrets (never commit)
-├── next.config.ts
-├── package.json
-└── tsconfig.json
-```
-
----
-
 ## Multi-Agent Architecture
 
-### Agent Hierarchy
+### Two-Phase Voice Flow
 
-```
-User Input (Voice / Text)
-        │
-        ▼
-┌─────────────────────────┐
-│   Steering Manager      │  ← Detects language, intent (job + country),
-│   Agent                 │    routes to sub-agents, maintains session memory
-└────────────┬────────────┘
-             │
-     ┌───────┴────────┐
-     ▼                ▼
-┌─────────────┐  ┌──────────────────┐
-│ NativeLingo │  │ GlobalVocation   │
-│ Agents      │  │ Agents           │
-│ (5 langs)   │  │ (country + job)  │
-└──────┬──────┘  └────────┬─────────┘
-       │                  │
-       └────────┬─────────┘
-                ▼
-     ┌──────────────────────┐
-     │  Tools & Knowledge   │
-     │  - VocationalSearch  │
-     │  - TechnicalDict     │
-     │  - ContextCulture    │
-     └──────────┬───────────┘
-                ▼
-     ┌──────────────────────┐
-     │  Session Report      │
-     │  Agent               │
-     └──────────────────────┘
-```
+**Phase 1 — Onboarding** (`/dashboard`, `DashboardClient.tsx`):
+- Agent: `steering_manager` | Voice: Male · **Charon**
+- Sethu speaks to the user and detects 3 things via tag output: `[LANG:te]`, `[JOB:driver]`, `[COUNTRY:dubai]`
+- On completion → `POST /api/session` → creates DB row → redirects to `/session/[sessionId]`
 
-### Agents Reference
+**Phase 2 — Learning Session** (`/session/[sessionId]`, `VoiceLearningSession.tsx`):
+- Agent: `nativelingo_[lang]` | Voice: Female · **Aoede**
+- User clicks "Start Learning" → fetches system prompt from `POST /api/agents` → starts Gemini Live
+- NativeLingo agent teaches in the user's native language using a 4-stage curriculum
 
-| Agent | File | Role |
-|---|---|---|
-| Steering Manager | `agents/steeringManager.ts` | Routes all requests, detects language & intent |
-| Telugu Agent | `agents/nativeLingo/teluguAgent.ts` | Teaches in Telugu |
-| Hindi Agent | `agents/nativeLingo/hindiAgent.ts` | Teaches in Hindi |
-| Tamil Agent | `agents/nativeLingo/tamilAgent.ts` | Teaches in Tamil |
-| Kannada Agent | `agents/nativeLingo/kannadaAgent.ts` | Teaches in Kannada |
-| Marathi Agent | `agents/nativeLingo/marathiAgent.ts` | Teaches in Marathi |
-| GlobalVocation Agent | `agents/globalVocation/*.ts` | Country + job-specific language training (e.g., Dubai-Driver, Japan-Construction) |
-| Session Report Agent | `agents/sessionReport/reportAgent.ts` | Progress tracking and report generation |
+### NativeLingo Teaching Curriculum (all 5 agents follow this)
+1. **Stage 1** — Basic survival words (hello, thank you, yes, no, sorry, help, water, numbers 1–5)
+2. **Stage 2** — Workplace greetings (good morning sir, how are you, see you tomorrow)
+3. **Stage 3** — Job-specific words (tools, supervisor commands, safety phrases)
+4. **Stage 4** — Full sentences combining stages 1–3
 
-### Tools Reference
+**Per-word interactive loop:** introduce meaning → pronounce → user repeats word → feedback → build sentence → user repeats sentence → comprehension check → mini review every 4 words.
 
-| Tool | File | Purpose |
-|---|---|---|
-| VocationalSearch | `tools/vocationalSearch.ts` | Finds real job phrases and local work terms |
-| TechnicalDictionary | `tools/technicalDictionary.ts` | Returns verified technical terms and safety instructions |
-| ContextCulture | `tools/contextCulture.ts` | Cultural do's and don'ts for the destination country |
+### Agent Reference
+
+| Agent Name | File | Voice | Notes |
+|---|---|---|---|
+| `steering_manager` | `src/agents/steeringManager.ts` | Male · Charon | Onboarding only; has NativeLingo subAgent |
+| `nativelingo_telugu` | `src/agents/nativeLingo/teluguAgent.ts` | Female · Aoede | Persona: Padma |
+| `nativelingo_hindi` | `src/agents/nativeLingo/hindiAgent.ts` | Female · Aoede | Persona: Priya |
+| `nativelingo_tamil` | `src/agents/nativeLingo/tamilAgent.ts` | Female · Aoede | Persona: Kavya |
+| `nativelingo_kannada` | `src/agents/nativeLingo/kannadaAgent.ts` | Female · Aoede | Persona: Kaveri |
+| `nativelingo_marathi` | `src/agents/nativeLingo/marathiAgent.ts` | Female · Aoede | Persona: Gauri |
+
+**Dispatcher:** `src/agents/nativeLingo/index.ts` exports `buildNativeLingoSystemPrompt(nativeLanguage, jobType, country)` and `createNativeLingoAgent()` — always use these, never import individual agent files directly.
+
+**SteeringManager subAgents:** `createSteeringManager()` calls `createNativeLingoAgent()` and passes it as `subAgents: [...]`.
 
 ---
 
-## Database Schema (Drizzle)
+## Key Architectural Patterns
 
-### ✅ Implemented — `src/db/schema.ts`
+### AudioContext — Chrome User Gesture Requirement
+`new AudioContext()` **must** be created inside a click handler (`onClick`). Both voice components enforce this:
+- `DashboardClient.tsx` → `handleStartVoice()` creates AudioContext on button click
+- `VoiceLearningSession.tsx` → `startSession()` creates AudioContext on "Start Learning" click
 
-```ts
-users          id (text PK = Clerk user_xxx), email, name, native_language, plan, created_at
-sessions       id (uuid PK), userId (text FK), nativeLanguage, jobType, country, status, startedAt, endedAt
-```
+Never create AudioContext in `useEffect` or outside a user gesture — Chrome will block it.
 
-**Critical rules — never deviate:**
-- `users.id` is `text`, not `uuid` — Clerk IDs are strings like `user_2abc...`
-- All FK columns referencing `users.id` must also be `text`
-- All other PKs use `uuid().defaultRandom()`
-- All FKs use `{ onDelete: 'cascade' }`
-- Drizzle driver is `drizzle-orm/neon-http` — never `pg` or WebSocket driver
-- DATABASE_URL must be the **direct** Neon URL: no `-pooler` in hostname, no `&channel_binding=require`
+### Gemini Live Session Pattern
+Both voice components use the same structure:
+1. Fetch `/api/token` for the API key
+2. Fetch system prompt (onboarding: hardcoded in component; learning: `POST /api/agents`)
+3. `ai.live.connect()` with `systemInstruction`, `inputAudioTranscription: {}`, `outputAudioTranscription: {}`
+4. Send `{ text: 'begin' }` via `sendRealtimeInput` to trigger the AI's first speech turn
+5. Wire mic via AudioWorklet at `/worklets/capture-processor.js`
+6. Play output audio via `AudioQueue` (`src/lib/audioQueue.ts`)
 
-### ⏳ Still to create
+### Tag Detection (Onboarding Only)
+Sethu outputs structured tags that `checkForTags()` in `DashboardClient.tsx` parses:
+- `[LANG:te]` → detected language
+- `[JOB:driver]` → detected job
+- `[COUNTRY:dubai]` → detected country
+After country detection, wait for `turnComplete` (Sethu finishes closing speech) then call `onComplete()`.
 
-- **session_progress** — session ID, vocabulary learned, fluency score, strengths, weak areas, readiness level
-- **agent_logs** — session ID, agent name, input, output, timestamp
-- **reports** — session ID, user ID, report JSON, created_at
+### `/api/agents` Route
+Takes `{ sessionId }` → looks up session in DB → calls `buildNativeLingoSystemPrompt(nativeLanguage, jobType, country)` → returns `{ systemPrompt, session }`. This is what `VoiceLearningSession` calls to get the right language agent's prompt.
 
 ### `getOrCreateUser()` — `src/lib/auth.ts`
-
-Lazy sync pattern — call at the top of every protected Server Component or API route. Uses `currentUser()` (not `sessionClaims`) to reliably get email and name from Clerk. Creates the DB row on first visit; backfills missing fields on subsequent visits.
+Call at the top of every protected Server Component or API route. Uses `currentUser()` (never `sessionClaims`) — creates the DB row on first visit, backfills missing fields on subsequent visits.
 
 ```ts
 import { getOrCreateUser } from '@/lib/auth'
 const user = await getOrCreateUser()  // throws if unauthenticated
 ```
 
+`POST /api/session` also backfills `users.native_language` if null — so the user's primary language is persisted from their first session.
+
 ---
 
-## Application Workflow
+## Database Schema
 
-1. **Onboarding** — User signs up via Clerk. Synced to Neon via Inngest lazy sync. Selects native language.
-2. **Goal Setting** — User states job type (Driver, Plumber, Construction, Painter, Cleaner…) + destination country (Dubai, Japan, UK, USA, Russia, China).
-3. **Steering Manager** — Detects language, identifies intent, routes to NativeLingo + GlobalVocation agents.
-4. **NativeLingo Teaching** — Agent explains concepts and builds understanding in user's native language.
-5. **GlobalVocation Training** — Agent delivers job-specific foreign vocab, real scenario dialogues, pronunciation. Tools are called as needed.
-6. **Voice Interaction** — Gemini Live API handles real-time bidirectional voice via WebSocket. User can interrupt mid-response.
-7. **Feedback Loop** — Agent provides spoken feedback, scores attempt, identifies weak areas, repeats until readiness threshold is met.
-8. **Session Report** — Session Report Agent compiles: Fluency Score, Vocabulary, Strengths, Weak Areas, Readiness Level. Inngest triggers generation.
-9. **Report Delivery** — Saved to Neon DB, optionally emailed via Resend.
-10. **New Session** — Steering Manager prompts: new language, new country/job, or continue. Loop restarts.
-
-### Continuous Learning Loop
-Every session follows a closed feedback loop that repeats until the readiness threshold is met:
-
-```
-Practice → Get Feedback → Improve → Reinforce → Retain → Apply in Real Life
-                                                                    ↓
-                                              Steering Manager (next goal / new session)
+```ts
+// src/db/schema.ts
+users     id (text PK = Clerk "user_xxx"), email, name, native_language, plan, created_at
+sessions  id (uuid PK), userId (text FK→users), nativeLanguage, jobType, country, status, startedAt, endedAt
 ```
 
----
+**Critical rules:**
+- `users.id` is `text` — Clerk IDs are strings like `user_2abc...`, never uuid
+- All FKs referencing `users.id` must also be `text`
+- All other PKs use `uuid().defaultRandom()`
+- All FKs use `{ onDelete: 'cascade' }`
+- Drizzle driver: `drizzle-orm/neon-http` — never `pg` or WebSocket driver
+- DATABASE_URL: direct Neon URL only — no `-pooler` in hostname, no `&channel_binding=require`
 
-## Future Scope / Roadmap
-
-| Priority | Feature |
-|---|---|
-| Languages | Bengali, Odia, Punjabi, Gujarati |
-| Countries | Germany (German), Qatar (Arabic), South Korea (Korean) |
-| Voice | Accent correction and pronunciation scoring via audio analysis |
-| Culture | Workplace etiquette, local customs, safety culture modules |
-| Integrations | Job portals and overseas recruitment agencies |
-| Mobile | PWA with offline support for low-connectivity users |
-| AI Memory | Personalized learning paths using pgvector |
-| B2B | Multi-user institutional access for training institutes |
+**Still to create:**
+- `session_progress` — vocabulary learned, fluency score, strengths, weak areas, readiness level
+- `agent_logs` — session ID, agent name, input, output, timestamp
+- `reports` — session ID, user ID, report JSON, created_at
 
 ---
-
-## Coding Standards
-
-- **TypeScript strict mode** — no `any`, no implicit returns, proper types everywhere
-- **Server Components by default** — only use `"use client"` when genuinely needed (interactivity, hooks, browser APIs)
-- **API routes** — always validate input with Zod before processing
-- **Database** — always use Drizzle ORM, never raw SQL strings
-- **Agents** — one file per agent, one responsibility per agent, no cross-agent direct imports (route via Steering Manager)
-- **Tools** — pure functions, typed inputs and outputs, no side effects
-- **Environment** — always access via `process.env.VARIABLE_NAME`, never hardcode
-- **Error handling** — all async functions wrapped in try/catch, errors logged with context
-- **No console.log in production** — use structured logging only
-
----
-
-## Voice Integration Notes
-
-- Gemini Live API uses **WebSocket** (not REST) — handle in `app/api/voice/route.ts`
-- The main text/agent model is `GEMINI_MODEL=gemini-3-flash-preview`
-- `GOOGLE_GENAI_USE=FALSE` — ADK uses the Gemini API directly, not Vertex AI
-- Keep voice session state in memory per `sessionId` (not DB — too slow for real-time)
-- Audio format: PCM 16-bit, 16kHz, mono for input; handle output audio chunks in streaming fashion
 
 ## Vercel / Next.js Config Notes
 
-- `next.config.ts` must include `serverExternalPackages: ['@google/adk', '@google/genai']` — prevents Webpack/Turbopack from trying to bundle them, which breaks in Vercel's serverless environment because ADK uses Node.js-specific APIs and dynamic imports
-- Never add `export const runtime = 'edge'` to any route that uses ADK agents — ADK requires full Node.js runtime
-- `GOOGLE_GENAI_USE_VERTEXAI=FALSE` must be set in Vercel Dashboard (Settings → Environment Variables)
-
----
-
-## Key Commands
-
-```bash
-# Development
-npm run dev
-
-# Inngest dev server (separate terminal)
-npx inngest-cli@latest dev
-
-# Database
-npm run db:push      # apply schema to Neon instantly (dev workflow)
-npm run db:generate  # generate migration SQL
-npm run db:studio    # browse Neon data locally
-
-# Type check
-npx tsc --noEmit
-
-# Lint
-npx eslint src
-```
+- `next.config.ts` must keep `serverExternalPackages: ['@google/adk', '@google/genai']` — ADK uses Node.js-specific APIs that break if Webpack bundles them
+- Never add `export const runtime = 'edge'` to any route using ADK agents — requires full Node.js runtime
+- `GOOGLE_GENAI_USE_VERTEXAI=FALSE` must be set in Vercel Dashboard
 
 ---
 
 ## Do Not
 
-- Do not use LangChain, CrewAI, or any other agent framework — ADK TypeScript only
-- Do not use Vertex AI — use Gemini API directly (`GOOGLE_GENAI_USE=FALSE`)
+- Do not use LangChain, CrewAI, or any other agent framework — Google ADK TypeScript only
+- Do not use Vertex AI — Gemini API directly (`GOOGLE_GENAI_USE_VERTEXAI=FALSE`)
 - Do not write raw SQL — use Drizzle ORM
-- Do not put business logic in components — keep components UI-only
-- Do not call one agent directly from another — always route through Steering Manager
+- Do not call one agent directly from another — route via SteeringManager / dispatcher
+- Do not import individual NativeLingo agent files directly — always go through `src/agents/nativeLingo/index.ts`
 - Do not store voice session audio in the database
-- Do not commit `.env`
 - Do not use `sessionClaims` to read email/name — use `currentUser()` from `@clerk/nextjs/server`
 - Do not add `&channel_binding=require` or `-pooler` to the Neon DATABASE_URL
+- Do not create `AudioContext` outside a click handler
+- Do not add `export const runtime = 'edge'` to any route that imports ADK

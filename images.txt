@@ -1,35 +1,73 @@
-That's the exact architecture from CLAUDE.md. The flow is:                                                                                                        
-  SteeringManager (brain)                                                                                                                            │                                                                                                                                  
-         ├──→ NativeLingo Agent (Telugu / Hindi / Tamil / Kannada / Marathi)                                                                
-         │         └── Explains concepts in user's native language                                                                          
-         │                                                                                                                                  
-         └──→ GlobalVocation Agent (Dubai-Driver / Japan-Construction / etc.)
-                   └── Job + country-specific foreign language training
-
-  Right now createSteeringManager() has subAgents: [] — intentionally empty, waiting for the language agents to be built.
-
-  Next step: Build agents/nativeLingo/teluguAgent.ts (and the other 4), then register them in SteeringManager's subAgents array.
-  SteeringManager detects language from session context and delegates to the correct one. Want to build all 5 NativeLingo agents now?
-
-
-   Partially yes — here's the honest state:                                                                                                  
+Here's the full workflow and agent reference:                                                                                             
                                                                                                                                             
-  ┌─────────────────────────────────────────────────────────────────────┬────────────────────────────────────────┐                            │                                What                                 │                  ADK?                  │                          
-  ├─────────────────────────────────────────────────────────────────────┼────────────────────────────────────────┤                            │ src/agents/steeringManager.ts — built as LlmAgent from @google/adk  │ ✅ Yes                                 │                          
-  ├─────────────────────────────────────────────────────────────────────┼────────────────────────────────────────┤                          
-  │ POST /api/agents — calls SteeringManager's buildSessionSystemPrompt │ ✅ Yes                                 │                          
-  ├─────────────────────────────────────────────────────────────────────┼────────────────────────────────────────┤                          
-  │ SteeringManager routing to NativeLingo agents                       │ ❌ Not yet — subAgents: []             │
-  ├─────────────────────────────────────────────────────────────────────┼────────────────────────────────────────┤
-  │ Session page actually calling the agent                             │ ❌ Not yet — still shows "Coming Soon" │
-  ├─────────────────────────────────────────────────────────────────────┼────────────────────────────────────────┤
-  │ NativeLingo agents (Telugu, Hindi, Tamil, Kannada, Marathi)         │ ❌ Not yet built                       │
-  └─────────────────────────────────────────────────────────────────────┴────────────────────────────────────────┘
+  ---
+  Complete Flow                                                                                                                                
+  USER clicks "Talk to Sethu" on Dashboard                                                                                                            │                                                                                                                               
+          ▼ AudioContext created (male voice)
+  ┌─────────────────────────────┐
+  │  PHASE 1 — ONBOARDING       │
+  │  Agent: steering_manager    │
+  │  Voice: Male (Charon)       │
+  │                             │
+  │  Sethu speaks in English:   │
+  │  Step 1 → detects LANGUAGE  │  [LANG:te/hi/ta/kn/mr]
+  │  Step 2 → detects JOB       │  [JOB:driver/plumber/...]
+  │  Step 3 → detects COUNTRY   │  [COUNTRY:dubai/japan/...]
+  │                             │
+  │  "Handing you to expert..." │
+  └──────────────┬──────────────┘
+                 │ onComplete(lang, job, country)
+                 ▼
+       POST /api/session → Neon DB
+       Returns sessionId → redirect
+                 │
+                 ▼
+  ┌─────────────────────────────┐
+  │  /session/[sessionId]       │
+  │  Shows: Language | Job |    │
+  │  Destination | Target lang  │
+  │                             │
+  │  "Start Learning" button    │
+  └──────────────┬──────────────┘
+                 │ Click → AudioContext created (female voice)
+                 ▼
+       POST /api/agents → picks NativeLingo
+       system prompt by nativeLanguage
+                 │
+                 ▼
+  ┌─────────────────────────────┐
+  │  PHASE 2 — LEARNING         │
+  │  Agent: nativelingo_[lang]  │
+  │  Voice: Female (Aoede)      │
+  │                             │
+  │  Per word teaching loop:    │
+  │  a) Native language meaning │
+  │  b) Foreign word            │
+  │  c) Phonetic guide          │
+  │  d) "Say it" — user repeats │
+  │  e) Feedback in native lang │
+  │  f) Review every 3-4 words  │
+  └─────────────────────────────┘
 
-  Full answer: The ADK agent exists and is wired up server-side, but it's not live in the session yet.
+  ---
+  Agent Names & Files
 
-  The complete YES happens after:
-  1. Build 5 NativeLingo agents → register in SteeringManager subAgents
-  2. Session page calls /api/agents → gets system prompt → starts Gemini Live voice session
+  ┌──────────────────┬─────────────────────┬────────────────┬────────────────────────────────────────┐
+  │      Agent       │        Name         │     Voice      │                  File                  │
+  ├──────────────────┼─────────────────────┼────────────────┼────────────────────────────────────────┤
+  │ Steering Manager │ steering_manager    │ Male · Charon  │ src/agents/steeringManager.ts          │
+  ├──────────────────┼─────────────────────┼────────────────┼────────────────────────────────────────┤
+  │ Telugu Tutor     │ nativelingo_telugu  │ Female · Aoede │ src/agents/nativeLingo/teluguAgent.ts  │
+  ├──────────────────┼─────────────────────┼────────────────┼────────────────────────────────────────┤
+  │ Hindi Tutor      │ nativelingo_hindi   │ Female · Aoede │ src/agents/nativeLingo/hindiAgent.ts   │
+  ├──────────────────┼─────────────────────┼────────────────┼────────────────────────────────────────┤
+  │ Tamil Tutor      │ nativelingo_tamil   │ Female · Aoede │ src/agents/nativeLingo/tamilAgent.ts   │
+  ├──────────────────┼─────────────────────┼────────────────┼────────────────────────────────────────┤
+  │ Kannada Tutor    │ nativelingo_kannada │ Female · Aoede │ src/agents/nativeLingo/kannadaAgent.ts │
+  ├──────────────────┼─────────────────────┼────────────────┼────────────────────────────────────────┤
+  │ Marathi Tutor    │ nativelingo_marathi │ Female · Aoede │ src/agents/nativeLingo/marathiAgent.ts │
+  └──────────────────┴─────────────────────┴────────────────┴────────────────────────────────────────┘
 
-  Want to build the 5 NativeLingo agents now?
+  Dispatcher: src/agents/nativeLingo/index.ts — picks the right agent by language code (te/hi/ta/kn/mr)
+
+  SteeringManager subAgents: Always contains exactly one NativeLingo agent — the one matching the user's detected language.

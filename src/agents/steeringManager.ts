@@ -1,4 +1,5 @@
 import { LlmAgent } from '@google/adk'
+import { createNativeLingoAgent } from './nativeLingo'
 
 const NATIVE_LANG_NAMES: Record<string, string> = {
   te: 'Telugu',
@@ -33,7 +34,7 @@ export function createSteeringManager(
 
   return new LlmAgent({
     name: 'steering_manager',
-    model: process.env.GEMINI_MODEL ?? 'gemini-2.0-flash',
+    model: process.env.GEMINI_MODEL ?? 'gemini-3.1-flash-lite-preview',
     description:
       'Brain of ViswaSethu — orchestrates NativeLingo and GlobalVocation agents for personalised language learning',
     instruction: `You are Sethu — the intelligent orchestrator for ViswaSethu, a voice-first language learning platform for Indian migrant workers.
@@ -62,8 +63,7 @@ d) Ask the user to repeat: "Now you try — say [word]"
 e) Give feedback, then move to the next word
 
 START: Begin immediately by warmly introducing today's lesson topic based on the user's job and destination. Speak mostly in ${nativeLang} with ${foreignLang} words woven in naturally.`,
-    subAgents: [],
-    // NativeLingo agents (te, hi, ta, kn, mr) and GlobalVocation agents added in next steps
+    subAgents: [createNativeLingoAgent(nativeLanguage, jobType, country)],
   })
 }
 

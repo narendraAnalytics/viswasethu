@@ -30,3 +30,22 @@ Command: npm install @google/adk @google/genai
 Config: Add @google/adk to serverExternalPackages in next.config.js.
 Runtime: Use the standard Node.js runtime (default).[3]
 Env: Set GOOGLE_GENAI_USE_VERTEXAI=FALSE in the Vercel Dashboard.
+
+-------------------------------------------------------- -------------------------------------------------------------
+
+ Yes — for voice (Gemini Live), both use gemini-3.1-flash-live-preview.                                                                    
+                                                                                                                                            
+  Here's the full picture:                                                                                                                                                                                                                                                              
+  ┌────────────────────────────────┬───────────────────────────────┬──────────────────────────────────────────────┐                           │              What              │             Model             │                    Where                     │                         
+  ├────────────────────────────────┼───────────────────────────────┼──────────────────────────────────────────────┤                         
+  │ Onboarding voice (Sethu)       │ gemini-3.1-flash-live-preview │ DashboardClient.tsx:296 — hardcoded          │
+  ├────────────────────────────────┼───────────────────────────────┼──────────────────────────────────────────────┤
+  │ Learning voice (NativeLingo)   │ gemini-3.1-flash-live-preview │ VoiceLearningSession.tsx:83 — hardcoded      │
+  ├────────────────────────────────┼───────────────────────────────┼──────────────────────────────────────────────┤
+  │ SteeringManager LlmAgent (ADK) │ gemini-2.0-flash              │ steeringManager.ts:37 — via GEMINI_MODEL env │
+  ├────────────────────────────────┼───────────────────────────────┼──────────────────────────────────────────────┤
+  │ NativeLingo LlmAgent (ADK)     │ gemini-2.0-flash              │ teluguAgent.ts:84 — via GEMINI_MODEL env     │
+  └────────────────────────────────┴───────────────────────────────┴──────────────────────────────────────────────┘
+
+  Key distinction: The gemini-3.1-flash-live-preview is used for the real-time bidirectional voice (Gemini Live WebSocket connection in the
+  browser). The gemini-2.0-flash is used for the ADK LlmAgent definitions (server-side agent orchestration). These are two separate things.

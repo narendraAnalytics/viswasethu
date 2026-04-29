@@ -1,0 +1,1667 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: https://adk.dev/agents/llm-agents/#llm-agent
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - strong [ref=e7]: New Releases!
+      - text: Explore
+      - link "ADK Python 2.0 Beta" [ref=e8] [cursor=pointer]:
+        - /url: https://adk.dev/2.0/
+      - text: with workflows and agent teams, and
+      - link "ADK TypeScript 1.0" [ref=e9] [cursor=pointer]:
+        - /url: https://github.com/google/adk-js/releases/tag/adk-v1.0.0
+      - text: is now available
+  - banner [ref=e10]:
+    - navigation "Header" [ref=e11]:
+      - img [ref=e13] [cursor=pointer]
+      - generic [ref=e16]:
+        - generic [ref=e17]: ADK
+        - generic: ADK
+      - generic [ref=e18]:
+        - radio "Switch to dark mode"
+        - generic "Switch to dark mode" [ref=e19] [cursor=pointer]:
+          - img [ref=e20]
+        - radio "Switch to light mode"
+      - dialog [ref=e22]:
+        - search [ref=e23]:
+          - generic [ref=e24]:
+            - textbox "Search" [ref=e25]
+            - generic:
+              - img
+            - navigation "Search":
+              - button "Clear":
+                - img
+          - generic [ref=e27]: Initializing search
+  - generic [ref=e28]:
+    - main [ref=e29]:
+      - generic [ref=e30]:
+        - navigation "Navigation" [ref=e33]:
+          - list [ref=e34]:
+            - listitem [ref=e35]:
+              - link "Home" [ref=e36] [cursor=pointer]:
+                - /url: https://adk.dev/
+                - generic [ref=e37]: Home
+            - listitem [ref=e38]:
+              - generic [ref=e40]: Build Agents
+              - navigation "Build Agents" [ref=e42]:
+                - generic [ref=e43] [cursor=pointer]: Build Agents
+                - list [ref=e45]:
+                  - listitem [ref=e46]:
+                    - link "Get Started" [ref=e48] [cursor=pointer]:
+                      - /url: https://adk.dev/get-started/
+                      - generic [ref=e49]: Get Started
+                    - navigation [ref=e52]:
+                      - generic [ref=e53] [cursor=pointer]: Get Started
+                      - list [ref=e55]:
+                        - listitem [ref=e56]:
+                          - link "Python" [ref=e57] [cursor=pointer]:
+                            - /url: https://adk.dev/get-started/python/
+                            - generic [ref=e58]: Python
+                        - listitem [ref=e59]:
+                          - link "TypeScript" [ref=e60] [cursor=pointer]:
+                            - /url: https://adk.dev/get-started/typescript/
+                            - generic [ref=e61]: TypeScript
+                        - listitem [ref=e62]:
+                          - link "Go" [ref=e63] [cursor=pointer]:
+                            - /url: https://adk.dev/get-started/go/
+                            - generic [ref=e64]: Go
+                        - listitem [ref=e65]:
+                          - link "Java" [ref=e66] [cursor=pointer]:
+                            - /url: https://adk.dev/get-started/java/
+                            - generic [ref=e67]: Java
+                  - listitem [ref=e68]:
+                    - link "Build your Agent" [ref=e70] [cursor=pointer]:
+                      - /url: https://adk.dev/tutorials/
+                      - generic [ref=e71]: Build your Agent
+                    - navigation [ref=e74]:
+                      - generic [ref=e75] [cursor=pointer]: Build your Agent
+                      - list [ref=e77]:
+                        - listitem [ref=e78]:
+                          - link "Multi-tool agent" [ref=e79] [cursor=pointer]:
+                            - /url: https://adk.dev/tutorials/multi-tool-agent/
+                            - generic [ref=e80]: Multi-tool agent
+                        - listitem [ref=e81]:
+                          - link "Agent team" [ref=e82] [cursor=pointer]:
+                            - /url: https://adk.dev/tutorials/agent-team/
+                            - generic [ref=e83]: Agent team
+                        - listitem [ref=e84]:
+                          - link "Streaming agent" [ref=e86] [cursor=pointer]:
+                            - /url: https://adk.dev/get-started/streaming/
+                            - generic [ref=e87]: Streaming agent
+                          - navigation [ref=e90]:
+                            - generic [ref=e91] [cursor=pointer]: Streaming agent
+                            - list [ref=e93]:
+                              - listitem [ref=e94]:
+                                - link "Python" [ref=e95] [cursor=pointer]:
+                                  - /url: https://adk.dev/get-started/streaming/quickstart-streaming/
+                                  - generic [ref=e96]: Python
+                              - listitem [ref=e97]:
+                                - link "Java" [ref=e98] [cursor=pointer]:
+                                  - /url: https://adk.dev/get-started/streaming/quickstart-streaming-java/
+                                  - generic [ref=e99]: Java
+                        - listitem [ref=e100]:
+                          - link "Visual Builder" [ref=e101] [cursor=pointer]:
+                            - /url: https://adk.dev/visual-builder/
+                            - generic [ref=e102]: Visual Builder
+                        - listitem [ref=e103]:
+                          - link "Coding with AI" [ref=e104] [cursor=pointer]:
+                            - /url: https://adk.dev/tutorials/coding-with-ai/
+                            - generic [ref=e105]: Coding with AI
+                        - listitem [ref=e106]:
+                          - link "Advanced setup" [ref=e107] [cursor=pointer]:
+                            - /url: https://adk.dev/get-started/installation/
+                            - generic [ref=e108]: Advanced setup
+                  - listitem [ref=e109]:
+                    - link "Agents" [ref=e111] [cursor=pointer]:
+                      - /url: https://adk.dev/agents/
+                      - generic [ref=e112]: Agents
+                    - navigation [ref=e115]:
+                      - generic [ref=e116] [cursor=pointer]: Agents
+                      - list [ref=e118]:
+                        - listitem [ref=e119]:
+                          - link "LLM agents" [ref=e120] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/llm-agents/
+                            - generic [ref=e121]: LLM agents
+                        - listitem [ref=e122]:
+                          - link "Workflow agents" [ref=e124] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/workflow-agents/
+                            - generic [ref=e125]: Workflow agents
+                          - navigation [ref=e128]:
+                            - generic [ref=e129] [cursor=pointer]: Workflow agents
+                            - list [ref=e131]:
+                              - listitem [ref=e132]:
+                                - link "Sequential agents" [ref=e133] [cursor=pointer]:
+                                  - /url: https://adk.dev/agents/workflow-agents/sequential-agents/
+                                  - generic [ref=e134]: Sequential agents
+                              - listitem [ref=e135]:
+                                - link "Loop agents" [ref=e136] [cursor=pointer]:
+                                  - /url: https://adk.dev/agents/workflow-agents/loop-agents/
+                                  - generic [ref=e137]: Loop agents
+                              - listitem [ref=e138]:
+                                - link "Parallel agents" [ref=e139] [cursor=pointer]:
+                                  - /url: https://adk.dev/agents/workflow-agents/parallel-agents/
+                                  - generic [ref=e140]: Parallel agents
+                        - listitem [ref=e141]:
+                          - link "Custom agents" [ref=e142] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/custom-agents/
+                            - generic [ref=e143]: Custom agents
+                        - listitem [ref=e144]:
+                          - link "Multi-agent systems" [ref=e145] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/multi-agents/
+                            - generic [ref=e146]: Multi-agent systems
+                        - listitem [ref=e147]:
+                          - link "Agent Config" [ref=e148] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/config/
+                            - generic [ref=e149]: Agent Config
+                  - listitem [ref=e150]:
+                    - link "Models for Agents" [ref=e152] [cursor=pointer]:
+                      - /url: https://adk.dev/agents/models/
+                      - generic [ref=e153]: Models for Agents
+                    - navigation [ref=e156]:
+                      - generic [ref=e157] [cursor=pointer]: Models for Agents
+                      - list [ref=e159]:
+                        - listitem [ref=e160]:
+                          - link "Gemini" [ref=e161] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/models/google-gemini/
+                            - generic [ref=e162]: Gemini
+                        - listitem [ref=e163]:
+                          - link "Gemma" [ref=e164] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/models/google-gemma/
+                            - generic [ref=e165]: Gemma
+                        - listitem [ref=e166]:
+                          - link "Claude" [ref=e167] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/models/anthropic/
+                            - generic [ref=e168]: Claude
+                        - listitem [ref=e169]:
+                          - link "Agent Platform hosted" [ref=e170] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/models/agent-platform/
+                            - generic [ref=e171]: Agent Platform hosted
+                        - listitem [ref=e172]:
+                          - link "Apigee AI Gateway" [ref=e173] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/models/apigee/
+                            - generic [ref=e174]: Apigee AI Gateway
+                        - listitem [ref=e175]:
+                          - link "Ollama" [ref=e176] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/models/ollama/
+                            - generic [ref=e177]: Ollama
+                        - listitem [ref=e178]:
+                          - link "vLLM" [ref=e179] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/models/vllm/
+                            - generic [ref=e180]: vLLM
+                        - listitem [ref=e181]:
+                          - link "LiteLLM" [ref=e182] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/models/litellm/
+                            - generic [ref=e183]: LiteLLM
+                        - listitem [ref=e184]:
+                          - link "LiteRT-LM" [ref=e185] [cursor=pointer]:
+                            - /url: https://adk.dev/agents/models/litert-lm/
+                            - generic [ref=e186]: LiteRT-LM
+                  - listitem [ref=e187]:
+                    - link "Tools and Integrations" [ref=e189] [cursor=pointer]:
+                      - /url: https://adk.dev/integrations/
+                      - generic [ref=e190]: Tools and Integrations
+                    - navigation [ref=e191]:
+                      - generic [ref=e192] [cursor=pointer]: Tools and Integrations
+                      - list [ref=e194]
+                  - listitem [ref=e195]:
+                    - link "Custom Tools" [ref=e197] [cursor=pointer]:
+                      - /url: https://adk.dev/tools-custom/
+                      - generic [ref=e198]: Custom Tools
+                    - navigation [ref=e201]:
+                      - generic [ref=e202] [cursor=pointer]: Custom Tools
+                      - list [ref=e204]:
+                        - listitem [ref=e205]:
+                          - generic [ref=e207]: Function tools
+                          - navigation "Function tools" [ref=e209]:
+                            - generic [ref=e210] [cursor=pointer]: Function tools
+                            - list [ref=e212]:
+                              - listitem [ref=e213]:
+                                - link "Overview" [ref=e214] [cursor=pointer]:
+                                  - /url: https://adk.dev/tools-custom/function-tools/
+                                  - generic [ref=e215]: Overview
+                              - listitem [ref=e216]:
+                                - link "Tool performance" [ref=e217] [cursor=pointer]:
+                                  - /url: https://adk.dev/tools-custom/performance/
+                                  - generic [ref=e218]: Tool performance
+                              - listitem [ref=e219]:
+                                - link "Action confirmations" [ref=e220] [cursor=pointer]:
+                                  - /url: https://adk.dev/tools-custom/confirmation/
+                                  - generic [ref=e221]: Action confirmations
+                        - listitem [ref=e222]:
+                          - link "MCP tools" [ref=e223] [cursor=pointer]:
+                            - /url: https://adk.dev/tools-custom/mcp-tools/
+                            - generic [ref=e224]: MCP tools
+                        - listitem [ref=e225]:
+                          - link "OpenAPI tools" [ref=e226] [cursor=pointer]:
+                            - /url: https://adk.dev/tools-custom/openapi-tools/
+                            - generic [ref=e227]: OpenAPI tools
+                        - listitem [ref=e228]:
+                          - link "Authentication" [ref=e229] [cursor=pointer]:
+                            - /url: https://adk.dev/tools-custom/authentication/
+                            - generic [ref=e230]: Authentication
+                        - listitem [ref=e231]:
+                          - link "Tool limitations" [ref=e232] [cursor=pointer]:
+                            - /url: https://adk.dev/tools/limitations/
+                            - generic [ref=e233]: Tool limitations
+                  - listitem [ref=e234]:
+                    - link "Skills for Agents" [ref=e236] [cursor=pointer]:
+                      - /url: https://adk.dev/skills/
+                      - generic [ref=e237]: Skills for Agents
+                    - navigation [ref=e238]:
+                      - generic [ref=e239] [cursor=pointer]: Skills for Agents
+                      - list [ref=e241]
+            - listitem [ref=e242]:
+              - generic [ref=e244]: Run Agents
+              - navigation "Run Agents" [ref=e246]:
+                - generic [ref=e247] [cursor=pointer]: Run Agents
+                - list [ref=e249]:
+                  - listitem [ref=e250]:
+                    - link "Agent Runtime" [ref=e252] [cursor=pointer]:
+                      - /url: https://adk.dev/runtime/
+                      - generic [ref=e253]: Agent Runtime
+                    - navigation [ref=e256]:
+                      - generic [ref=e257] [cursor=pointer]: Agent Runtime
+                      - list [ref=e259]:
+                        - listitem [ref=e260]:
+                          - link "Web Interface" [ref=e261] [cursor=pointer]:
+                            - /url: https://adk.dev/runtime/web-interface/
+                            - generic [ref=e262]: Web Interface
+                        - listitem [ref=e263]:
+                          - link "Command Line" [ref=e264] [cursor=pointer]:
+                            - /url: https://adk.dev/runtime/command-line/
+                            - generic [ref=e265]: Command Line
+                        - listitem [ref=e266]:
+                          - link "API Server" [ref=e267] [cursor=pointer]:
+                            - /url: https://adk.dev/runtime/api-server/
+                            - generic [ref=e268]: API Server
+                        - listitem [ref=e269]:
+                          - link "Ambient Agents" [ref=e270] [cursor=pointer]:
+                            - /url: https://adk.dev/runtime/ambient-agents/
+                            - generic [ref=e271]: Ambient Agents
+                        - listitem [ref=e272]:
+                          - link "Resume Agents" [ref=e273] [cursor=pointer]:
+                            - /url: https://adk.dev/runtime/resume/
+                            - generic [ref=e274]: Resume Agents
+                        - listitem [ref=e275]:
+                          - link "Runtime Config" [ref=e276] [cursor=pointer]:
+                            - /url: https://adk.dev/runtime/runconfig/
+                            - generic [ref=e277]: Runtime Config
+                        - listitem [ref=e278]:
+                          - link "Event Loop" [ref=e279] [cursor=pointer]:
+                            - /url: https://adk.dev/runtime/event-loop/
+                            - generic [ref=e280]: Event Loop
+                  - listitem [ref=e281]:
+                    - link "Deployment" [ref=e283] [cursor=pointer]:
+                      - /url: https://adk.dev/deploy/
+                      - generic [ref=e284]: Deployment
+                    - navigation [ref=e287]:
+                      - generic [ref=e288] [cursor=pointer]: Deployment
+                      - list [ref=e290]:
+                        - listitem [ref=e291]:
+                          - link "Agent Runtime" [ref=e293] [cursor=pointer]:
+                            - /url: https://adk.dev/deploy/agent-runtime/
+                            - generic [ref=e294]: Agent Runtime
+                          - navigation [ref=e297]:
+                            - generic [ref=e298] [cursor=pointer]: Agent Runtime
+                            - list [ref=e300]:
+                              - listitem [ref=e301]:
+                                - link "Standard deployment" [ref=e302] [cursor=pointer]:
+                                  - /url: https://adk.dev/deploy/agent-runtime/deploy/
+                                  - generic [ref=e303]: Standard deployment
+                              - listitem [ref=e304]:
+                                - link "agents-cli" [ref=e305] [cursor=pointer]:
+                                  - /url: https://adk.dev/deploy/agent-runtime/agents-cli/
+                                  - generic [ref=e306]: agents-cli
+                              - listitem [ref=e307]:
+                                - link "Test deployed agents" [ref=e308] [cursor=pointer]:
+                                  - /url: https://adk.dev/deploy/agent-runtime/test/
+                                  - generic [ref=e309]: Test deployed agents
+                        - listitem [ref=e310]:
+                          - link "Cloud Run" [ref=e311] [cursor=pointer]:
+                            - /url: https://adk.dev/deploy/cloud-run/
+                            - generic [ref=e312]: Cloud Run
+                        - listitem [ref=e313]:
+                          - link "GKE" [ref=e314] [cursor=pointer]:
+                            - /url: https://adk.dev/deploy/gke/
+                            - generic [ref=e315]: GKE
+                  - listitem [ref=e316]:
+                    - link "Observability" [ref=e318] [cursor=pointer]:
+                      - /url: https://adk.dev/observability/
+                      - generic [ref=e319]: Observability
+                    - navigation [ref=e322]:
+                      - generic [ref=e323] [cursor=pointer]: Observability
+                      - list [ref=e325]:
+                        - listitem [ref=e326]:
+                          - link "Logging" [ref=e327] [cursor=pointer]:
+                            - /url: https://adk.dev/observability/logging/
+                            - generic [ref=e328]: Logging
+                        - listitem [ref=e329]:
+                          - link "Metrics" [ref=e330] [cursor=pointer]:
+                            - /url: https://adk.dev/observability/metrics/
+                            - generic [ref=e331]: Metrics
+                        - listitem [ref=e332]:
+                          - link "Traces" [ref=e333] [cursor=pointer]:
+                            - /url: https://adk.dev/observability/traces/
+                            - generic [ref=e334]: Traces
+                  - listitem [ref=e335]:
+                    - link "Evaluation" [ref=e337] [cursor=pointer]:
+                      - /url: https://adk.dev/evaluate/
+                      - generic [ref=e338]: Evaluation
+                    - navigation [ref=e341]:
+                      - generic [ref=e342] [cursor=pointer]: Evaluation
+                      - list [ref=e344]:
+                        - listitem [ref=e345]:
+                          - link "Criteria" [ref=e346] [cursor=pointer]:
+                            - /url: https://adk.dev/evaluate/criteria/
+                            - generic [ref=e347]: Criteria
+                        - listitem [ref=e348]:
+                          - link "User Simulation" [ref=e349] [cursor=pointer]:
+                            - /url: https://adk.dev/evaluate/user-sim/
+                            - generic [ref=e350]: User Simulation
+                        - listitem [ref=e351]:
+                          - link "Environment Simulation" [ref=e352] [cursor=pointer]:
+                            - /url: https://adk.dev/evaluate/environment_simulation/
+                            - generic [ref=e353]: Environment Simulation
+                        - listitem [ref=e354]:
+                          - link "Custom Metrics" [ref=e355] [cursor=pointer]:
+                            - /url: https://adk.dev/evaluate/custom_metrics/
+                            - generic [ref=e356]: Custom Metrics
+                        - listitem [ref=e357]:
+                          - link "Optimization" [ref=e358] [cursor=pointer]:
+                            - /url: https://adk.dev/optimize/
+                            - generic [ref=e359]: Optimization
+                  - listitem [ref=e360]:
+                    - link "Safety and Security" [ref=e362] [cursor=pointer]:
+                      - /url: https://adk.dev/safety/
+                      - generic [ref=e363]: Safety and Security
+                    - navigation [ref=e364]:
+                      - generic [ref=e365] [cursor=pointer]: Safety and Security
+                      - list [ref=e367]
+            - listitem [ref=e368]:
+              - generic [ref=e370]: Components
+              - navigation "Components" [ref=e372]:
+                - generic [ref=e373] [cursor=pointer]: Components
+                - list [ref=e375]:
+                  - listitem [ref=e376]:
+                    - link "Technical Overview" [ref=e377] [cursor=pointer]:
+                      - /url: https://adk.dev/get-started/about/
+                      - generic [ref=e378]: Technical Overview
+                  - listitem [ref=e379]:
+                    - link "Context" [ref=e381] [cursor=pointer]:
+                      - /url: https://adk.dev/context/
+                      - generic [ref=e382]: Context
+                    - navigation [ref=e385]:
+                      - generic [ref=e386] [cursor=pointer]: Context
+                      - list [ref=e388]:
+                        - listitem [ref=e389]:
+                          - link "Context caching" [ref=e390] [cursor=pointer]:
+                            - /url: https://adk.dev/context/caching/
+                            - generic [ref=e391]: Context caching
+                        - listitem [ref=e392]:
+                          - link "Context compression" [ref=e393] [cursor=pointer]:
+                            - /url: https://adk.dev/context/compaction/
+                            - generic [ref=e394]: Context compression
+                  - listitem [ref=e395]:
+                    - link "Sessions & Memory" [ref=e397] [cursor=pointer]:
+                      - /url: https://adk.dev/sessions/
+                      - generic [ref=e398]: Sessions & Memory
+                    - navigation [ref=e401]:
+                      - generic [ref=e402] [cursor=pointer]: Sessions & Memory
+                      - list [ref=e404]:
+                        - listitem [ref=e405]:
+                          - link "Sessions" [ref=e407] [cursor=pointer]:
+                            - /url: https://adk.dev/sessions/session/
+                            - generic [ref=e408]: Sessions
+                          - navigation [ref=e411]:
+                            - generic [ref=e412] [cursor=pointer]: Sessions
+                            - list [ref=e414]:
+                              - listitem [ref=e415]:
+                                - link "Rewind sessions" [ref=e416] [cursor=pointer]:
+                                  - /url: https://adk.dev/sessions/session/rewind/
+                                  - generic [ref=e417]: Rewind sessions
+                              - listitem [ref=e418]:
+                                - link "Migrate sessions" [ref=e419] [cursor=pointer]:
+                                  - /url: https://adk.dev/sessions/session/migrate/
+                                  - generic [ref=e420]: Migrate sessions
+                        - listitem [ref=e421]:
+                          - link "State" [ref=e422] [cursor=pointer]:
+                            - /url: https://adk.dev/sessions/state/
+                            - generic [ref=e423]: State
+                        - listitem [ref=e424]:
+                          - link "Memory" [ref=e425] [cursor=pointer]:
+                            - /url: https://adk.dev/sessions/memory/
+                            - generic [ref=e426]: Memory
+                  - listitem [ref=e427]:
+                    - link "Callbacks" [ref=e429] [cursor=pointer]:
+                      - /url: https://adk.dev/callbacks/
+                      - generic [ref=e430]: Callbacks
+                    - navigation [ref=e433]:
+                      - generic [ref=e434] [cursor=pointer]: Callbacks
+                      - list [ref=e436]:
+                        - listitem [ref=e437]:
+                          - link "Types of callbacks" [ref=e438] [cursor=pointer]:
+                            - /url: https://adk.dev/callbacks/types-of-callbacks/
+                            - generic [ref=e439]: Types of callbacks
+                        - listitem [ref=e440]:
+                          - link "Callback patterns" [ref=e441] [cursor=pointer]:
+                            - /url: https://adk.dev/callbacks/design-patterns-and-best-practices/
+                            - generic [ref=e442]: Callback patterns
+                  - listitem [ref=e443]:
+                    - link "Artifacts" [ref=e445] [cursor=pointer]:
+                      - /url: https://adk.dev/artifacts/
+                      - generic [ref=e446]: Artifacts
+                    - navigation [ref=e447]:
+                      - generic [ref=e448] [cursor=pointer]: Artifacts
+                      - list [ref=e450]
+                  - listitem [ref=e451]:
+                    - link "Events" [ref=e453] [cursor=pointer]:
+                      - /url: https://adk.dev/events/
+                      - generic [ref=e454]: Events
+                    - navigation [ref=e455]:
+                      - generic [ref=e456] [cursor=pointer]: Events
+                      - list [ref=e458]
+                  - listitem [ref=e459]:
+                    - link "Apps" [ref=e461] [cursor=pointer]:
+                      - /url: https://adk.dev/apps/
+                      - generic [ref=e462]: Apps
+                    - navigation [ref=e463]:
+                      - generic [ref=e464] [cursor=pointer]: Apps
+                      - list [ref=e466]
+                  - listitem [ref=e467]:
+                    - link "Plugins" [ref=e469] [cursor=pointer]:
+                      - /url: https://adk.dev/plugins/
+                      - generic [ref=e470]: Plugins
+                    - navigation [ref=e471]:
+                      - generic [ref=e472] [cursor=pointer]: Plugins
+                      - list [ref=e474]
+                  - listitem [ref=e475]:
+                    - link "MCP" [ref=e477] [cursor=pointer]:
+                      - /url: https://adk.dev/mcp/
+                      - generic [ref=e478]: MCP
+                    - navigation [ref=e479]:
+                      - generic [ref=e480] [cursor=pointer]: MCP
+                      - list [ref=e482]
+                  - listitem [ref=e483]:
+                    - link "A2A Protocol" [ref=e485] [cursor=pointer]:
+                      - /url: https://adk.dev/a2a/
+                      - generic [ref=e486]: A2A Protocol
+                    - navigation [ref=e489]:
+                      - generic [ref=e490] [cursor=pointer]: A2A Protocol
+                      - list [ref=e492]:
+                        - listitem [ref=e493]:
+                          - link "Introduction to A2A" [ref=e494] [cursor=pointer]:
+                            - /url: https://adk.dev/a2a/intro/
+                            - generic [ref=e495]: Introduction to A2A
+                        - listitem [ref=e496]:
+                          - generic [ref=e498]: A2A Quickstart (Exposing)
+                          - navigation "A2A Quickstart (Exposing)" [ref=e500]:
+                            - generic [ref=e501] [cursor=pointer]: A2A Quickstart (Exposing)
+                            - list [ref=e503]:
+                              - listitem [ref=e504]:
+                                - link "Python" [ref=e505] [cursor=pointer]:
+                                  - /url: https://adk.dev/a2a/quickstart-exposing/
+                                  - generic [ref=e506]: Python
+                              - listitem [ref=e507]:
+                                - link "Go" [ref=e508] [cursor=pointer]:
+                                  - /url: https://adk.dev/a2a/quickstart-exposing-go/
+                                  - generic [ref=e509]: Go
+                              - listitem [ref=e510]:
+                                - link "Java" [ref=e511] [cursor=pointer]:
+                                  - /url: https://adk.dev/a2a/quickstart-exposing-java/
+                                  - generic [ref=e512]: Java
+                        - listitem [ref=e513]:
+                          - generic [ref=e515]: A2A Quickstart (Consuming)
+                          - navigation "A2A Quickstart (Consuming)" [ref=e517]:
+                            - generic [ref=e518] [cursor=pointer]: A2A Quickstart (Consuming)
+                            - list [ref=e520]:
+                              - listitem [ref=e521]:
+                                - link "Python" [ref=e522] [cursor=pointer]:
+                                  - /url: https://adk.dev/a2a/quickstart-consuming/
+                                  - generic [ref=e523]: Python
+                              - listitem [ref=e524]:
+                                - link "Go" [ref=e525] [cursor=pointer]:
+                                  - /url: https://adk.dev/a2a/quickstart-consuming-go/
+                                  - generic [ref=e526]: Go
+                              - listitem [ref=e527]:
+                                - link "Java" [ref=e528] [cursor=pointer]:
+                                  - /url: https://adk.dev/a2a/quickstart-consuming-java/
+                                  - generic [ref=e529]: Java
+                        - listitem [ref=e530]:
+                          - link "A2A Extension" [ref=e531] [cursor=pointer]:
+                            - /url: https://adk.dev/a2a/a2a-extension/
+                            - generic [ref=e532]: A2A Extension
+                  - listitem [ref=e533]:
+                    - link "Gemini Live API Toolkit" [ref=e535] [cursor=pointer]:
+                      - /url: https://adk.dev/streaming/
+                      - generic [ref=e536]: Gemini Live API Toolkit
+                    - navigation [ref=e539]:
+                      - generic [ref=e540] [cursor=pointer]: Gemini Live API Toolkit
+                      - list [ref=e542]:
+                        - listitem [ref=e543]:
+                          - generic [ref=e545]: Gemini Live API Toolkit development guide series
+                          - navigation "Gemini Live API Toolkit development guide series" [ref=e547]:
+                            - generic [ref=e548] [cursor=pointer]: Gemini Live API Toolkit development guide series
+                            - list [ref=e550]:
+                              - listitem [ref=e551]:
+                                - link "Part 1. Intro to streaming" [ref=e552] [cursor=pointer]:
+                                  - /url: https://adk.dev/streaming/dev-guide/part1/
+                                  - generic [ref=e553]: Part 1. Intro to streaming
+                              - listitem [ref=e554]:
+                                - link "Part 2. Sending messages" [ref=e555] [cursor=pointer]:
+                                  - /url: https://adk.dev/streaming/dev-guide/part2/
+                                  - generic [ref=e556]: Part 2. Sending messages
+                              - listitem [ref=e557]:
+                                - link "Part 3. Event handling" [ref=e558] [cursor=pointer]:
+                                  - /url: https://adk.dev/streaming/dev-guide/part3/
+                                  - generic [ref=e559]: Part 3. Event handling
+                              - listitem [ref=e560]:
+                                - link "Part 4. Run configuration" [ref=e561] [cursor=pointer]:
+                                  - /url: https://adk.dev/streaming/dev-guide/part4/
+                                  - generic [ref=e562]: Part 4. Run configuration
+                              - listitem [ref=e563]:
+                                - link "Part 5. Audio, Images, and Video" [ref=e564] [cursor=pointer]:
+                                  - /url: https://adk.dev/streaming/dev-guide/part5/
+                                  - generic [ref=e565]: Part 5. Audio, Images, and Video
+                        - listitem [ref=e566]:
+                          - link "Streaming Tools" [ref=e567] [cursor=pointer]:
+                            - /url: https://adk.dev/streaming/streaming-tools/
+                            - generic [ref=e568]: Streaming Tools
+                        - listitem [ref=e569]:
+                          - link "Configuring streaming behavior" [ref=e570] [cursor=pointer]:
+                            - /url: https://adk.dev/streaming/configuration/
+                            - generic [ref=e571]: Configuring streaming behavior
+                  - listitem [ref=e572]:
+                    - link "Grounding" [ref=e574] [cursor=pointer]:
+                      - /url: https://adk.dev/grounding/
+                      - generic [ref=e575]: Grounding
+                    - navigation [ref=e578]:
+                      - generic [ref=e579] [cursor=pointer]: Grounding
+                      - list [ref=e581]:
+                        - listitem [ref=e582]:
+                          - link "Google Search Grounding" [ref=e583] [cursor=pointer]:
+                            - /url: https://adk.dev/grounding/google_search_grounding/
+                            - generic [ref=e584]: Google Search Grounding
+                        - listitem [ref=e585]:
+                          - link "Grounding with Search" [ref=e586] [cursor=pointer]:
+                            - /url: https://adk.dev/grounding/grounding_with_search/
+                            - generic [ref=e587]: Grounding with Search
+            - listitem [ref=e588]:
+              - link "Integrations" [ref=e590] [cursor=pointer]:
+                - /url: https://adk.dev/integrations/
+                - generic [ref=e591]: Integrations
+              - navigation [ref=e592]:
+                - generic [ref=e593] [cursor=pointer]: Integrations
+                - list [ref=e595]
+            - listitem [ref=e596]:
+              - generic [ref=e598]: Reference
+              - navigation "Reference" [ref=e600]:
+                - generic [ref=e601] [cursor=pointer]: Reference
+                - list [ref=e603]:
+                  - listitem [ref=e604]:
+                    - link "API Reference" [ref=e606] [cursor=pointer]:
+                      - /url: https://adk.dev/api-reference/
+                      - generic [ref=e607]: API Reference
+                    - navigation [ref=e610]:
+                      - generic [ref=e611] [cursor=pointer]: API Reference
+                      - list [ref=e613]:
+                        - listitem [ref=e614]:
+                          - link "Python ADK" [ref=e615] [cursor=pointer]:
+                            - /url: https://adk.dev/api-reference/python/
+                            - generic [ref=e616]: Python ADK
+                        - listitem [ref=e617]:
+                          - link "Typescript ADK" [ref=e618] [cursor=pointer]:
+                            - /url: https://adk.dev/api-reference/typescript/
+                            - generic [ref=e619]: Typescript ADK
+                        - listitem [ref=e620]:
+                          - link "Go ADK" [ref=e621] [cursor=pointer]:
+                            - /url: https://pkg.go.dev/google.golang.org/adk
+                            - generic [ref=e622]: Go ADK
+                        - listitem [ref=e623]:
+                          - link "Java ADK" [ref=e624] [cursor=pointer]:
+                            - /url: https://adk.dev/api-reference/java/
+                            - generic [ref=e625]: Java ADK
+                        - listitem [ref=e626]:
+                          - link "CLI Reference" [ref=e627] [cursor=pointer]:
+                            - /url: https://adk.dev/api-reference/cli/
+                            - generic [ref=e628]: CLI Reference
+                        - listitem [ref=e629]:
+                          - link "Agent Config Reference" [ref=e630] [cursor=pointer]:
+                            - /url: https://adk.dev/api-reference/agentconfig/
+                            - generic [ref=e631]: Agent Config Reference
+                        - listitem [ref=e632]:
+                          - link "REST API" [ref=e633] [cursor=pointer]:
+                            - /url: https://adk.dev/api-reference/rest/
+                            - generic [ref=e634]: REST API
+                  - listitem [ref=e635]:
+                    - link "Release Notes" [ref=e636] [cursor=pointer]:
+                      - /url: https://adk.dev/release-notes/
+                      - generic [ref=e637]: Release Notes
+            - listitem [ref=e638]:
+              - link "Community" [ref=e640] [cursor=pointer]:
+                - /url: https://adk.dev/community/
+                - generic [ref=e641]: Community
+              - navigation [ref=e644]:
+                - generic [ref=e645] [cursor=pointer]: Community
+                - list [ref=e647]:
+                  - listitem [ref=e648]:
+                    - link "Contributing Guide" [ref=e649] [cursor=pointer]:
+                      - /url: https://adk.dev/community/contributing-guide/
+                      - generic [ref=e650]: Contributing Guide
+            - listitem [ref=e651]:
+              - link "ADK 2.0" [ref=e653] [cursor=pointer]:
+                - /url: https://adk.dev/2.0/
+                - generic [ref=e654]: ADK 2.0
+              - navigation [ref=e657]:
+                - generic [ref=e658] [cursor=pointer]: ADK 2.0
+                - list [ref=e660]:
+                  - listitem [ref=e661]:
+                    - link "Graph-based workflows" [ref=e663] [cursor=pointer]:
+                      - /url: https://adk.dev/workflows/
+                      - generic [ref=e664]: Graph-based workflows
+                    - navigation [ref=e667]:
+                      - generic [ref=e668] [cursor=pointer]: Graph-based workflows
+                      - list [ref=e670]:
+                        - listitem [ref=e671]:
+                          - link "Graph routes" [ref=e672] [cursor=pointer]:
+                            - /url: https://adk.dev/workflows/graph-routes/
+                            - generic [ref=e673]: Graph routes
+                        - listitem [ref=e674]:
+                          - link "Data handling" [ref=e675] [cursor=pointer]:
+                            - /url: https://adk.dev/workflows/data-handling/
+                            - generic [ref=e676]: Data handling
+                        - listitem [ref=e677]:
+                          - link "Human input" [ref=e678] [cursor=pointer]:
+                            - /url: https://adk.dev/workflows/human-input/
+                            - generic [ref=e679]: Human input
+                  - listitem [ref=e680]:
+                    - link "Collaborative agents" [ref=e681] [cursor=pointer]:
+                      - /url: https://adk.dev/workflows/collaboration/
+                      - generic [ref=e682]: Collaborative agents
+                  - listitem [ref=e683]:
+                    - link "Dynamic workflows" [ref=e684] [cursor=pointer]:
+                      - /url: https://adk.dev/workflows/dynamic/
+                      - generic [ref=e685]: Dynamic workflows
+        - navigation "Table of contents" [ref=e689]:
+          - generic [ref=e690]: Table of contents
+          - list [ref=e691]:
+            - listitem [ref=e692]:
+              - link "Defining the Agent's Identity and Purpose" [ref=e693] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#defining-the-agents-identity-and-purpose
+                - generic [ref=e694]: Defining the Agent's Identity and Purpose
+            - listitem [ref=e695]:
+              - 'link "Guiding the Agent: Instructions (instruction)" [ref=e696] [cursor=pointer]':
+                - /url: https://adk.dev/agents/llm-agents/#guiding-the-agent-instructions-instruction
+                - generic [ref=e697]: "Guiding the Agent: Instructions (instruction)"
+            - listitem [ref=e698]:
+              - 'link "Equipping the Agent: Tools (tools)" [ref=e699] [cursor=pointer]':
+                - /url: https://adk.dev/agents/llm-agents/#equipping-the-agent-tools-tools
+                - generic [ref=e700]: "Equipping the Agent: Tools (tools)"
+            - listitem [ref=e701]:
+              - link "Advanced Configuration & Control" [ref=e702] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#advanced-configuration-control
+                - generic [ref=e703]: Advanced Configuration & Control
+              - navigation "Advanced Configuration & Control" [ref=e704]:
+                - list [ref=e705]:
+                  - listitem [ref=e706]:
+                    - link "Fine-Tuning LLM Generation (generate_content_config)" [ref=e707] [cursor=pointer]:
+                      - /url: https://adk.dev/agents/llm-agents/#fine-tuning-llm-generation-generate_content_config
+                      - generic [ref=e708]: Fine-Tuning LLM Generation (generate_content_config)
+                  - listitem [ref=e709]:
+                    - link "Structuring Data (input_schema, output_schema, output_key)" [ref=e710] [cursor=pointer]:
+                      - /url: https://adk.dev/agents/llm-agents/#structuring-data-input_schema-output_schema-output_key
+                      - generic [ref=e711]: Structuring Data (input_schema, output_schema, output_key)
+                  - listitem [ref=e712]:
+                    - link "Managing Context (include_contents)" [ref=e713] [cursor=pointer]:
+                      - /url: https://adk.dev/agents/llm-agents/#managing-context-include_contents
+                      - generic [ref=e714]: Managing Context (include_contents)
+                  - listitem [ref=e715]:
+                    - link "Planner" [ref=e716] [cursor=pointer]:
+                      - /url: https://adk.dev/agents/llm-agents/#planner
+                      - generic [ref=e717]: Planner
+                  - listitem [ref=e718]:
+                    - link "Code Execution" [ref=e719] [cursor=pointer]:
+                      - /url: https://adk.dev/agents/llm-agents/#code-execution
+                      - generic [ref=e720]: Code Execution
+            - listitem [ref=e721]:
+              - 'link "Putting It Together: Example" [ref=e722] [cursor=pointer]':
+                - /url: https://adk.dev/agents/llm-agents/#putting-it-together-example
+                - generic [ref=e723]: "Putting It Together: Example"
+            - listitem [ref=e724]:
+              - link "Related Concepts (Deferred Topics)" [ref=e725] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#related-concepts-deferred-topics
+                - generic [ref=e726]: Related Concepts (Deferred Topics)
+        - generic [ref=e727]:
+          - navigation "Navigation" [ref=e728]:
+            - list [ref=e729]:
+              - listitem [ref=e730]:
+                - link "Home" [ref=e731] [cursor=pointer]:
+                  - /url: https://adk.dev/
+                  - generic [ref=e732]: Home
+              - listitem [ref=e733]:
+                - link "Build Agents" [ref=e734] [cursor=pointer]:
+                  - /url: https://adk.dev/get-started/
+                  - generic [ref=e735]: Build Agents
+              - listitem [ref=e736]:
+                - link "Agents" [ref=e737] [cursor=pointer]:
+                  - /url: https://adk.dev/agents/
+                  - generic [ref=e738]: Agents
+          - article [ref=e739]:
+            - link "Edit this page on GitHub" [ref=e740] [cursor=pointer]:
+              - /url: https://github.com/google/adk-docs/edit/main/docs/agents/llm-agents.md
+              - img [ref=e741]
+            - link "View Markdown source" [ref=e743] [cursor=pointer]:
+              - /url: https://github.com/google/adk-docs/raw/main/docs/agents/llm-agents.md
+              - img [ref=e744]
+            - button "Copy page as Markdown" [ref=e746] [cursor=pointer]:
+              - img [ref=e747]
+            - heading "LLM Agent ¶" [level=1] [ref=e749]:
+              - text: LLM Agent
+              - link "¶" [ref=e750] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#llm-agent
+            - generic [ref=e751]:
+              - generic [ref=e752]: Supported in ADK
+              - generic [ref=e753]: Python v0.1.0
+              - generic [ref=e754]: Typescript v0.2.0
+              - generic [ref=e755]: Go v0.1.0
+              - generic [ref=e756]: Java v0.1.0
+            - paragraph [ref=e757]:
+              - text: The
+              - code [ref=e758]: LlmAgent
+              - text: (often aliased simply as
+              - code [ref=e759]: Agent
+              - text: ) is a core component in ADK, acting as the "thinking" part of your application. It leverages the power of a Large Language Model (LLM) for reasoning, understanding natural language, making decisions, generating responses, and interacting with tools.
+            - paragraph [ref=e760]:
+              - text: Unlike deterministic
+              - link "Workflow Agents" [ref=e761] [cursor=pointer]:
+                - /url: https://adk.dev/agents/workflow-agents/
+              - text: that follow predefined execution paths,
+              - code [ref=e762]: LlmAgent
+              - text: behavior is non-deterministic. It uses the LLM to interpret instructions and context, deciding dynamically how to proceed, which tools to use (if any), or whether to transfer control to another agent.
+            - paragraph [ref=e763]:
+              - text: Building an effective
+              - code [ref=e764]: LlmAgent
+              - text: involves defining its identity, clearly guiding its behavior through instructions, and equipping it with the necessary tools and capabilities.
+            - heading "Defining the Agent's Identity and Purpose ¶" [level=2] [ref=e765]:
+              - text: Defining the Agent's Identity and Purpose
+              - link "¶" [ref=e766] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#defining-the-agents-identity-and-purpose
+            - paragraph [ref=e767]:
+              - text: First, you need to establish what the agent
+              - emphasis [ref=e768]: is
+              - text: and what it's
+              - emphasis [ref=e769]: for
+              - text: .
+            - list [ref=e770]:
+              - listitem [ref=e771]:
+                - paragraph [ref=e772]:
+                  - strong [ref=e773]:
+                    - code [ref=e774]: name
+                    - text: "(Required):"
+                  - text: Every agent needs a unique string identifier. This
+                  - code [ref=e775]: name
+                  - text: is crucial for internal operations, especially in multi-agent systems where agents need to refer to or delegate tasks to each other. Choose a descriptive name that reflects the agent's function (e.g.,
+                  - code [ref=e776]: customer_support_router
+                  - text: ","
+                  - code [ref=e777]: billing_inquiry_agent
+                  - text: ). Avoid reserved names like
+                  - code [ref=e778]: user
+                  - text: .
+              - listitem [ref=e779]:
+                - paragraph [ref=e780]:
+                  - strong [ref=e781]:
+                    - code [ref=e782]: description
+                    - text: "(Optional, Recommended for Multi-Agent):"
+                  - text: Provide a concise summary of the agent's capabilities. This description is primarily used by
+                  - emphasis [ref=e783]: other
+                  - text: LLM agents to determine if they should route a task to this agent. Make it specific enough to differentiate it from peers (e.g., "Handles inquiries about current billing statements," not just "Billing agent").
+              - listitem [ref=e784]:
+                - paragraph [ref=e785]:
+                  - strong [ref=e786]:
+                    - code [ref=e787]: model
+                    - text: "(Required):"
+                  - text: Specify the underlying LLM that will power this agent's reasoning. This is a string identifier like
+                  - code [ref=e788]: "\"gemini-flash-latest\""
+                  - text: . The choice of model impacts the agent's capabilities, cost, and performance. See the
+                  - link "Models" [ref=e789] [cursor=pointer]:
+                    - /url: https://adk.dev/agents/models/
+                  - text: page for available options and considerations.
+            - generic [ref=e790]:
+              - radio "Python" [checked]
+              - radio "Typescript"
+              - radio "Go"
+              - radio "Java"
+              - generic [ref=e791]:
+                - link "Python" [ref=e793] [cursor=pointer]:
+                  - /url: "#python"
+                - link "Typescript" [ref=e795] [cursor=pointer]:
+                  - /url: "#typescript"
+                - link "Go" [ref=e797] [cursor=pointer]:
+                  - /url: "#go"
+                - link "Java" [ref=e799] [cursor=pointer]:
+                  - /url: "#java"
+              - generic [ref=e803]:
+                - navigation [ref=e804]:
+                  - button "Toggle line selection" [ref=e805] [cursor=pointer]
+                  - button "Copy to clipboard" [ref=e806] [cursor=pointer]
+                - code [ref=e807]:
+                  - generic [ref=e808]: "# Example: Defining the basic identity"
+                  - generic [ref=e809]: capital_agent = LlmAgent(
+                  - generic [ref=e810]: model="gemini-flash-latest",
+                  - generic [ref=e811]: name="capital_agent",
+                  - generic [ref=e812]: description="Answers user questions about the capital city of a given country."
+                  - generic [ref=e813]: "# instruction and tools will be added next"
+                  - generic [ref=e814]: )
+              - button [ref=e815] [cursor=pointer]
+              - button [ref=e816] [cursor=pointer]
+            - 'heading "Guiding the Agent: Instructions (instruction) ¶" [level=2] [ref=e817]':
+              - text: "Guiding the Agent: Instructions ("
+              - code [ref=e818]: instruction
+              - text: )
+              - link "¶" [ref=e819] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#guiding-the-agent-instructions-instruction
+            - paragraph [ref=e820]:
+              - text: The
+              - code [ref=e821]: instruction
+              - text: parameter is arguably the most critical for shaping an
+              - code [ref=e822]: LlmAgent
+              - text: "'s behavior. It's a string (or a function returning a string) that tells the agent:"
+            - list [ref=e823]:
+              - listitem [ref=e824]: Its core task or goal.
+              - listitem [ref=e825]: Its personality or persona (e.g., "You are a helpful assistant," "You are a witty pirate").
+              - listitem [ref=e826]: Constraints on its behavior (e.g., "Only answer questions about X," "Never reveal Y").
+              - listitem [ref=e827]:
+                - text: How and when to use its
+                - code [ref=e828]: tools
+                - text: . You should explain the purpose of each tool and the circumstances under which it should be called, supplementing any descriptions within the tool itself.
+              - listitem [ref=e829]: The desired format for its output (e.g., "Respond in JSON," "Provide a bulleted list").
+            - paragraph [ref=e830]:
+              - strong [ref=e831]: "Tips for Effective Instructions:"
+            - list [ref=e832]:
+              - listitem [ref=e833]:
+                - strong [ref=e834]: "Be Clear and Specific:"
+                - text: Avoid ambiguity. Clearly state the desired actions and outcomes.
+              - listitem [ref=e835]:
+                - strong [ref=e836]: "Use Markdown:"
+                - text: Improve readability for complex instructions using headings, lists, etc.
+              - listitem [ref=e837]:
+                - strong [ref=e838]: "Provide Examples (Few-Shot):"
+                - text: For complex tasks or specific output formats, include examples directly in the instruction.
+              - listitem [ref=e839]:
+                - strong [ref=e840]: "Guide Tool Use:"
+                - text: Don't just list tools; explain
+                - emphasis [ref=e841]: when
+                - text: and
+                - emphasis [ref=e842]: why
+                - text: the agent should use them.
+            - paragraph [ref=e843]:
+              - strong [ref=e844]: "State:"
+            - list [ref=e845]:
+              - listitem [ref=e846]:
+                - text: The instruction is a string template, you can use the
+                - code [ref=e847]: "{var}"
+                - text: syntax to insert dynamic values into the instruction.
+              - listitem [ref=e848]:
+                - code [ref=e849]: "{var}"
+                - text: is used to insert the value of the state variable named var.
+              - listitem [ref=e850]:
+                - code [ref=e851]: "{artifact.var}"
+                - text: is used to insert the text content of the artifact named var.
+              - listitem [ref=e852]:
+                - text: If the state variable or artifact does not exist, the agent will raise an error. If you want to ignore the error, you can append a
+                - code [ref=e853]: "?"
+                - text: to the variable name as in
+                - code [ref=e854]: "{var?}"
+                - text: .
+            - generic [ref=e855]:
+              - radio "Python" [checked]
+              - radio "Typescript"
+              - radio "Go"
+              - radio "Java"
+              - generic [ref=e856]:
+                - link "Python" [ref=e858] [cursor=pointer]:
+                  - /url: "#python_1"
+                - link "Typescript" [ref=e860] [cursor=pointer]:
+                  - /url: "#typescript_1"
+                - link "Go" [ref=e862] [cursor=pointer]:
+                  - /url: "#go_1"
+                - link "Java" [ref=e864] [cursor=pointer]:
+                  - /url: "#java_1"
+              - generic [ref=e868]:
+                - navigation [ref=e869]:
+                  - button "Toggle line selection" [ref=e870] [cursor=pointer]
+                  - button "Copy to clipboard" [ref=e871] [cursor=pointer]
+                - code [ref=e872]:
+                  - generic [ref=e873]: "# Example: Adding instructions"
+                  - generic [ref=e874]: capital_agent = LlmAgent(
+                  - generic [ref=e875]: model="gemini-flash-latest",
+                  - generic [ref=e876]: name="capital_agent",
+                  - generic [ref=e877]: description="Answers user questions about the capital city of a given country.",
+                  - generic [ref=e878]: instruction="""You are an agent that provides the capital city of a country.
+                  - generic [ref=e879]: "When a user asks for the capital of a country:"
+                  - generic [ref=e880]: 1. Identify the country name from the user's query.
+                  - generic [ref=e881]: "2. Use the `get_capital_city` tool to find the capital."
+                  - generic [ref=e882]: 3. Respond clearly to the user, stating the capital city.
+                  - generic [ref=e883]: "Example Query: \"What's the capital of {country}?\""
+                  - generic [ref=e884]: "Example Response: \"The capital of France is Paris.\""
+                  - generic [ref=e885]: "\"\"\","
+                  - generic [ref=e886]: "# tools will be added next"
+                  - generic [ref=e887]: )
+              - button [ref=e888] [cursor=pointer]
+              - button [ref=e889] [cursor=pointer]
+            - paragraph [ref=e890]:
+              - emphasis [ref=e891]: "(Note: For instructions that apply to"
+              - text: all
+              - emphasis [ref=e892]:
+                - text: agents in a system, consider using
+                - code [ref=e893]: global_instruction
+                - text: on the root agent, detailed further in the
+                - link "Multi-Agents" [ref=e894] [cursor=pointer]:
+                  - /url: https://adk.dev/agents/multi-agents/
+                - text: section.)
+            - 'heading "Equipping the Agent: Tools (tools) ¶" [level=2] [ref=e895]':
+              - text: "Equipping the Agent: Tools ("
+              - code [ref=e896]: tools
+              - text: )
+              - link "¶" [ref=e897] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#equipping-the-agent-tools-tools
+            - paragraph [ref=e898]:
+              - text: Tools give your
+              - code [ref=e899]: LlmAgent
+              - text: capabilities beyond the LLM's built-in knowledge or reasoning. They allow the agent to interact with the outside world, perform calculations, fetch real-time data, or execute specific actions.
+            - list [ref=e900]:
+              - listitem [ref=e901]:
+                - strong [ref=e902]:
+                  - code [ref=e903]: tools
+                  - text: "(Optional):"
+                - text: "Provide a list of tools the agent can use. Each item in the list can be:"
+                - list [ref=e904]:
+                  - listitem [ref=e905]:
+                    - text: A native function or method (wrapped as a
+                    - code [ref=e906]: FunctionTool
+                    - text: ). Python ADK automatically wraps the native function into a
+                    - code [ref=e907]: FunctionTool
+                    - text: whereas, you must explicitly wrap your Java methods using
+                    - code [ref=e908]: FunctionTool.create(...)
+                  - listitem [ref=e909]:
+                    - text: An instance of a class inheriting from
+                    - code [ref=e910]: BaseTool
+                    - text: .
+                  - listitem [ref=e911]:
+                    - text: An instance of another agent (
+                    - code [ref=e912]: AgentTool
+                    - text: ", enabling agent-to-agent delegation - see"
+                    - link "Multi-Agents" [ref=e913] [cursor=pointer]:
+                      - /url: https://adk.dev/agents/multi-agents/
+                    - text: ).
+            - paragraph [ref=e914]:
+              - text: The LLM uses the function/tool names, descriptions (from docstrings or the
+              - code [ref=e915]: description
+              - text: field), and parameter schemas to decide which tool to call based on the conversation and its instructions.
+            - generic [ref=e916]:
+              - radio "Python" [checked]
+              - radio "Typescript"
+              - radio "Go"
+              - radio "Java"
+              - generic [ref=e917]:
+                - link "Python" [ref=e919] [cursor=pointer]:
+                  - /url: "#python_2"
+                - link "Typescript" [ref=e921] [cursor=pointer]:
+                  - /url: "#typescript_2"
+                - link "Go" [ref=e923] [cursor=pointer]:
+                  - /url: "#go_2"
+                - link "Java" [ref=e925] [cursor=pointer]:
+                  - /url: "#java_2"
+              - generic [ref=e929]:
+                - navigation [ref=e930]:
+                  - button "Toggle line selection" [ref=e931] [cursor=pointer]
+                  - button "Copy to clipboard" [ref=e932] [cursor=pointer]
+                - code [ref=e933]:
+                  - generic [ref=e934]: "# Define a tool function"
+                  - generic [ref=e935]: "def get_capital_city(country: str) -> str:"
+                  - generic [ref=e936]: "\"\"\"Retrieves the capital city for a given country.\"\"\""
+                  - generic [ref=e937]: "# Replace with actual logic (e.g., API call, database lookup)"
+                  - generic [ref=e938]: "capitals = {\"france\": \"Paris\", \"japan\": \"Tokyo\", \"canada\": \"Ottawa\"}"
+                  - generic [ref=e939]: "return capitals.get(country.lower(), f\"Sorry, I don't know the capital of {country}.\")"
+                  - generic [ref=e941]: "# Add the tool to the agent"
+                  - generic [ref=e942]: capital_agent = LlmAgent(
+                  - generic [ref=e943]: model="gemini-flash-latest",
+                  - generic [ref=e944]: name="capital_agent",
+                  - generic [ref=e945]: description="Answers user questions about the capital city of a given country.",
+                  - generic [ref=e946]: instruction="""You are an agent that provides the capital city of a country... (previous instruction text)""",
+                  - generic [ref=e947]: "tools=[get_capital_city] # Provide the function directly"
+                  - generic [ref=e948]: )
+              - button [ref=e949] [cursor=pointer]
+              - button [ref=e950] [cursor=pointer]
+            - paragraph [ref=e951]:
+              - text: Learn more about Tools in
+              - link "Custom Tools" [ref=e952] [cursor=pointer]:
+                - /url: https://adk.dev/tools-custom/
+              - text: .
+            - heading "Advanced Configuration & Control ¶" [level=2] [ref=e953]:
+              - text: Advanced Configuration & Control
+              - link "¶" [ref=e954] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#advanced-configuration-control
+            - paragraph [ref=e955]:
+              - text: Beyond the core parameters,
+              - code [ref=e956]: LlmAgent
+              - text: "offers several options for finer control:"
+            - heading "Fine-Tuning LLM Generation (generate_content_config) ¶" [level=3] [ref=e957]:
+              - text: Fine-Tuning LLM Generation (
+              - code [ref=e958]: generate_content_config
+              - text: )
+              - link "¶" [ref=e959] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#fine-tuning-llm-generation-generate_content_config
+            - paragraph [ref=e960]:
+              - text: You can adjust how the underlying LLM generates responses using
+              - code [ref=e961]: generate_content_config
+              - text: .
+            - list [ref=e962]:
+              - listitem [ref=e963]:
+                - strong [ref=e964]:
+                  - code [ref=e965]: generate_content_config
+                  - text: "(Optional):"
+                - text: Pass an instance of
+                - link "google.genai.types.GenerateContentConfig" [ref=e966] [cursor=pointer]:
+                  - /url: https://googleapis.github.io/python-genai/genai.html#genai.types.GenerateContentConfig
+                  - code [ref=e967]: google.genai.types.GenerateContentConfig
+                - text: to control parameters like
+                - code [ref=e968]: temperature
+                - text: (randomness),
+                - code [ref=e969]: max_output_tokens
+                - text: (response length),
+                - code [ref=e970]: top_p
+                - text: ","
+                - code [ref=e971]: top_k
+                - text: ", and safety settings."
+            - generic [ref=e972]:
+              - radio "Python" [checked]
+              - radio "Typescript"
+              - radio "Go"
+              - radio "Java"
+              - generic [ref=e973]:
+                - link "Python" [ref=e975] [cursor=pointer]:
+                  - /url: "#python_3"
+                - link "Typescript" [ref=e977] [cursor=pointer]:
+                  - /url: "#typescript_3"
+                - link "Go" [ref=e979] [cursor=pointer]:
+                  - /url: "#go_3"
+                - link "Java" [ref=e981] [cursor=pointer]:
+                  - /url: "#java_3"
+              - generic [ref=e985]:
+                - navigation [ref=e986]:
+                  - button "Toggle line selection" [ref=e987] [cursor=pointer]
+                  - button "Copy to clipboard" [ref=e988] [cursor=pointer]
+                - code [ref=e989]:
+                  - generic [ref=e990]: from google.genai import types
+                  - generic [ref=e992]: agent = LlmAgent(
+                  - generic [ref=e993]: "# ... other params"
+                  - generic [ref=e994]: generate_content_config=types.GenerateContentConfig(
+                  - generic [ref=e995]: "temperature=0.2, # More deterministic output"
+                  - generic [ref=e996]: max_output_tokens=250,
+                  - generic [ref=e997]: safety_settings=[
+                  - generic [ref=e998]: types.SafetySetting(
+                  - generic [ref=e999]: category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                  - generic [ref=e1000]: threshold=types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                  - generic [ref=e1001]: )
+                  - generic [ref=e1002]: "]"
+                  - generic [ref=e1003]: )
+                  - generic [ref=e1004]: )
+              - button [ref=e1005] [cursor=pointer]
+              - button [ref=e1006] [cursor=pointer]
+            - heading "Structuring Data (input_schema, output_schema, output_key) ¶" [level=3] [ref=e1007]:
+              - text: Structuring Data (
+              - code [ref=e1008]: input_schema
+              - text: ","
+              - code [ref=e1009]: output_schema
+              - text: ","
+              - code [ref=e1010]: output_key
+              - text: )
+              - link "¶" [ref=e1011] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#structuring-data-input_schema-output_schema-output_key
+            - paragraph [ref=e1012]:
+              - text: For scenarios requiring structured data exchange with an
+              - code [ref=e1013]: LLM Agent
+              - text: ", the ADK provides mechanisms to define expected input and desired output formats using schema definitions."
+            - list [ref=e1014]:
+              - listitem [ref=e1015]:
+                - paragraph [ref=e1016]:
+                  - strong [ref=e1017]:
+                    - code [ref=e1018]: input_schema
+                    - text: "(Optional):"
+                  - text: Define a schema representing the expected input structure. If set, the user message content passed to this agent
+                  - emphasis [ref=e1019]: must
+                  - text: be a JSON string conforming to this schema. Your instructions should guide the user or preceding agent accordingly.
+              - listitem [ref=e1020]:
+                - paragraph [ref=e1021]:
+                  - strong [ref=e1022]:
+                    - code [ref=e1023]: output_schema
+                    - text: "(Optional):"
+                  - text: Define a schema representing the desired output structure. If set, the agent's final response
+                  - emphasis [ref=e1024]: must
+                  - text: be a JSON string conforming to this schema.
+            - generic [ref=e1025]:
+              - paragraph [ref=e1026]:
+                - text: "Warning: Using"
+                - code [ref=e1027]: output_schema
+                - text: with
+                - code [ref=e1028]: tools
+              - paragraph [ref=e1029]:
+                - text: Using
+                - code [ref=e1030]: output_schema
+                - text: with
+                - code [ref=e1031]: tools
+                - text: in the same LLM request is only supported by specific models, including
+                - link "Gemini 3.0" [ref=e1032] [cursor=pointer]:
+                  - /url: https://ai.google.dev/gemini-api/docs/function-calling?example=meeting#structured-output
+                - text: . For other models, workarounds using
+                - link "function tools" [ref=e1033] [cursor=pointer]:
+                  - /url: https://github.com/google/adk-python/blob/main/src/google/adk/flows/llm_flows/_output_schema_processor.py
+                - text: ) in ADK may not work reliably. In such cases, consider using sub-agents that handle output formatting separately.
+            - list [ref=e1034]:
+              - listitem [ref=e1035]:
+                - strong [ref=e1036]:
+                  - code [ref=e1037]: output_key
+                  - text: "(Optional):"
+                - text: Provide a string key. If set, the text content of the agent's
+                - emphasis [ref=e1038]: final
+                - text: response will be automatically saved to the session's state dictionary under this key. This is useful for passing results between agents or steps in a workflow.
+                - list [ref=e1039]:
+                  - listitem [ref=e1040]:
+                    - text: "In Python, this might look like:"
+                    - code [ref=e1041]: session.state[output_key] = agent_response_text
+                  - listitem [ref=e1042]:
+                    - text: "In Java:"
+                    - code [ref=e1043]: session.state().put(outputKey, agentResponseText)
+                  - listitem [ref=e1044]:
+                    - text: "In Golang, within a callback handler:"
+                    - code [ref=e1045]: ctx.State().Set(output_key, agentResponseText)
+            - generic [ref=e1046]:
+              - radio "Python" [checked]
+              - radio "Typescript"
+              - radio "Go"
+              - radio "Java"
+              - generic [ref=e1047]:
+                - link "Python" [ref=e1049] [cursor=pointer]:
+                  - /url: "#python_4"
+                - link "Typescript" [ref=e1051] [cursor=pointer]:
+                  - /url: "#typescript_4"
+                - link "Go" [ref=e1053] [cursor=pointer]:
+                  - /url: "#go_4"
+                - link "Java" [ref=e1055] [cursor=pointer]:
+                  - /url: "#java_4"
+              - generic [ref=e1057]:
+                - paragraph [ref=e1058]:
+                  - text: The input and output schema is typically a
+                  - code [ref=e1059]: Pydantic
+                  - text: BaseModel.
+                - generic [ref=e1061]:
+                  - navigation [ref=e1062]:
+                    - button "Toggle line selection" [ref=e1063] [cursor=pointer]
+                    - button "Copy to clipboard" [ref=e1064] [cursor=pointer]
+                  - code [ref=e1065]:
+                    - generic [ref=e1066]: from pydantic import BaseModel, Field
+                    - generic [ref=e1068]: "class CapitalOutput(BaseModel):"
+                    - generic [ref=e1069]: "capital: str = Field(description=\"The capital of the country.\")"
+                    - generic [ref=e1071]: structured_capital_agent = LlmAgent(
+                    - generic [ref=e1072]: "# ... name, model, description"
+                    - generic [ref=e1073]: "instruction=\"\"\"You are a Capital Information Agent. Given a country, respond ONLY with a JSON object containing the capital. Format: {\"capital\": \"capital_name\"}\"\"\","
+                    - generic [ref=e1074]: "output_schema=CapitalOutput, # Enforce JSON output"
+                    - generic [ref=e1075]: "output_key=\"found_capital\" # Store result in state['found_capital']"
+                    - generic [ref=e1076]: "# Cannot use tools=[get_capital_city] effectively here"
+                    - generic [ref=e1077]: )
+              - button [ref=e1078] [cursor=pointer]
+              - button [ref=e1079] [cursor=pointer]
+            - heading "Managing Context (include_contents) ¶" [level=3] [ref=e1080]:
+              - text: Managing Context (
+              - code [ref=e1081]: include_contents
+              - text: )
+              - link "¶" [ref=e1082] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#managing-context-include_contents
+            - paragraph [ref=e1083]: Control whether the agent receives the prior conversation history.
+            - list [ref=e1084]:
+              - listitem [ref=e1085]:
+                - strong [ref=e1086]:
+                  - code [ref=e1087]: include_contents
+                  - text: "(Optional, Default:"
+                  - code [ref=e1088]: "'default'"
+                  - text: "):"
+                - text: Determines if the
+                - code [ref=e1089]: contents
+                - text: (history) are sent to the LLM.
+                - list [ref=e1090]:
+                  - listitem [ref=e1091]:
+                    - code [ref=e1092]: "'default'"
+                    - text: ": The agent receives the relevant conversation history."
+                  - listitem [ref=e1093]:
+                    - code [ref=e1094]: "'none'"
+                    - text: ": The agent receives no prior"
+                    - code [ref=e1095]: contents
+                    - text: . It operates based solely on its current instruction and any input provided in the
+                    - emphasis [ref=e1096]: current
+                    - text: turn (useful for stateless tasks or enforcing specific contexts).
+            - generic [ref=e1097]:
+              - radio "Python" [checked]
+              - radio "Typescript"
+              - radio "Go"
+              - radio "Java"
+              - generic [ref=e1098]:
+                - link "Python" [ref=e1100] [cursor=pointer]:
+                  - /url: "#python_5"
+                - link "Typescript" [ref=e1102] [cursor=pointer]:
+                  - /url: "#typescript_5"
+                - link "Go" [ref=e1104] [cursor=pointer]:
+                  - /url: "#go_5"
+                - link "Java" [ref=e1106] [cursor=pointer]:
+                  - /url: "#java_5"
+              - generic [ref=e1110]:
+                - navigation [ref=e1111]:
+                  - button "Toggle line selection" [ref=e1112] [cursor=pointer]
+                  - button "Copy to clipboard" [ref=e1113] [cursor=pointer]
+                - code [ref=e1114]:
+                  - generic [ref=e1115]: stateless_agent = LlmAgent(
+                  - generic [ref=e1116]: "# ... other params"
+                  - generic [ref=e1117]: include_contents='none'
+                  - generic [ref=e1118]: )
+              - button [ref=e1119] [cursor=pointer]
+              - button [ref=e1120] [cursor=pointer]
+            - heading "Planner ¶" [level=3] [ref=e1121]:
+              - text: Planner
+              - link "¶" [ref=e1122] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#planner
+            - generic [ref=e1123]:
+              - generic [ref=e1124]: Supported in ADK
+              - generic [ref=e1125]: Python v0.1.0
+            - paragraph [ref=e1126]:
+              - strong [ref=e1127]:
+                - code [ref=e1128]: planner
+                - text: "(Optional):"
+              - text: Assign a
+              - code [ref=e1129]: BasePlanner
+              - text: "instance to enable multi-step reasoning and planning before execution. There are two main planners:"
+            - list [ref=e1130]:
+              - listitem [ref=e1131]:
+                - paragraph [ref=e1132]:
+                  - strong [ref=e1133]:
+                    - code [ref=e1134]: BuiltInPlanner
+                    - text: ":"
+                  - text: Leverages the model's built-in planning capabilities (e.g., Gemini's thinking feature). See
+                  - link "Gemini Thinking" [ref=e1135] [cursor=pointer]:
+                    - /url: https://ai.google.dev/gemini-api/docs/thinking
+                  - text: for details and examples.
+                - paragraph [ref=e1136]:
+                  - text: Here, the
+                  - code [ref=e1137]: thinking_budget
+                  - text: parameter guides the model on the number of thinking tokens to use when generating a response. The
+                  - code [ref=e1138]: include_thoughts
+                  - text: parameter controls whether the model should include its raw thoughts and internal reasoning process in the response.
+                - generic [ref=e1140]:
+                  - navigation [ref=e1141]:
+                    - button "Toggle line selection" [ref=e1142] [cursor=pointer]
+                    - button "Copy to clipboard" [ref=e1143] [cursor=pointer]
+                  - code [ref=e1144]:
+                    - generic [ref=e1145]: from google.adk import Agent
+                    - generic [ref=e1146]: from google.adk.planners import BuiltInPlanner
+                    - generic [ref=e1147]: from google.genai import types
+                    - generic [ref=e1149]: my_agent = Agent(
+                    - generic [ref=e1150]: model="gemini-flash-latest",
+                    - generic [ref=e1151]: planner=BuiltInPlanner(
+                    - generic [ref=e1152]: thinking_config=types.ThinkingConfig(
+                    - generic [ref=e1153]: include_thoughts=True,
+                    - generic [ref=e1154]: thinking_budget=1024,
+                    - generic [ref=e1155]: )
+                    - generic [ref=e1156]: ),
+                    - generic [ref=e1157]: "# ... your tools here"
+                    - generic [ref=e1158]: )
+              - listitem [ref=e1159]:
+                - paragraph [ref=e1160]:
+                  - strong [ref=e1161]:
+                    - code [ref=e1162]: PlanReActPlanner
+                    - text: ":"
+                  - text: "This planner instructs the model to follow a specific structure in its output: first create a plan, then execute actions (like calling tools), and provide reasoning for its steps."
+                  - emphasis [ref=e1163]: It's particularly useful for models that don't have a built-in "thinking" feature
+                  - text: .
+                - generic [ref=e1165]:
+                  - navigation [ref=e1166]:
+                    - button "Toggle line selection" [ref=e1167] [cursor=pointer]
+                    - button "Copy to clipboard" [ref=e1168] [cursor=pointer]
+                  - code [ref=e1169]:
+                    - generic [ref=e1170]: from google.adk import Agent
+                    - generic [ref=e1171]: from google.adk.planners import PlanReActPlanner
+                    - generic [ref=e1173]: my_agent = Agent(
+                    - generic [ref=e1174]: model="gemini-flash-latest",
+                    - generic [ref=e1175]: planner=PlanReActPlanner(),
+                    - generic [ref=e1176]: "# ... your tools here"
+                    - generic [ref=e1177]: )
+                - paragraph [ref=e1178]: "The agent's response will follow a structured format:"
+                - generic [ref=e1180]:
+                  - navigation [ref=e1181]:
+                    - button "Toggle line selection" [ref=e1182] [cursor=pointer]
+                    - button "Copy to clipboard" [ref=e1183] [cursor=pointer]
+                  - code [ref=e1184]:
+                    - generic [ref=e1185]: "[user]: ai news"
+                    - generic [ref=e1186]: "[google_search_agent]: /*PLANNING*/"
+                    - generic [ref=e1187]: 1. Perform a Google search for "latest AI news" to get current updates and headlines related to artificial intelligence.
+                    - generic [ref=e1188]: 2. Synthesize the information from the search results to provide a summary of recent AI news.
+                    - generic [ref=e1190]: /*ACTION*/
+                    - generic [ref=e1191]: /*REASONING*/
+                    - generic [ref=e1192]: The search results provide a comprehensive overview of recent AI news, covering various aspects like company developments, research breakthroughs, and applications. I have enough information to answer the user's request.
+                    - generic [ref=e1194]: /*FINAL_ANSWER*/
+                    - generic [ref=e1195]: "Here's a summary of recent AI news:"
+                    - generic [ref=e1196]: ....
+            - paragraph [ref=e1197]: "Example for using built-in-planner:"
+            - generic [ref=e1199]:
+              - navigation [ref=e1200]:
+                - button "Toggle line selection" [ref=e1201] [cursor=pointer]
+                - button "Copy to clipboard" [ref=e1202] [cursor=pointer]
+              - code [ref=e1203]:
+                - generic [ref=e1204]: from dotenv import load_dotenv
+                - generic [ref=e1207]: import asyncio
+                - generic [ref=e1208]: import os
+                - generic [ref=e1210]: from google.genai import types
+                - generic [ref=e1211]: from google.adk.agents.llm_agent import LlmAgent
+                - generic [ref=e1212]: from google.adk.runners import Runner
+                - generic [ref=e1213]: from google.adk.sessions import InMemorySessionService
+                - generic [ref=e1214]: "from google.adk.artifacts.in_memory_artifact_service import InMemoryArtifactService # Optional"
+                - generic [ref=e1215]: from google.adk.planners import BasePlanner, BuiltInPlanner, PlanReActPlanner
+                - generic [ref=e1216]: from google.adk.models import LlmRequest
+                - generic [ref=e1218]: from google.genai.types import ThinkingConfig
+                - generic [ref=e1219]: from google.genai.types import GenerateContentConfig
+                - generic [ref=e1221]: import datetime
+                - generic [ref=e1222]: from zoneinfo import ZoneInfo
+                - generic [ref=e1224]: APP_NAME = "weather_app"
+                - generic [ref=e1225]: USER_ID = "1234"
+                - generic [ref=e1226]: SESSION_ID = "session1234"
+                - generic [ref=e1228]: "def get_weather(city: str) -> dict:"
+                - generic [ref=e1229]: "\"\"\"Retrieves the current weather report for a specified city."
+                - generic [ref=e1231]: "Args:"
+                - generic [ref=e1232]: "city (str): The name of the city for which to retrieve the weather report."
+                - generic [ref=e1234]: "Returns:"
+                - generic [ref=e1235]: "dict: status and result or error msg."
+                - generic [ref=e1236]: "\"\"\""
+                - generic [ref=e1237]: "if city.lower() == \"new york\":"
+                - generic [ref=e1238]: "return {"
+                - generic [ref=e1239]: "\"status\": \"success\","
+                - generic [ref=e1240]: "\"report\": ("
+                - generic [ref=e1241]: "\"The weather in New York is sunny with a temperature of 25 degrees\""
+                - generic [ref=e1242]: "\" Celsius (77 degrees Fahrenheit).\""
+                - generic [ref=e1243]: ),
+                - generic [ref=e1244]: "}"
+                - generic [ref=e1245]: "else:"
+                - generic [ref=e1246]: "return {"
+                - generic [ref=e1247]: "\"status\": \"error\","
+                - generic [ref=e1248]: "\"error_message\": f\"Weather information for '{city}' is not available.\","
+                - generic [ref=e1249]: "}"
+                - generic [ref=e1252]: "def get_current_time(city: str) -> dict:"
+                - generic [ref=e1253]: "\"\"\"Returns the current time in a specified city."
+                - generic [ref=e1255]: "Args:"
+                - generic [ref=e1256]: "city (str): The name of the city for which to retrieve the current time."
+                - generic [ref=e1258]: "Returns:"
+                - generic [ref=e1259]: "dict: status and result or error msg."
+                - generic [ref=e1260]: "\"\"\""
+                - generic [ref=e1262]: "if city.lower() == \"new york\":"
+                - generic [ref=e1263]: tz_identifier = "America/New_York"
+                - generic [ref=e1264]: "else:"
+                - generic [ref=e1265]: "return {"
+                - generic [ref=e1266]: "\"status\": \"error\","
+                - generic [ref=e1267]: "\"error_message\": ("
+                - generic [ref=e1268]: "f\"Sorry, I don't have timezone information for {city}.\""
+                - generic [ref=e1269]: ),
+                - generic [ref=e1270]: "}"
+                - generic [ref=e1272]: tz = ZoneInfo(tz_identifier)
+                - generic [ref=e1273]: now = datetime.datetime.now(tz)
+                - generic [ref=e1274]: report = (
+                - generic [ref=e1275]: "f'The current time in {city} is {now.strftime(\"%Y-%m-%d %H:%M:%S %Z%z\")}'"
+                - generic [ref=e1276]: )
+                - generic [ref=e1277]: "return {\"status\": \"success\", \"report\": report}"
+                - generic [ref=e1279]: "# Step 1: Create a ThinkingConfig"
+                - generic [ref=e1280]: thinking_config = ThinkingConfig(
+                - generic [ref=e1281]: "include_thoughts=True, # Ask the model to include its thoughts in the response"
+                - generic [ref=e1282]: "thinking_budget=256 # Limit the 'thinking' to 256 tokens (adjust as needed)"
+                - generic [ref=e1283]: )
+                - generic [ref=e1284]: print("ThinkingConfig:", thinking_config)
+                - generic [ref=e1286]: "# Step 2: Instantiate BuiltInPlanner"
+                - generic [ref=e1287]: planner = BuiltInPlanner(
+                - generic [ref=e1288]: thinking_config=thinking_config
+                - generic [ref=e1289]: )
+                - generic [ref=e1290]: print("BuiltInPlanner created.")
+                - generic [ref=e1292]: "# Step 3: Wrap the planner in an LlmAgent"
+                - generic [ref=e1293]: agent = LlmAgent(
+                - generic [ref=e1294]: "model=\"gemini-2.5-pro-preview-03-25\", # Set your model name"
+                - generic [ref=e1295]: name="weather_and_time_agent",
+                - generic [ref=e1296]: instruction="You are an agent that returns time and weather",
+                - generic [ref=e1297]: planner=planner,
+                - generic [ref=e1298]: tools=[get_weather, get_current_time]
+                - generic [ref=e1299]: )
+                - generic [ref=e1301]: "# Session and Runner"
+                - generic [ref=e1302]: session_service = InMemorySessionService()
+                - generic [ref=e1303]: session = session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID)
+                - generic [ref=e1304]: runner = Runner(agent=agent, app_name=APP_NAME, session_service=session_service)
+                - generic [ref=e1306]: "# Agent Interaction"
+                - generic [ref=e1307]: "def call_agent(query):"
+                - generic [ref=e1308]: content = types.Content(role='user', parts=[types.Part(text=query)])
+                - generic [ref=e1309]: events = runner.run(user_id=USER_ID, session_id=SESSION_ID, new_message=content)
+                - generic [ref=e1311]: "for event in events:"
+                - generic [ref=e1312]: "print(f\"\\nDEBUG EVENT: {event}\\n\")"
+                - generic [ref=e1313]: "if event.is_final_response() and event.content:"
+                - generic [ref=e1314]: final_answer = event.content.parts[0].text.strip()
+                - generic [ref=e1315]: print("\n🟢 FINAL ANSWER\n", final_answer, "\n")
+                - generic [ref=e1317]: call_agent("If it's raining in New York right now, what is the current temperature?")
+            - heading "Code Execution ¶" [level=3] [ref=e1318]:
+              - text: Code Execution
+              - link "¶" [ref=e1319] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#code-execution
+            - generic [ref=e1320]:
+              - generic [ref=e1321]: Supported in ADK
+              - generic [ref=e1322]: Python v0.1.0
+              - generic [ref=e1323]: Java v0.1.0
+            - list [ref=e1324]:
+              - listitem [ref=e1325]:
+                - strong [ref=e1326]:
+                  - code [ref=e1327]: code_executor
+                  - text: "(Optional):"
+                - text: Provide a
+                - code [ref=e1328]: BaseCodeExecutor
+                - text: instance to allow the agent to execute code blocks found in the LLM's response. For more information, see
+                - link "Code Execution with Gemini API" [ref=e1329] [cursor=pointer]:
+                  - /url: https://adk.dev/integrations/code-execution/
+                - text: .
+            - generic [ref=e1330]:
+              - radio "Python" [checked]
+              - radio "Java"
+              - generic [ref=e1331]:
+                - link "Python" [ref=e1333] [cursor=pointer]:
+                  - /url: "#python_6"
+                - link "Java" [ref=e1335] [cursor=pointer]:
+                  - /url: "#java_6"
+              - generic [ref=e1339]:
+                - navigation [ref=e1340]:
+                  - button "Toggle line selection" [ref=e1341] [cursor=pointer]
+                  - button "Copy to clipboard" [ref=e1342] [cursor=pointer]
+                - code [ref=e1343]:
+                  - generic [ref=e1344]: "# Copyright 2025 Google LLC"
+                  - generic [ref=e1345]: "#"
+                  - generic [ref=e1346]: "# Licensed under the Apache License, Version 2.0 (the \"License\");"
+                  - generic [ref=e1347]: "# you may not use this file except in compliance with the License."
+                  - generic [ref=e1348]: "# You may obtain a copy of the License at"
+                  - generic [ref=e1349]: "#"
+                  - generic [ref=e1350]: "# http://www.apache.org/licenses/LICENSE-2.0"
+                  - generic [ref=e1351]: "#"
+                  - generic [ref=e1352]: "# Unless required by applicable law or agreed to in writing, software"
+                  - generic [ref=e1353]: "# distributed under the License is distributed on an \"AS IS\" BASIS,"
+                  - generic [ref=e1354]: "# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied."
+                  - generic [ref=e1355]: "# See the License for the specific language governing permissions and"
+                  - generic [ref=e1356]: "# limitations under the License."
+                  - generic [ref=e1358]: import asyncio
+                  - generic [ref=e1359]: from google.adk.agents import LlmAgent
+                  - generic [ref=e1360]: from google.adk.runners import Runner
+                  - generic [ref=e1361]: from google.adk.sessions import InMemorySessionService
+                  - generic [ref=e1362]: from google.adk.code_executors import BuiltInCodeExecutor
+                  - generic [ref=e1363]: from google.genai import types
+                  - generic [ref=e1365]: AGENT_NAME = "calculator_agent"
+                  - generic [ref=e1366]: APP_NAME = "calculator"
+                  - generic [ref=e1367]: USER_ID = "user1234"
+                  - generic [ref=e1368]: SESSION_ID = "session_code_exec_async"
+                  - generic [ref=e1369]: GEMINI_MODEL = "gemini-2.0-flash"
+                  - generic [ref=e1371]: "# Agent Definition"
+                  - generic [ref=e1372]: code_agent = LlmAgent(
+                  - generic [ref=e1373]: name=AGENT_NAME,
+                  - generic [ref=e1374]: model=GEMINI_MODEL,
+                  - generic [ref=e1375]: code_executor=BuiltInCodeExecutor(),
+                  - generic [ref=e1376]: instruction="""You are a calculator agent.
+                  - generic [ref=e1377]: When given a mathematical expression, write and execute Python code to calculate the result.
+                  - generic [ref=e1378]: Return only the final numerical result as plain text, without markdown or code blocks.
+                  - generic [ref=e1379]: "\"\"\","
+                  - generic [ref=e1380]: description="Executes Python code to perform calculations.",
+                  - generic [ref=e1381]: )
+                  - generic [ref=e1383]: "# Session and Runner"
+                  - generic [ref=e1384]: session_service = InMemorySessionService()
+                  - generic [ref=e1385]: session = asyncio.run(session_service.create_session(
+                  - generic [ref=e1386]: app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
+                  - generic [ref=e1387]: ))
+                  - generic [ref=e1388]: runner = Runner(agent=code_agent, app_name=APP_NAME,
+                  - generic [ref=e1389]: session_service=session_service)
+                  - generic [ref=e1391]: "# Agent Interaction (Async)"
+                  - generic [ref=e1392]: "async def call_agent_async(query):"
+                  - generic [ref=e1393]: content = types.Content(role="user", parts=[types.Part(text=query)])
+                  - generic [ref=e1394]: "print(f\"\\n--- Running Query: {query} ---\")"
+                  - generic [ref=e1395]: final_response_text = "No final text response captured."
+                  - generic [ref=e1396]: "try:"
+                  - generic [ref=e1397]: "# Use run_async"
+                  - generic [ref=e1398]: async for event in runner.run_async(
+                  - generic [ref=e1399]: user_id=USER_ID, session_id=SESSION_ID, new_message=content
+                  - generic [ref=e1400]: "):"
+                  - generic [ref=e1401]: "print(f\"Event ID: {event.id}, Author: {event.author}\")"
+                  - generic [ref=e1403]: "# --- Check for specific parts FIRST ---"
+                  - generic [ref=e1404]: has_specific_part = False
+                  - generic [ref=e1405]: "if event.content and event.content.parts:"
+                  - generic [ref=e1406]: "for part in event.content.parts: # Iterate through all parts"
+                  - generic [ref=e1407]: "if part.executable_code:"
+                  - generic [ref=e1408]: "# Access the actual code string via .code"
+                  - generic [ref=e1409]: print(
+                  - generic [ref=e1410]: "f\" Debug: Agent generated code:\\n```python\\n{part.executable_code.code}\\n```\""
+                  - generic [ref=e1411]: )
+                  - generic [ref=e1412]: has_specific_part = True
+                  - generic [ref=e1413]: "elif part.code_execution_result:"
+                  - generic [ref=e1414]: "# Access outcome and output correctly"
+                  - generic [ref=e1415]: print(
+                  - generic [ref=e1416]: "f\" Debug: Code Execution Result: {part.code_execution_result.outcome} - Output:\\n{part.code_execution_result.output}\""
+                  - generic [ref=e1417]: )
+                  - generic [ref=e1418]: has_specific_part = True
+                  - generic [ref=e1419]: "# Also print any text parts found in any event for debugging"
+                  - generic [ref=e1420]: "elif part.text and not part.text.isspace():"
+                  - generic [ref=e1421]: "print(f\" Text: '{part.text.strip()}'\")"
+                  - generic [ref=e1422]: "# Do not set has_specific_part=True here, as we want the final response logic below"
+                  - generic [ref=e1424]: "# --- Check for final response AFTER specific parts ---"
+                  - generic [ref=e1425]: "# Only consider it final if it doesn't have the specific code parts we just handled"
+                  - generic [ref=e1426]: "if not has_specific_part and event.is_final_response():"
+                  - generic [ref=e1427]: if (
+                  - generic [ref=e1428]: event.content
+                  - generic [ref=e1429]: and event.content.parts
+                  - generic [ref=e1430]: and event.content.parts[0].text
+                  - generic [ref=e1431]: "):"
+                  - generic [ref=e1432]: final_response_text = event.content.parts[0].text.strip()
+                  - generic [ref=e1433]: "print(f\"==> Final Agent Response: {final_response_text}\")"
+                  - generic [ref=e1434]: "else:"
+                  - generic [ref=e1435]: print(
+                  - generic [ref=e1436]: "\"==> Final Agent Response: [No text content in final event]\")"
+                  - generic [ref=e1438]: "except Exception as e:"
+                  - generic [ref=e1439]: "print(f\"ERROR during agent run: {e}\")"
+                  - generic [ref=e1440]: print("-" * 30)
+                  - generic [ref=e1443]: "# Main async function to run the examples"
+                  - generic [ref=e1444]: "async def main():"
+                  - generic [ref=e1445]: await call_agent_async("Calculate the value of (5 + 7) * 3")
+                  - generic [ref=e1446]: await call_agent_async("What is 10 factorial?")
+                  - generic [ref=e1449]: "# Execute the main async function"
+                  - generic [ref=e1450]: "try:"
+                  - generic [ref=e1451]: asyncio.run(main())
+                  - generic [ref=e1452]: "except RuntimeError as e:"
+                  - generic [ref=e1453]: "# Handle specific error when running asyncio.run in an already running loop (like Jupyter/Colab)"
+                  - generic [ref=e1454]: "if \"cannot be called from a running event loop\" in str(e):"
+                  - generic [ref=e1455]: print("\nRunning in an existing event loop (like Colab/Jupyter).")
+                  - generic [ref=e1456]: "print(\"Please run `await main()` in a notebook cell instead.\")"
+                  - generic [ref=e1457]: "# If in an interactive environment like a notebook, you might need to run:"
+                  - generic [ref=e1458]: "# await main()"
+                  - generic [ref=e1459]: "else:"
+                  - generic [ref=e1460]: "raise e # Re-raise other runtime errors"
+              - button [ref=e1461] [cursor=pointer]
+              - button [ref=e1462] [cursor=pointer]
+            - 'heading "Putting It Together: Example ¶" [level=2] [ref=e1463]':
+              - text: "Putting It Together: Example"
+              - link "¶" [ref=e1464] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#putting-it-together-example
+            - group [ref=e1465]:
+              - generic "Code" [ref=e1466] [cursor=pointer]
+            - paragraph [ref=e1467]:
+              - emphasis [ref=e1468]: (This example demonstrates the core concepts. More complex agents might incorporate schemas, context control, planning, etc.)
+            - heading "Related Concepts (Deferred Topics) ¶" [level=2] [ref=e1469]:
+              - text: Related Concepts (Deferred Topics)
+              - link "¶" [ref=e1470] [cursor=pointer]:
+                - /url: https://adk.dev/agents/llm-agents/#related-concepts-deferred-topics
+            - paragraph [ref=e1471]:
+              - text: While this page covers the core configuration of
+              - code [ref=e1472]: LlmAgent
+              - text: ", several related concepts provide more advanced control and are detailed elsewhere:"
+            - list [ref=e1473]:
+              - listitem [ref=e1474]:
+                - strong [ref=e1475]: "Callbacks:"
+                - text: Intercepting execution points (before/after model calls, before/after tool calls) using
+                - code [ref=e1476]: before_model_callback
+                - text: ","
+                - code [ref=e1477]: after_model_callback
+                - text: ", etc. See"
+                - link "Callbacks" [ref=e1478] [cursor=pointer]:
+                  - /url: https://adk.dev/callbacks/types-of-callbacks/
+                - text: .
+              - listitem [ref=e1479]:
+                - strong [ref=e1480]: "Multi-Agent Control:"
+                - text: Advanced strategies for agent interaction, including planning (
+                - code [ref=e1481]: planner
+                - text: ), controlling agent transfer (
+                - code [ref=e1482]: disallow_transfer_to_parent
+                - text: ","
+                - code [ref=e1483]: disallow_transfer_to_peers
+                - text: ), and system-wide instructions (
+                - code [ref=e1484]: global_instruction
+                - text: ). See
+                - link "Multi-Agents" [ref=e1485] [cursor=pointer]:
+                  - /url: https://adk.dev/agents/multi-agents/
+                - text: .
+      - button "Back to top":
+        - img
+        - text: Back to top
+    - contentinfo [ref=e1486]:
+      - navigation "Footer" [ref=e1487]:
+        - 'link "Previous: Agents" [ref=e1488] [cursor=pointer]':
+          - /url: https://adk.dev/agents/
+          - img [ref=e1490]
+          - generic [ref=e1492]:
+            - text: Previous
+            - generic [ref=e1493]: Agents
+        - 'link "Next: Workflow Agents" [ref=e1494] [cursor=pointer]':
+          - /url: https://adk.dev/agents/workflow-agents/
+          - generic [ref=e1495]:
+            - text: Next
+            - generic [ref=e1496]: Workflow Agents
+          - img [ref=e1498]
+      - generic [ref=e1502]:
+        - generic [ref=e1503]:
+          - text: Copyright Google 2026 |
+          - link "License" [ref=e1504] [cursor=pointer]:
+            - /url: //github.com/google/adk-docs/blob/main/LICENSE
+          - text: "|"
+          - link "Privacy" [ref=e1505] [cursor=pointer]:
+            - /url: //policies.google.com/privacy
+          - text: "|"
+          - link "Manage cookies" [ref=e1506] [cursor=pointer]:
+            - /url: https://adk.dev/agents/llm-agents/#__consent
+        - text: Made with
+        - link "Material for MkDocs" [ref=e1507] [cursor=pointer]:
+          - /url: https://squidfunk.github.io/mkdocs-material/
+  - progressbar
+  - complementary [ref=e1509]:
+    - generic [ref=e1510]:
+      - heading "Cookie consent" [level=4] [ref=e1511]
+      - paragraph [ref=e1512]: We use cookies to recognize repeated visits and preferences, as well as to measure the effectiveness of our documentation and whether users find the information they need. With your consent, you're helping us to make our documentation better.
+      - generic [ref=e1513]:
+        - button "Accept" [ref=e1514] [cursor=pointer]
+        - text: Manage settings

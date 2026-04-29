@@ -3,9 +3,14 @@ import { db } from '@/db'
 import { sessions } from '@/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
+import VoiceLearningSession from '@/components/session/VoiceLearningSession'
 
 const LANG_LABELS: Record<string, string> = {
   te: 'Telugu', hi: 'Hindi', ta: 'Tamil', kn: 'Kannada', mr: 'Marathi',
+}
+const AGENT_LABELS: Record<string, string> = {
+  te: 'Telugu AI Tutor', hi: 'Hindi AI Tutor', ta: 'Tamil AI Tutor',
+  kn: 'Kannada AI Tutor', mr: 'Marathi AI Tutor',
 }
 const JOB_LABELS: Record<string, string> = {
   driver: '🚗 Driver', plumber: '🔧 Plumber', construction: '🏗️ Construction',
@@ -32,53 +37,60 @@ export default async function SessionPage({ params }: { params: Promise<{ sessio
   if (!session) notFound()
 
   const lang = LANG_LABELS[session.nativeLanguage] ?? session.nativeLanguage
+  const agentLabel = AGENT_LABELS[session.nativeLanguage] ?? `${lang} AI Tutor`
   const job = JOB_LABELS[session.jobType] ?? session.jobType
   const dest = COUNTRY_LABELS[session.country] ?? { label: session.country, flag: '🌍', lang: 'the local language' }
 
   return (
-    <div style={{ maxWidth: 720, margin: '60px auto', padding: '0 24px', textAlign: 'center' }}>
-      <div style={{ fontSize: 64, marginBottom: 16 }}>🎓</div>
-      <h1 style={{ fontFamily: 'var(--font-playfair)', fontSize: 'clamp(1.5rem,3vw,2rem)', color: '#1C2B1A', marginBottom: 8 }}>
-        Your Learning Session is Ready!
-      </h1>
-      <p style={{ color: '#5A4A2A', fontSize: 15, marginBottom: 32 }}>
-        Sethu has handed you over to your <strong style={{ color: '#D97706' }}>{dest.lang}</strong> language expert.
-      </p>
+    <div style={{ maxWidth: 760, margin: '0 auto', padding: '40px 24px 60px' }}>
+      {/* Header */}
+      <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <div style={{ fontSize: 56, marginBottom: 12 }}>🎓</div>
+        <h1 style={{ fontFamily: 'var(--font-playfair)', fontSize: 'clamp(1.4rem,3vw,1.9rem)', color: '#1C2B1A', margin: '0 0 8px' }}>
+          Your {dest.lang} Learning Session
+        </h1>
+        <p style={{ color: '#78450F', fontSize: 14, margin: 0, fontWeight: 500 }}>
+          {agentLabel} will teach you job-specific {dest.lang} — all by voice
+        </p>
+      </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap', marginBottom: 40 }}>
+      {/* Session context chips */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 32 }}>
         <InfoChip icon="🗣️" label="Language" value={lang} color="#D97706" />
         <InfoChip icon="💼" label="Job" value={job} color="#059669" />
         <InfoChip icon={dest.flag} label="Destination" value={dest.label} color="#EA580C" />
         <InfoChip icon="📚" label="Learning" value={dest.lang} color="#7C3AED" />
       </div>
 
-      <div style={{ background: '#fff', borderRadius: 20, border: '1px solid rgba(217,119,6,0.18)', padding: '32px 24px', boxShadow: '0 4px 32px rgba(217,119,6,0.08)' }}>
-        <div style={{ fontSize: 40, marginBottom: 12 }}>🚧</div>
-        <div style={{ fontWeight: 700, fontSize: 16, color: '#1C2B1A', marginBottom: 8 }}>
-          AI Tutor Coming Soon
-        </div>
-        <div style={{ fontSize: 14, color: '#5A4A2A', lineHeight: 1.7 }}>
-          Your personalised <strong>{dest.lang}</strong> learning session for <strong>{job.replace(/^.*? /, '')}</strong> workers heading to <strong>{dest.label}</strong> is being built.
-          <br />The multi-agent AI tutor will start your voice lesson here very soon.
-        </div>
-      </div>
+      {/* Voice learning session */}
+      <VoiceLearningSession
+        sessionId={sessionId}
+        nativeLanguage={session.nativeLanguage}
+        jobType={session.jobType}
+        country={session.country}
+        targetLang={dest.lang}
+        agentLabel={agentLabel}
+      />
 
-      <a
-        href="/dashboard"
-        style={{ display: 'inline-block', marginTop: 28, padding: '11px 28px', borderRadius: 24, background: '#D97706', color: '#fff', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}
-      >
-        ← Back to Dashboard
-      </a>
+      {/* Back link */}
+      <div style={{ textAlign: 'center', marginTop: 24 }}>
+        <a
+          href="/dashboard"
+          style={{ fontSize: 13, color: '#D97706', fontWeight: 600, textDecoration: 'none' }}
+        >
+          ← Back to Dashboard
+        </a>
+      </div>
     </div>
   )
 }
 
 function InfoChip({ icon, label, value, color }: { icon: string; label: string; value: string; color: string }) {
   return (
-    <div style={{ background: '#fff', border: `1.5px solid ${color}30`, borderRadius: 14, padding: '12px 18px', minWidth: 120, boxShadow: `0 2px 12px ${color}10` }}>
-      <div style={{ fontSize: 22, marginBottom: 4 }}>{icon}</div>
-      <div style={{ fontSize: 11, color: '#5A4A2A', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>{label}</div>
-      <div style={{ fontSize: 14, fontWeight: 700, color, marginTop: 2 }}>{value}</div>
+    <div style={{ background: '#fff', border: `1.5px solid ${color}30`, borderRadius: 14, padding: '10px 16px', minWidth: 110, boxShadow: `0 2px 12px ${color}10`, textAlign: 'center' }}>
+      <div style={{ fontSize: 20, marginBottom: 3 }}>{icon}</div>
+      <div style={{ fontSize: 10, color: '#5A4A2A', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>{label}</div>
+      <div style={{ fontSize: 13, fontWeight: 700, color, marginTop: 2 }}>{value}</div>
     </div>
   )
 }
