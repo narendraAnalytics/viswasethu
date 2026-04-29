@@ -30,7 +30,7 @@ export default function Navbar() {
       }}
     >
       {/* Logo */}
-      <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginRight: 32 }}>
+      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginRight: 32 }}>
         <div
           style={{
             width: 36,

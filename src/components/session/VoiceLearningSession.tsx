@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { GoogleGenAI, Modality } from '@google/genai'
 import { AudioQueue, b64ToAudioBuffer } from '@/lib/audioQueue'
+import SessionWrapUp from './SessionWrapUp'
+import type { SessionReport } from '@/agents/sessionReport/reportAgent'
 
 interface Props {
   sessionId: string
@@ -10,21 +12,27 @@ interface Props {
   jobType: string
   country: string
   targetLang: string
-  agentLabel: string  // e.g. "Telugu AI Tutor"
+  agentLabel: string
 }
+
+type Phase = 'idle' | 'connecting' | 'active' | 'error' | 'completing' | 'wrapup'
 
 export default function VoiceLearningSession({
   sessionId, nativeLanguage, jobType, country, targetLang, agentLabel,
 }: Props) {
-  const [phase, setPhase] = useState<'idle' | 'connecting' | 'active' | 'error'>('idle')
+  const [phase, setPhase] = useState<Phase>('idle')
   const [statusText, setStatusText] = useState('')
   const [aiSpeaking, setAiSpeaking] = useState(false)
+  const [report, setReport] = useState<SessionReport | null>(null)
+  const [wrapUpSystemPrompt, setWrapUpSystemPrompt] = useState('')
+  const [wrapUpCtxs, setWrapUpCtxs] = useState<{ input: AudioContext; output: AudioContext } | null>(null)
 
   const audioCtxsRef = useRef<{ input: AudioContext; output: AudioContext } | null>(null)
   const sessionRef = useRef<unknown>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const audioQueueRef = useRef<AudioQueue | null>(null)
   const aiBufferRef = useRef('')
+  const transcriptRef = useRef<string[]>([])
   const intentionalCloseRef = useRef(false)
   const startedRef = useRef(false)
 
@@ -46,8 +54,8 @@ export default function VoiceLearningSession({
   async function startSession() {
     if (startedRef.current) return
     startedRef.current = true
+    transcriptRef.current = []
 
-    // AudioContext MUST be created inside onClick — Chrome requires it
     audioCtxsRef.current = {
       input: new AudioContext({ sampleRate: 16000 }),
       output: new AudioContext({ sampleRate: 24000 }),
@@ -61,7 +69,6 @@ export default function VoiceLearningSession({
       await audioCtxsRef.current.output.resume()
       audioQueueRef.current = new AudioQueue(audioCtxsRef.current.output)
 
-      // Fetch token + NativeLingo system prompt
       const [tokenRes, agentRes] = await Promise.all([
         fetch('/api/token', { method: 'POST' }),
         fetch('/api/agents', {
@@ -123,6 +130,10 @@ export default function VoiceLearningSession({
             }
 
             if (sc?.turnComplete) {
+              // Accumulate AI turn into persistent transcript
+              if (aiBufferRef.current.trim()) {
+                transcriptRef.current.push(aiBufferRef.current.trim())
+              }
               aiBufferRef.current = ''
               setAiSpeaking(false)
             }
@@ -143,7 +154,7 @@ export default function VoiceLearningSession({
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
-            voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Aoede' } }, // female voice for tutor
+            voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Aoede' } },
           },
           systemInstruction: { parts: [{ text: systemPrompt }] },
           inputAudioTranscription: {},
@@ -156,7 +167,6 @@ export default function VoiceLearningSession({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;(liveSession as any).sendRealtimeInput?.({ text: 'begin' })
 
-      // Wire mic
       const outputCtx = audioCtxsRef.current.output
       await audioCtxsRef.current.input.audioWorklet.addModule('/worklets/capture-processor.js')
       const worklet = new AudioWorkletNode(audioCtxsRef.current.input, 'capture-processor')
@@ -177,8 +187,7 @@ export default function VoiceLearningSession({
         })
       }
 
-      void outputCtx // keep reference alive
-
+      void outputCtx
     } catch (err) {
       console.error(err)
       setPhase('error')
@@ -187,15 +196,61 @@ export default function VoiceLearningSession({
     }
   }
 
-  function stopSession() {
+  async function stopSession() {
+    // Create new AudioContexts for wrap-up BEFORE any await — must be in user gesture
+    const newCtxs = {
+      input: new AudioContext({ sampleRate: 16000 }),
+      output: new AudioContext({ sampleRate: 24000 }),
+    }
+
     cleanup()
-    setPhase('idle')
-    setStatusText('')
     setAiSpeaking(false)
-    aiBufferRef.current = ''
+    setStatusText('')
+    setPhase('completing')
+
+    try {
+      const transcript = transcriptRef.current.join(' ')
+      const res = await fetch(`/api/session/${sessionId}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript }),
+      })
+      const data = await res.json() as { report: SessionReport; wrapUpSystemPrompt: string }
+      setReport(data.report)
+      setWrapUpSystemPrompt(data.wrapUpSystemPrompt ?? '')
+      setWrapUpCtxs(newCtxs)
+      setPhase('wrapup')
+    } catch (err) {
+      console.error('complete session error', err)
+      // Fallback: still show wrapup with a minimal report
+      setReport({
+        fluencyPoints: 50,
+        vocabularyLearned: [],
+        stuckWords: [],
+        readinessLevel: 'beginner',
+        summary: 'Session completed. Well done for practicing today!',
+      })
+      setWrapUpCtxs(newCtxs)
+      setPhase('wrapup')
+    }
   }
 
   const isActive = phase === 'connecting' || phase === 'active'
+
+  // Wrap-up phase — hand off to SessionWrapUp
+  if (phase === 'wrapup' && report && wrapUpCtxs) {
+    return (
+      <SessionWrapUp
+        nativeLanguage={nativeLanguage}
+        jobType={jobType}
+        country={country}
+        report={report}
+        systemPrompt={wrapUpSystemPrompt}
+        inputCtx={wrapUpCtxs.input}
+        outputCtx={wrapUpCtxs.output}
+      />
+    )
+  }
 
   return (
     <div
@@ -224,6 +279,8 @@ export default function VoiceLearningSession({
             width: 100, height: 100, borderRadius: '50%',
             background: phase === 'error'
               ? 'linear-gradient(135deg, #EF4444, #DC2626)'
+              : phase === 'completing'
+              ? 'linear-gradient(135deg, #059669, #10B981)'
               : phase === 'idle'
               ? 'linear-gradient(135deg, #FFF3E0, #FED97040)'
               : 'linear-gradient(135deg, #D97706, #EA580C)',
@@ -237,7 +294,7 @@ export default function VoiceLearningSession({
             transition: 'background 0.4s',
           }}
         >
-          {phase === 'error' ? '⚠️' : phase === 'connecting' ? '⏳' : '🎙️'}
+          {phase === 'error' ? '⚠️' : phase === 'connecting' ? '⏳' : phase === 'completing' ? '⏳' : '🎙️'}
         </div>
       </div>
 
@@ -253,7 +310,7 @@ export default function VoiceLearningSession({
       {/* Agent label */}
       <div style={{ textAlign: 'center' }}>
         <div style={{ fontSize: 15, fontWeight: 800, color: '#B45309', marginBottom: 4 }}>
-          {agentLabel}
+          {phase === 'completing' ? 'Saving your session…' : agentLabel}
         </div>
         <div style={{ fontSize: 13, color: '#78450F', fontWeight: 500 }}>
           {targetLang} • {jobType} • {country}
@@ -264,6 +321,12 @@ export default function VoiceLearningSession({
       {statusText && (
         <div style={{ fontSize: 13, color: phase === 'error' ? '#EF4444' : '#1C2B1A', textAlign: 'center', lineHeight: 1.6, maxWidth: 380, fontWeight: 500 }}>
           {statusText}
+        </div>
+      )}
+
+      {phase === 'completing' && (
+        <div style={{ fontSize: 13, color: '#047857', fontWeight: 600 }}>
+          Generating your session report…
         </div>
       )}
 

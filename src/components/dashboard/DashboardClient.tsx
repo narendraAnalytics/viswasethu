@@ -75,9 +75,12 @@ Rules:
 interface Props {
   userName: string
   totalSessions: number
+  wordsLearned: number
+  avgReadiness: string
+  dayStreak: number
 }
 
-export default function DashboardClient({ userName, totalSessions }: Props) {
+export default function DashboardClient({ userName, totalSessions, wordsLearned, avgReadiness, dayStreak }: Props) {
   const router = useRouter()
   const [voiceStarted, setVoiceStarted] = useState(false)
   const [launching, setLaunching] = useState(false)
@@ -124,9 +127,9 @@ export default function DashboardClient({ userName, totalSessions }: Props) {
       {/* Stats row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 32 }}>
         <StatCard icon="🎓" label="Sessions Completed" value={totalSessions} color="#D97706" />
-        <StatCard icon="📚" label="Words Learned" value={0} color="#059669" />
-        <StatCard icon="⭐" label="Avg Readiness" value="—" color="#EA580C" />
-        <StatCard icon="🔥" label="Day Streak" value={totalSessions > 0 ? 1 : 0} color="#7C3AED" suffix="days" />
+        <StatCard icon="📚" label="Words Learned" value={wordsLearned} color="#059669" />
+        <StatCard icon="⭐" label="Avg Readiness" value={avgReadiness} color="#EA580C" />
+        <StatCard icon="🔥" label="Day Streak" value={dayStreak} color="#7C3AED" suffix={dayStreak !== 1 ? 'days' : 'day'} />
       </div>
 
       {/* Main 2-col grid */}

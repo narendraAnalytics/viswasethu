@@ -1,5 +1,6 @@
 import { LlmAgent } from '@google/adk'
 import { createNativeLingoAgent } from './nativeLingo'
+import type { SessionReport } from './sessionReport/reportAgent'
 
 const NATIVE_LANG_NAMES: Record<string, string> = {
   te: 'Telugu',
@@ -92,4 +93,44 @@ SESSION RULES:
 - Give warm, encouraging feedback after each user attempt in ${nativeLang}
 - Keep sentences short and voice-friendly — this is a spoken session
 - Begin immediately: greet the user in ${nativeLang} and introduce today's first lesson topic warmly`
+}
+
+export function buildWrapUpSystemPrompt(
+  nativeLanguage: string,
+  jobType: string,
+  country: string,
+  report: SessionReport,
+): string {
+  const nativeLang = NATIVE_LANG_NAMES[nativeLanguage] ?? toLabel(nativeLanguage)
+  const foreignLang = DESTINATION_LANG[country] ?? toLabel(country)
+  const jobLabel = toLabel(jobType)
+  const countryLabel = toLabel(country)
+  const wordCount = report.vocabularyLearned.length
+  const wordList = wordCount > 0 ? report.vocabularyLearned.slice(0, 8).join(', ') : 'introductory phrases'
+
+  return `You are Sethu — the warm, friendly male voice guide at ViswaSethu, The Bridge of Trust.
+
+A learning session just ended. You are wrapping it up with the learner.
+
+SESSION RESULTS:
+- Learner's native language: ${nativeLang}
+- Job: ${jobLabel} in ${countryLabel}
+- Foreign language practiced: ${foreignLang}
+- Words and phrases learned: ${wordList}${wordCount > 8 ? ` and ${wordCount - 8} more` : ''}
+- Fluency score: ${report.fluencyPoints}/100
+- Readiness level: ${report.readinessLevel}
+- Summary: ${report.summary}
+
+YOUR TASK:
+1. Warmly congratulate the user in a mix of ${nativeLang} and English
+2. Share the results naturally — fluency score, words learned, readiness level
+3. Ask: "Would you like to learn another session, or shall we end here for today?"
+4. If user says yes / continue → encourage them, say "Go back to the dashboard to start a new session", then say a warm goodbye, then output exactly: [SESSION:END]
+5. If user says no / done / finish → give an encouraging farewell, wish them success on Day 1 at work, then output exactly: [SESSION:END]
+
+RULES:
+- Speak in short, natural sentences — max 2-3 sentences per turn (this is voice)
+- Be warm, celebratory, encouraging — the user worked hard
+- Output [SESSION:END] on its own line only after you have finished your goodbye — never before
+- BEGIN IMMEDIATELY with the congratulation message, do not wait`
 }

@@ -1,4 +1,4 @@
-import { pgTable, text, varchar, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { pgTable, text, varchar, timestamp, uuid, jsonb } from 'drizzle-orm/pg-core'
 
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
@@ -18,4 +18,11 @@ export const sessions = pgTable('sessions', {
   status: varchar('status', { length: 20 }).default('active').notNull(),
   startedAt: timestamp('started_at').defaultNow().notNull(),
   endedAt: timestamp('ended_at'),
+})
+
+export const sessionReports = pgTable('session_reports', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  sessionId: uuid('session_id').notNull().references(() => sessions.id, { onDelete: 'cascade' }),
+  report: jsonb('report').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 })
