@@ -1,0 +1,8 @@
+o create a pricing section ans the plans nice design section cards
+  for pricing c:\Users\ES\Desktop\Capture.PNG . Don't use the same design cards uploaded i want nice design pricing cards and toggle for
+  month,year .  Also use Lazy plan sync — no webhooks
+  Every request that touches plan-gated features calls `getPlanFromHas(has)` via Clerk's `has({ plan: 'pro' })` and writes the result to
+  `users.plan` if it changed. This means the DB is never stale by more than one request.PLAN_BADGE` from `src/lib/plans.ts` drives the
+  badge shown in both the landing page navbar and the dashboard navbar. Badge reads from Clerk session token synchronously via
+  `useAuth().has()`.Plan slugs in Clerk Dashboard must exactly match: `'plus'`, `'pro'` (lowercase) — `has({ plan: 'pro' })` matches
+  literally. 

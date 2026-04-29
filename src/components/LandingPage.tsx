@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
 
-const TOTAL = 7;
+const TOTAL = 8;
 
 // ── Typography helpers ──
 const ff = {
@@ -35,6 +35,7 @@ function Navbar({ current, goTo }: { current: number; goTo: (i: number) => void 
     { label: "Features", idx: 3 },
     { label: "Who It's For", idx: 4 },
     { label: "Tech", idx: 5 },
+    { label: "Pricing", idx: 6 },
   ];
 
   return (
@@ -135,7 +136,7 @@ function Navbar({ current, goTo }: { current: number; goTo: (i: number) => void 
 
 // ── DOT NAV ──
 function DotNav({ current, goTo }: { current: number; goTo: (i: number) => void }) {
-  const labels = ["Hero", "Problem", "Solution", "Features", "Users", "Tech Stack", "Get Started"];
+  const labels = ["Hero", "Problem", "Solution", "Features", "Users", "Tech Stack", "Pricing", "Get Started"];
   return (
     <div style={{ position: "fixed", right: 28, top: "50%", transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 14, zIndex: 1000 }}>
       {labels.map((label, i) => (
@@ -706,7 +707,293 @@ function PersonasSection() {
   );
 }
 
-// ── S6: TECH ──
+// ── S6: PRICING ──
+function PricingSection() {
+  const [yearly, setYearly] = useState(false);
+  const { isSignedIn } = useUser();
+
+  const plans = [
+    {
+      key: 'free',
+      name: 'Free',
+      tagline: 'Try it out',
+      monthlyPrice: 0,
+      yearlyTotal: 0,
+      color: '#C09050',
+      glow: 'rgba(192,144,80,0.22)',
+      border: 'rgba(192,144,80,0.38)',
+      cta: 'Get Started',
+      href: isSignedIn ? '/dashboard' : '/sign-up',
+      badge: null as string | null,
+      features: [
+        '5 min per session',
+        '2 sessions / month',
+        'Hindi & Telugu',
+        'Dubai & Russia only',
+        '2 job types',
+        'Summary report only',
+      ],
+    },
+    {
+      key: 'plus',
+      name: 'Plus',
+      tagline: 'Daily learner',
+      monthlyPrice: 199,
+      yearlyTotal: 1990,
+      color: '#D97706',
+      glow: 'rgba(217,119,6,0.35)',
+      border: 'rgba(217,119,6,0.72)',
+      cta: 'Start Learning',
+      href: isSignedIn ? '/dashboard' : '/sign-up',
+      badge: '★ MOST POPULAR',
+      features: [
+        '20 min per session',
+        '15 sessions / month',
+        'All 5 languages',
+        '3 destinations',
+        'All 5 job types',
+        'Full session report',
+        '30-day history',
+      ],
+    },
+    {
+      key: 'pro',
+      name: 'Pro',
+      tagline: 'Serious job seeker',
+      monthlyPrice: 499,
+      yearlyTotal: 4990,
+      color: '#059669',
+      glow: 'rgba(5,150,105,0.28)',
+      border: 'rgba(5,150,105,0.48)',
+      cta: 'Go Pro',
+      href: isSignedIn ? '/dashboard' : '/sign-up',
+      badge: null as string | null,
+      features: [
+        '45 min per session',
+        'Unlimited sessions',
+        'All + future languages',
+        'All destinations',
+        'All jobs + Global agents',
+        'Full report + PDF download',
+        'All-time analytics',
+        'WhatsApp support',
+      ],
+    },
+  ];
+
+  return (
+    <section style={{
+      width: '100%', height: '100%',
+      background: 'linear-gradient(160deg, #0E0804 0%, #160C04 55%, #0A0E08 100%)',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      gap: 14, padding: '70px 40px 16px',
+      position: 'relative', overflow: 'hidden',
+      fontFamily: ff.jakarta,
+    }}>
+      {/* Dot grid background */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        backgroundImage: 'radial-gradient(rgba(217,119,6,0.10) 1px, transparent 1px)',
+        backgroundSize: '36px 36px',
+      }} />
+      {/* Ambient radial glow */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        width: 600, height: 400, borderRadius: '50%',
+        background: 'radial-gradient(ellipse, rgba(217,119,6,0.07) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Header */}
+      <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <div style={{ fontFamily: ff.space, fontSize: '0.62rem', letterSpacing: '0.2em', color: '#D97706', textTransform: 'uppercase', marginBottom: 6 }}>
+          CHOOSE YOUR PATH
+        </div>
+        <h2 style={{ fontFamily: ff.playfair, fontSize: 'clamp(1.5rem,2.4vw,2.2rem)', fontWeight: 700, color: '#FFF8ED', margin: 0, lineHeight: 1.15 }}>
+          Invest in Your{' '}
+          <span style={{ background: 'linear-gradient(135deg,#D97706,#EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Global Future
+          </span>
+        </h2>
+      </div>
+
+      {/* Billing toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, position: 'relative', zIndex: 1 }}>
+        <span style={{
+          fontFamily: ff.space, fontSize: '0.66rem', letterSpacing: '0.12em',
+          color: !yearly ? '#FFF8ED' : 'rgba(255,248,237,0.35)',
+          transition: 'color 0.35s',
+        }}>MONTHLY</span>
+        <button
+          type="button"
+          onClick={() => setYearly(v => !v)}
+          aria-label="Toggle billing period"
+          style={{
+            width: 50, height: 26, borderRadius: 13,
+            background: yearly ? 'linear-gradient(135deg,#D97706,#EA580C)' : 'rgba(255,255,255,0.10)',
+            border: '1px solid rgba(217,119,6,0.45)',
+            cursor: 'pointer', position: 'relative', outline: 'none',
+            transition: 'background 0.4s',
+          }}
+        >
+          <div style={{
+            position: 'absolute', top: 3, left: yearly ? 25 : 3,
+            width: 18, height: 18, borderRadius: '50%', background: '#FFF8ED',
+            transition: 'left 0.35s cubic-bezier(0.34,1.56,0.64,1)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.35)',
+          }} />
+        </button>
+        <span style={{
+          fontFamily: ff.space, fontSize: '0.66rem', letterSpacing: '0.12em',
+          color: yearly ? '#D97706' : 'rgba(255,248,237,0.35)',
+          transition: 'color 0.35s',
+          display: 'flex', alignItems: 'center', gap: 7,
+        }}>
+          YEARLY
+          {yearly && (
+            <span style={{
+              background: 'linear-gradient(135deg,#059669,#047857)',
+              color: '#fff', padding: '2px 7px', borderRadius: 6,
+              fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.08em',
+            }}>SAVE 17%</span>
+          )}
+        </span>
+      </div>
+
+      {/* Plan cards */}
+      <div className="pricing-grid" style={{
+        display: 'flex', gap: 16, alignItems: 'center',
+        position: 'relative', zIndex: 1,
+      }}>
+        {plans.map((plan) => {
+          const isCenter = plan.key === 'plus';
+          const effectiveMonthly = plan.monthlyPrice === 0
+            ? 0
+            : yearly
+            ? Math.round(plan.yearlyTotal / 12)
+            : plan.monthlyPrice;
+
+          return (
+            <div
+              key={plan.key}
+              className={`pricing-card${isCenter ? ' pricing-card-featured' : ''}`}
+              style={{
+                position: 'relative',
+                background: isCenter
+                  ? 'linear-gradient(160deg, rgba(217,119,6,0.16) 0%, rgba(234,88,12,0.08) 100%)'
+                  : 'rgba(255,255,255,0.035)',
+                border: `1.5px solid ${plan.border}`,
+                borderRadius: 20,
+                padding: isCenter ? '36px 24px 22px' : '24px 20px',
+                minWidth: isCenter ? 248 : 214,
+                boxShadow: `0 0 50px ${plan.glow}, 0 12px 40px rgba(0,0,0,0.5)`,
+                backdropFilter: 'blur(16px)',
+                transform: isCenter ? 'scale(1.05)' : 'scale(1)',
+                transition: 'transform 0.35s ease, box-shadow 0.35s ease',
+              }}
+            >
+              {/* Popular ribbon */}
+              {plan.badge && (
+                <div style={{
+                  position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)',
+                  background: 'linear-gradient(135deg,#D97706,#EA580C)',
+                  color: '#fff', padding: '3px 18px',
+                  borderRadius: 20, fontFamily: ff.space,
+                  fontSize: '0.58rem', letterSpacing: '0.15em',
+                  boxShadow: '0 4px 18px rgba(217,119,6,0.5)',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {plan.badge}
+                </div>
+              )}
+
+              {/* Plan label */}
+              <div style={{ fontFamily: ff.space, fontSize: '0.62rem', letterSpacing: '0.2em', color: plan.color, marginBottom: 2 }}>
+                {plan.name.toUpperCase()}
+              </div>
+              <div style={{ fontFamily: ff.jakarta, fontSize: '0.72rem', color: 'rgba(255,248,237,0.45)', marginBottom: 10 }}>
+                {plan.tagline}
+              </div>
+
+              {/* Price display */}
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, marginBottom: 2 }}>
+                <span style={{ fontFamily: ff.playfair, fontSize: '2.2rem', fontWeight: 700, color: '#FFF8ED', lineHeight: 1 }}>
+                  {plan.monthlyPrice === 0 ? '₹0' : `₹${effectiveMonthly}`}
+                </span>
+                {plan.monthlyPrice > 0 && (
+                  <span style={{ fontFamily: ff.jakarta, fontSize: '0.74rem', color: 'rgba(255,248,237,0.4)', marginBottom: 4 }}>
+                    /mo
+                  </span>
+                )}
+              </div>
+              <div style={{ fontFamily: ff.jakarta, fontSize: '0.68rem', color: 'rgba(255,248,237,0.28)', marginBottom: 14 }}>
+                {plan.monthlyPrice === 0
+                  ? 'Always free'
+                  : yearly
+                  ? `Billed ₹${plan.yearlyTotal} annually`
+                  : 'Billed monthly'}
+              </div>
+
+              {/* Gradient rule */}
+              <div style={{
+                height: 1, marginBottom: 12,
+                background: `linear-gradient(90deg, transparent, ${plan.border}, transparent)`,
+              }} />
+
+              {/* Features */}
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 16px', display: 'flex', flexDirection: 'column', gap: 7 }}>
+                {plan.features.map((f, fi) => (
+                  <li key={fi} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: '0.74rem', color: 'rgba(255,248,237,0.78)', lineHeight: 1.35 }}>
+                    <span style={{ color: plan.color, flexShrink: 0, fontSize: '0.6rem', marginTop: 3 }}>✦</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA button */}
+              <a
+                href={plan.href}
+                className={`pricing-cta pricing-cta-${plan.key}`}
+                style={{
+                  display: 'block', textAlign: 'center',
+                  padding: '10px 0', borderRadius: 50,
+                  background: isCenter ? `linear-gradient(135deg,${plan.color},#EA580C)` : 'transparent',
+                  border: `1.5px solid ${plan.border}`,
+                  color: isCenter ? '#fff' : plan.color,
+                  fontFamily: ff.jakarta, fontWeight: 700, fontSize: '0.8rem',
+                  textDecoration: 'none', letterSpacing: '0.06em',
+                  transition: 'all 0.3s ease',
+                  boxShadow: isCenter ? `0 4px 20px ${plan.glow}` : 'none',
+                }}
+              >
+                {plan.cta} →
+              </a>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{ fontFamily: ff.jakarta, fontSize: '0.68rem', color: 'rgba(255,248,237,0.22)', position: 'relative', zIndex: 1, textAlign: 'center' }}>
+        No credit card required for Free · Cancel anytime · Prices in INR
+      </div>
+
+      <style>{`
+        @media (max-width: 960px) {
+          .pricing-grid { flex-direction: column !important; align-items: stretch !important; gap: 14px !important; }
+          .pricing-card-featured { transform: scale(1) !important; }
+          .pricing-card { min-width: unset !important; }
+        }
+        .pricing-card:hover { transform: translateY(-8px) !important; }
+        .pricing-card-featured:hover { transform: scale(1.05) translateY(-8px) !important; }
+        .pricing-cta-free:hover  { background: rgba(192,144,80,0.18) !important; }
+        .pricing-cta-plus:hover  { filter: brightness(1.12) !important; }
+        .pricing-cta-pro:hover   { background: rgba(5,150,105,0.22) !important; color: #fff !important; }
+      `}</style>
+    </section>
+  );
+}
+
+// ── S7: TECH ──
 function TechSection() {
   const techs = [
     { logo: "⚡", name: "Next.js", desc: "Full-stack React framework" },
@@ -898,6 +1185,7 @@ export default function LandingPage() {
     <FeaturesSection key="features" />,
     <PersonasSection key="personas" />,
     <TechSection key="tech" />,
+    <PricingSection key="pricing" />,
     <CTASection key="cta" />,
   ];
 

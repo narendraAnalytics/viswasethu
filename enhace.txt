@@ -7,7 +7,7 @@
   PLAN OVERVIEW
 ──────────────────────────────────────────────────────────────
 
-  FREE          PLUS (₹199/mo or $2.99/mo)     PRO (₹499/mo or $6.99/mo)
+  free          plus                             pro
   ──────────    ─────────────────────────────   ──────────────────────────
   Try it out    Daily learner                   Serious job seeker
 
@@ -28,8 +28,8 @@
   2. MONTHLY SESSIONS
 ──────────────────────────────────────────────────────────────
 
-  Free   →  5 sessions / month
-  Plus   →  30 sessions / month
+  Free   →  2 sessions / month
+  Plus   →  15 sessions / month
   Pro    →  Unlimited sessions
 
   Enforcement: Track session count in `users` table.
@@ -40,7 +40,7 @@
   3. LANGUAGES (Native Indian Language)
 ──────────────────────────────────────────────────────────────
 
-  Free   →  Hindi only
+  Free   →  Hindi , Telugu only
   Plus   →  All 5 (Hindi, Telugu, Tamil, Kannada, Marathi)
   Pro    →  All current + future languages (Bengali, Gujarati…)
 
@@ -52,7 +52,7 @@
   4. DESTINATION COUNTRIES & TARGET LANGUAGES
 ──────────────────────────────────────────────────────────────
 
-  Free   →  Dubai (Arabic) only
+  Free   →  Dubai (Arabic),  Russia only
   Plus   →  Dubai, UK/USA, Japan (Arabic, English, Japanese)
   Pro    →  All destinations including Russia, China, Korea,
             Gulf states + any new country added
