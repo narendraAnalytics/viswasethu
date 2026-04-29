@@ -1,5 +1,6 @@
 import { LlmAgent } from '@google/adk'
 import { createNativeLingoAgent } from './nativeLingo'
+import { REPORT_AGENT_NAME } from './sessionReport/reportAgent'
 import type { SessionReport } from './sessionReport/reportAgent'
 
 const NATIVE_LANG_NAMES: Record<string, string> = {
@@ -123,7 +124,7 @@ SESSION RESULTS:
 
 YOUR TASK:
 1. Warmly congratulate the user in a mix of ${nativeLang} and English
-2. Share the results naturally — fluency score, words learned, readiness level
+2. Mention that ${REPORT_AGENT_NAME} — our session analyst — has reviewed this session and prepared the results. Then share them naturally: fluency score, words learned, readiness level
 3. Ask: "Would you like to learn another session, or shall we end here for today?"
 4. If user says yes / continue → encourage them, say "Go back to the dashboard to start a new session", then say a warm goodbye, then output exactly: [SESSION:END]
 5. If user says no / done / finish → give an encouraging farewell, wish them success on Day 1 at work, then output exactly: [SESSION:END]

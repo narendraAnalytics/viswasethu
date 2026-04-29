@@ -1,5 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 
+export const REPORT_AGENT_NAME = 'Ananya'
+
 export type SessionReport = {
   fluencyPoints: number
   vocabularyLearned: string[]

@@ -157,11 +157,19 @@ function DotNav({ current, goTo }: { current: number; goTo: (i: number) => void 
   );
 }
 
+const HERO_IMAGES = [
+  "https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1777460835/bannerimage2_wpfh1c.png",
+  "https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1777461478/bannerimage3_somn4a.png",
+  "https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1777292512/bannerimage1_uodots.png",
+   "https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1777462223/bannerimage4_snqfbb.png",
+];
+
 // ── S1: HERO ──
 function HeroSection({ goTo }: { goTo: (i: number) => void }) {
   const pCanvasRef = useRef<HTMLCanvasElement>(null);
   const { isSignedIn, user } = useUser();
   const displayName = user?.username ?? user?.firstName ?? "there";
+  const [bgIndex, setBgIndex] = useState(0);
 
   // Particle system
   useEffect(() => {
@@ -202,6 +210,11 @@ function HeroSection({ goTo }: { goTo: (i: number) => void }) {
     return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
   }, []);
 
+  useEffect(() => {
+    const id = setInterval(() => setBgIndex((i) => (i + 1) % HERO_IMAGES.length), 5000);
+    return () => clearInterval(id);
+  }, []);
+
   const WaveBar = ({ delay, height }: { delay: number; height: number }) => (
     <div style={{
       width: 3, height, borderRadius: 2, background: "#D97706", opacity: 0.5,
@@ -212,11 +225,20 @@ function HeroSection({ goTo }: { goTo: (i: number) => void }) {
   return (
     <section style={{
       width: "100%", height: "100%", position: "relative", overflow: "hidden",
-      backgroundImage: "url('https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1777292512/bannerimage1_uodots.png')",
-      backgroundSize: "98% auto", backgroundPosition: "center top", backgroundRepeat: "no-repeat",
       backgroundColor: "#0D0502",
       display: "flex", alignItems: "center", justifyContent: "flex-start",
     }}>
+      {/* Carousel background images */}
+      {HERO_IMAGES.map((src, i) => (
+        <div key={src} style={{
+          position: "absolute", inset: 0, zIndex: 0,
+          backgroundImage: `url('${src}')`,
+          backgroundSize: "100% auto", backgroundPosition: "center top", backgroundRepeat: "no-repeat",
+          opacity: bgIndex === i ? 1 : 0,
+          transition: "opacity 1.2s ease-in-out",
+        }} />
+      ))}
+
       {/* Dark overlay for readability */}
       <div style={{
         position: "absolute", inset: 0, zIndex: 1,
@@ -319,6 +341,27 @@ function HeroSection({ goTo }: { goTo: (i: number) => void }) {
           </span>
         </div>
       )}
+
+      {/* Carousel dots */}
+      <div style={{
+        position: "absolute", bottom: 36, right: 48,
+        display: "flex", gap: 8, zIndex: 20,
+      }}>
+        {HERO_IMAGES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setBgIndex(i)}
+            aria-label={`Show banner ${i + 1}`}
+            style={{
+              width: bgIndex === i ? 22 : 8, height: 8,
+              borderRadius: 4, padding: 0, cursor: "pointer", border: "none",
+              background: bgIndex === i ? "#D97706" : "rgba(217,119,6,0.35)",
+              transition: "all 0.4s ease",
+              boxShadow: bgIndex === i ? "0 0 10px rgba(217,119,6,0.6)" : "none",
+            }}
+          />
+        ))}
+      </div>
 
       {/* Scroll hint */}
       <button

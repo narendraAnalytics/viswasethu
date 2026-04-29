@@ -17,6 +17,8 @@ interface Props {
 
 type Phase = 'idle' | 'connecting' | 'active' | 'error' | 'completing' | 'wrapup'
 
+const TOTAL_SECONDS = 5 * 60
+
 export default function VoiceLearningSession({
   sessionId, nativeLanguage, jobType, country, targetLang, agentLabel,
 }: Props) {
@@ -26,6 +28,7 @@ export default function VoiceLearningSession({
   const [report, setReport] = useState<SessionReport | null>(null)
   const [wrapUpSystemPrompt, setWrapUpSystemPrompt] = useState('')
   const [wrapUpCtxs, setWrapUpCtxs] = useState<{ input: AudioContext; output: AudioContext } | null>(null)
+  const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS)
 
   const audioCtxsRef = useRef<{ input: AudioContext; output: AudioContext } | null>(null)
   const sessionRef = useRef<unknown>(null)
@@ -35,6 +38,11 @@ export default function VoiceLearningSession({
   const transcriptRef = useRef<string[]>([])
   const intentionalCloseRef = useRef(false)
   const startedRef = useRef(false)
+  // Pre-created during startSession() (user gesture) so timer-triggered stop can use them
+  const wrapUpCtxsPreRef = useRef<{ input: AudioContext; output: AudioContext } | null>(null)
+  const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // Ref to latest stopSession to avoid stale closure in timer callback
+  const stopSessionRef = useRef<() => Promise<void>>(async () => {})
 
   const cleanup = useCallback(() => {
     intentionalCloseRef.current = true
@@ -51,12 +59,47 @@ export default function VoiceLearningSession({
 
   useEffect(() => () => { cleanup() }, [cleanup])
 
+  // Cleanup pre-created wrap-up contexts on unmount if unused
+  useEffect(() => () => {
+    wrapUpCtxsPreRef.current?.input.close().catch(() => {})
+    wrapUpCtxsPreRef.current?.output.close().catch(() => {})
+    wrapUpCtxsPreRef.current = null
+  }, [])
+
+  // 5-minute countdown — starts when session becomes active
+  useEffect(() => {
+    if (phase !== 'active') return
+    setTimeLeft(TOTAL_SECONDS)
+    timerIntervalRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timerIntervalRef.current!)
+          timerIntervalRef.current = null
+          void stopSessionRef.current()
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current)
+        timerIntervalRef.current = null
+      }
+    }
+  }, [phase])
+
   async function startSession() {
     if (startedRef.current) return
     startedRef.current = true
     transcriptRef.current = []
 
     audioCtxsRef.current = {
+      input: new AudioContext({ sampleRate: 16000 }),
+      output: new AudioContext({ sampleRate: 24000 }),
+    }
+    // Pre-create wrap-up contexts now (user gesture) so timer-triggered stop works without a gesture
+    wrapUpCtxsPreRef.current = {
       input: new AudioContext({ sampleRate: 16000 }),
       output: new AudioContext({ sampleRate: 24000 }),
     }
@@ -197,11 +240,19 @@ export default function VoiceLearningSession({
   }
 
   async function stopSession() {
-    // Create new AudioContexts for wrap-up BEFORE any await — must be in user gesture
-    const newCtxs = {
+    // Stop timer
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current)
+      timerIntervalRef.current = null
+    }
+
+    // Use pre-created AudioContexts (created during startSession user gesture).
+    // Fallback to new ones only if button was clicked directly without prior startSession.
+    const newCtxs = wrapUpCtxsPreRef.current ?? {
       input: new AudioContext({ sampleRate: 16000 }),
       output: new AudioContext({ sampleRate: 24000 }),
     }
+    wrapUpCtxsPreRef.current = null
 
     cleanup()
     setAiSpeaking(false)
@@ -235,7 +286,22 @@ export default function VoiceLearningSession({
     }
   }
 
+  // Keep ref pointing to latest stopSession so timer callback never has a stale closure
+  stopSessionRef.current = stopSession
+
   const isActive = phase === 'connecting' || phase === 'active'
+
+  const timerColor = timeLeft > 120
+    ? '#059669'
+    : timeLeft > 60
+    ? '#D97706'
+    : timeLeft > 30
+    ? '#EA580C'
+    : '#DC2626'
+  const timerMinutes = Math.floor(timeLeft / 60)
+  const timerSeconds = timeLeft % 60
+  const timerLabel = `${String(timerMinutes).padStart(2, '0')}:${String(timerSeconds).padStart(2, '0')}`
+  const circumference = 2 * Math.PI * 26
 
   // Wrap-up phase — hand off to SessionWrapUp
   if (phase === 'wrapup' && report && wrapUpCtxs) {
@@ -335,6 +401,40 @@ export default function VoiceLearningSession({
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#92400E', fontWeight: 500 }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669', animation: 'vsPulseDot 1.2s ease-in-out infinite' }} />
           Female AI Tutor · Gemini Live
+        </div>
+      )}
+
+      {/* Session timer */}
+      {phase === 'active' && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+          <div style={{ position: 'relative', width: 64, height: 64 }}>
+            <svg width="64" height="64" viewBox="0 0 64 64" style={{ transform: 'rotate(-90deg)' }}>
+              <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(0,0,0,0.07)" strokeWidth="4" />
+              <circle
+                cx="32" cy="32" r="26"
+                fill="none"
+                stroke={timerColor}
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeDasharray={circumference}
+                strokeDashoffset={circumference * (1 - timeLeft / TOTAL_SECONDS)}
+                style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.6s ease' }}
+              />
+            </svg>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{
+                fontSize: 13, fontWeight: 800, color: timerColor,
+                fontFamily: 'monospace', letterSpacing: '-0.5px',
+                animation: timeLeft <= 30 ? 'vsTimerPulse 0.8s ease-in-out infinite' : 'none',
+                transition: 'color 0.6s ease',
+              }}>
+                {timerLabel}
+              </span>
+            </div>
+          </div>
+          <span style={{ fontSize: 9, color: timerColor, fontWeight: 700, letterSpacing: '0.08em', opacity: 0.75, transition: 'color 0.6s ease' }}>
+            {timeLeft <= 30 ? '⚠ TIME ENDING' : 'SESSION TIME'}
+          </span>
         </div>
       )}
 

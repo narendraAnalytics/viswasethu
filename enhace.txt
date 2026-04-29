@@ -1,2 +1,197 @@
+═══════════════════════════════════════════════════════════════
+  VISWASETHU — PRICING PLAN SUGGESTIONS
+  Reference doc for Clerk plan implementation
+═══════════════════════════════════════════════════════════════
 
-                                                                              
+──────────────────────────────────────────────────────────────
+  PLAN OVERVIEW
+──────────────────────────────────────────────────────────────
+
+  FREE          PLUS (₹199/mo or $2.99/mo)     PRO (₹499/mo or $6.99/mo)
+  ──────────    ─────────────────────────────   ──────────────────────────
+  Try it out    Daily learner                   Serious job seeker
+
+
+──────────────────────────────────────────────────────────────
+  1. SESSION TIMER
+──────────────────────────────────────────────────────────────
+
+  Free   →  5 minutes per session
+  Plus   →  20 minutes per session
+  Pro    →  45 minutes per session (or unlimited)
+
+  Why: Timer is the most natural upsell lever — learners will
+  hit the wall mid-lesson and be motivated to upgrade.
+
+
+──────────────────────────────────────────────────────────────
+  2. MONTHLY SESSIONS
+──────────────────────────────────────────────────────────────
+
+  Free   →  5 sessions / month
+  Plus   →  30 sessions / month
+  Pro    →  Unlimited sessions
+
+  Enforcement: Track session count in `users` table.
+  Add `plan`, `sessionsUsedThisMonth`, `planResetDate` columns.
+
+
+──────────────────────────────────────────────────────────────
+  3. LANGUAGES (Native Indian Language)
+──────────────────────────────────────────────────────────────
+
+  Free   →  Hindi only
+  Plus   →  All 5 (Hindi, Telugu, Tamil, Kannada, Marathi)
+  Pro    →  All current + future languages (Bengali, Gujarati…)
+
+  Why: Most migrant workers speak one language — but families
+  have multiple members. Plus/Pro covers the whole household.
+
+
+──────────────────────────────────────────────────────────────
+  4. DESTINATION COUNTRIES & TARGET LANGUAGES
+──────────────────────────────────────────────────────────────
+
+  Free   →  Dubai (Arabic) only
+  Plus   →  Dubai, UK/USA, Japan (Arabic, English, Japanese)
+  Pro    →  All destinations including Russia, China, Korea,
+            Gulf states + any new country added
+
+  Why: Workers going to Japan or specialized destinations are
+  higher intent — willing to pay more.
+
+
+──────────────────────────────────────────────────────────────
+  5. JOB TYPES
+──────────────────────────────────────────────────────────────
+
+  Free   →  2 jobs: Driver, Construction
+  Plus   →  All 5 current jobs (Driver, Plumber, Construction,
+            Cleaner, Painter)
+  Pro    →  All jobs + specialized GlobalVocation agents
+            (Dubai Driver, Japan Construction, etc.) when built
+
+
+──────────────────────────────────────────────────────────────
+  6. SESSION REPORTS
+──────────────────────────────────────────────────────────────
+
+  Free   →  Summary only (readiness level + 1-line summary)
+  Plus   →  Full report (fluency score, vocabulary learned,
+            stuck words, readiness, summary)
+  Pro    →  Full report + downloadable PDF + shareable link
+            (worker can show employer proof of preparation)
+
+  The shareable report is a strong Pro differentiator —
+  employers may require it as part of hiring documentation.
+
+
+──────────────────────────────────────────────────────────────
+  7. PROGRESS & ANALYTICS
+──────────────────────────────────────────────────────────────
+
+  Free   →  No history (only current session visible)
+  Plus   →  /sessions page — last 30 sessions + basic stats
+            (total words, avg fluency, day streak)
+  Pro    →  Full /reports page — vocabulary growth chart,
+            fluency trend over time, words to review list,
+            estimated "job readiness" score with target date
+
+
+──────────────────────────────────────────────────────────────
+  8. VOCABULARY REVIEW (future feature)
+──────────────────────────────────────────────────────────────
+
+  Free   →  Not available
+  Plus   →  Review last session's vocabulary (flashcard style)
+  Pro    →  Review all-time vocabulary, spaced repetition,
+            offline review mode (PWA cached)
+
+
+──────────────────────────────────────────────────────────────
+  9. AI TUTOR QUALITY
+──────────────────────────────────────────────────────────────
+
+  Free   →  Standard model (gemini-3.1-flash-lite-preview)
+  Plus   →  Same model, higher priority queue
+  Pro    →  Upgraded model when available (gemini-flash or
+            pro tier for better pronunciation feedback)
+
+
+──────────────────────────────────────────────────────────────
+  10. SUPPORT
+──────────────────────────────────────────────────────────────
+
+  Free   →  Community FAQ only
+  Plus   →  Email support (48hr response)
+  Pro    →  Priority email + WhatsApp support (24hr)
+            (WhatsApp is the primary channel for migrant workers)
+
+
+──────────────────────────────────────────────────────────────
+  PLAN COMPARISON TABLE (for landing page)
+──────────────────────────────────────────────────────────────
+
+  Feature                     FREE        PLUS        PRO
+  ─────────────────────────   ──────────  ──────────  ──────────
+  Session timer               5 min       20 min      45 min
+  Sessions / month            5           30          Unlimited
+  Native languages            Hindi       All 5       All + future
+  Destinations                Dubai       3           All
+  Job types                   2           5           All + Global
+  Session report              Summary     Full        Full + PDF
+  Progress history            ✗           30 days     All-time
+  Vocabulary review           ✗           Last session All-time
+  Analytics / charts          ✗           Basic       Advanced
+  Job readiness score         ✗           ✗           ✓
+  Downloadable PDF report     ✗           ✗           ✓
+  WhatsApp support            ✗           ✗           ✓
+
+
+──────────────────────────────────────────────────────────────
+  CLERK IMPLEMENTATION NOTES
+──────────────────────────────────────────────────────────────
+
+  Clerk plan field:
+    - Store plan in `publicMetadata.plan` on the Clerk user:
+      "free" | "plus" | "pro"
+    - Read server-side via `currentUser().publicMetadata.plan`
+    - After Stripe webhook confirms payment → update via
+      Clerk Backend API: clerkClient.users.updateUserMetadata()
+
+  DB enforcement:
+    - `users.plan` column (text, default 'free')
+    - `users.sessionsUsedThisMonth` (int, default 0)
+    - `users.planResetDate` (timestamp) — reset on billing cycle
+    - Increment `sessionsUsedThisMonth` in POST /api/session
+    - Block session creation if count >= plan limit
+
+  Session timer enforcement:
+    - Pass `sessionDurationSeconds` from /api/session response
+    - Frontend TOTAL_SECONDS reads from this value
+    - Free: 300s, Plus: 1200s, Pro: 2700s (or 0 = unlimited)
+
+  Gate checks (server-side in API routes):
+    - /api/session   → check session count limit
+    - /api/agents    → check language + destination + job access
+    - /reports page  → check plan for history access
+
+  Upgrade flow:
+    - Show upgrade banner when Free user hits timer or session limit
+    - CTA: "Upgrade to Plus — learn 4x longer per session"
+
+
+──────────────────────────────────────────────────────────────
+  PRICING RATIONALE
+──────────────────────────────────────────────────────────────
+
+  Target user earns ~₹15,000–25,000/month before going abroad.
+  Foreign job can pay 3–5x more. Language prep is a real ROI.
+
+  ₹199/mo Plus  = less than a cup of tea per day
+  ₹499/mo Pro   = less than one local bus ride per day
+
+  Suggested: offer a 7-day free trial on Plus to hook users
+  who hit the 5-min Free wall. Auto-downgrade after trial.
+
+═══════════════════════════════════════════════════════════════

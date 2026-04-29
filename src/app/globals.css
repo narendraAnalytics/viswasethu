@@ -212,3 +212,8 @@
   0%, 100% { transform: scaleY(0.4); }
   50% { transform: scaleY(1); }
 }
+
+@keyframes vsTimerPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.18); }
+}
