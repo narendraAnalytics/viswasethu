@@ -38,19 +38,7 @@ export async function POST(
     })
 
     const plan = (user.plan ?? 'free') as PlanSlug
-
-    // Free plan: trim report to summary + readiness only
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let finalReport: any = report
-    if (plan === 'free') {
-      finalReport = {
-        fluencyPoints: 0,
-        vocabularyLearned: [],
-        stuckWords: [],
-        readinessLevel: report.readinessLevel,
-        summary: report.summary,
-      }
-    }
+    const finalReport = report
 
     // Free plan: save report only for the first completed session this month
     let saveReport = true
