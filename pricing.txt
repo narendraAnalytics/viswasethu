@@ -1,8 +1,64 @@
-o create a pricing section ans the plans nice design section cards
-  for pricing c:\Users\ES\Desktop\Capture.PNG . Don't use the same design cards uploaded i want nice design pricing cards and toggle for
-  month,year .  Also use Lazy plan sync — no webhooks
-  Every request that touches plan-gated features calls `getPlanFromHas(has)` via Clerk's `has({ plan: 'pro' })` and writes the result to
-  `users.plan` if it changed. This means the DB is never stale by more than one request.PLAN_BADGE` from `src/lib/plans.ts` drives the
-  badge shown in both the landing page navbar and the dashboard navbar. Badge reads from Clerk session token synchronously via
-  `useAuth().has()`.Plan slugs in Clerk Dashboard must exactly match: `'plus'`, `'pro'` (lowercase) — `has({ plan: 'pro' })` matches
-  literally. 
+═══════════════════════════════════════════════════════════════
+  VISWASETHU — FREE PLAN RESTRICTIONS (CONFIRMED & ENFORCED)
+  Last updated: 2026-04-29
+═══════════════════════════════════════════════════════════════
+
+Enforcement layers:
+  1. Sethu (voice manager) — tells user at onboarding if choice is restricted
+  2. POST /api/session — hard 403 block if restriction bypassed
+  3. Dashboard UI — UpgradeWall replaces Start button when limit reached
+
+──────────────────────────────────────────────────────────────
+  FREE PLAN LIMITS
+──────────────────────────────────────────────────────────────
+
+  Session timer          5 minutes (300 seconds)
+  Sessions / month       2
+  Report saved to DB     First session only (2nd session completes but report discarded)
+  Report content         Summary + readiness level only (no vocabulary, no stuck words, fluency = 0)
+
+──────────────────────────────────────────────────────────────
+  NATIVE LANGUAGES (home language)
+──────────────────────────────────────────────────────────────
+
+  Allowed   Hindi (hi), Telugu (te)
+  Blocked   Tamil (ta), Kannada (kn), Marathi (mr)
+
+  Clerk plan slugs: 'plus' unlocks all 5 · 'pro' unlocks all + future
+
+──────────────────────────────────────────────────────────────
+  DESTINATION COUNTRIES
+──────────────────────────────────────────────────────────────
+
+  Allowed   Dubai (Arabic), Russia (Russian)
+  Blocked   Japan (Japanese), UK (English), USA (English), China (Mandarin)
+
+──────────────────────────────────────────────────────────────
+  JOB TYPES
+──────────────────────────────────────────────────────────────
+
+  Allowed   Driver, Construction
+  Blocked   Plumber, Cleaner, Painter
+
+──────────────────────────────────────────────────────────────
+  UPGRADE PRICING
+──────────────────────────────────────────────────────────────
+
+  Plus   ₹199/month  — 20 min/session, 15 sessions/month, all 5 languages,
+                        Dubai + UK/USA + Japan, all 5 jobs, full report
+  Pro    ₹499/month  — 45 min/session, unlimited sessions, all languages + future,
+                        all destinations, all jobs + GlobalVocation agents,
+                        full report + PDF + shareable link, WhatsApp support
+
+──────────────────────────────────────────────────────────────
+  PLAN SLUGS IN CLERK (must match exactly — lowercase)
+──────────────────────────────────────────────────────────────
+
+  'free'  (default, no Clerk plan needed)
+  'plus'  → has({ plan: 'plus' }) returns true
+  'pro'   → has({ plan: 'pro' })  returns true
+
+  DB column: users.plan (varchar 20, default 'free')
+  Lazy sync: getPlanFromHas(has) in src/lib/plans.ts — no webhooks needed
+
+═══════════════════════════════════════════════════════════════

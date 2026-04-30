@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { UserButton } from '@clerk/nextjs'
+import { UserButton, useAuth } from '@clerk/nextjs'
+import { getPlanFromHas, PLAN_BADGE } from '@/lib/plans'
 
 const NAV_LINKS = [
   { href: '/dashboard', label: 'Dashboard' },
@@ -12,6 +13,8 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const pathname = usePathname()
+  const { has } = useAuth()
+  const badge = PLAN_BADGE[getPlanFromHas(has)]
 
   return (
     <nav
@@ -80,20 +83,16 @@ export default function Navbar() {
         })}
       </div>
 
-      {/* Right: UserButton */}
+      {/* Right: plan badge (plus/pro only) + UserButton */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div
-          style={{
-            fontSize: 12,
-            fontWeight: 600,
-            color: '#059669',
-            background: 'rgba(5, 150, 105, 0.10)',
-            padding: '4px 10px',
-            borderRadius: 20,
-            border: '1px solid rgba(5, 150, 105, 0.25)',
-          }}
-        >
-          Free Plan
+        <div style={{
+          fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
+          color: badge.color, background: badge.bg,
+          padding: '4px 12px', borderRadius: 20,
+          border: badge.label === 'FREE' ? '1px solid rgba(5,150,105,0.25)' : 'none',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.10)',
+        }}>
+          {badge.label === 'FREE' ? 'Free Plan' : badge.label}
         </div>
         <UserButton />
       </div>

@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getOrCreateUser } from '@/lib/auth'
 import { db } from '@/db'
 import { sessions, sessionReports } from '@/db/schema'
-import { eq, sql } from 'drizzle-orm'
+import { eq, sql, and, gte, count } from 'drizzle-orm'
 import { generateSessionReport } from '@/agents/sessionReport/reportAgent'
 import { buildWrapUpSystemPrompt } from '@/agents/steeringManager'
+import type { PlanSlug } from '@/lib/plans'
 
 export async function POST(
   req: NextRequest,
@@ -36,12 +37,43 @@ export async function POST(
       durationMinutes,
     })
 
+    const plan = (user.plan ?? 'free') as PlanSlug
+
+    // Free plan: trim report to summary + readiness only
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let finalReport: any = report
+    if (plan === 'free') {
+      finalReport = {
+        fluencyPoints: 0,
+        vocabularyLearned: [],
+        stuckWords: [],
+        readinessLevel: report.readinessLevel,
+        summary: report.summary,
+      }
+    }
+
+    // Free plan: save report only for the first completed session this month
+    let saveReport = true
+    if (plan === 'free') {
+      const startOfMonth = new Date()
+      startOfMonth.setDate(1)
+      startOfMonth.setHours(0, 0, 0, 0)
+      const [{ value: reportsThisMonth }] = await db
+        .select({ value: count() })
+        .from(sessionReports)
+        .innerJoin(sessions, eq(sessionReports.sessionId, sessions.id))
+        .where(and(eq(sessions.userId, user.id), gte(sessionReports.createdAt, startOfMonth)))
+      saveReport = Number(reportsThisMonth) < 1
+    }
+
     await db.update(sessions)
       .set({ status: 'completed', endedAt: sql`now()` })
       .where(eq(sessions.id, sessionId))
 
-    await db.insert(sessionReports)
-      .values({ sessionId, report })
+    if (saveReport) {
+      await db.insert(sessionReports)
+        .values({ sessionId, report: finalReport })
+    }
 
     const wrapUpSystemPrompt = buildWrapUpSystemPrompt(
       session.nativeLanguage,
@@ -50,7 +82,7 @@ export async function POST(
       report,
     )
 
-    return NextResponse.json({ report, wrapUpSystemPrompt })
+    return NextResponse.json({ report: finalReport, wrapUpSystemPrompt })
   } catch (err) {
     console.error('[POST /api/session/[sessionId]/complete]', err)
     return NextResponse.json({ error: 'Failed to complete session' }, { status: 500 })

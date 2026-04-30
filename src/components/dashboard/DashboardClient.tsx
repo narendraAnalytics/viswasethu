@@ -32,26 +32,62 @@ const COUNTRIES = [
   { code: 'china', label: 'China', flag: '🇨🇳', lang: 'Mandarin' },
 ]
 
-const ONBOARDING_SYSTEM_PROMPT = `You are Sethu — a warm, friendly male voice assistant for ViswaSethu, an AI platform that helps Indian migrant workers learn job-specific language skills abroad.
+function getOnboardingPrompt(plan: string): string {
+  const isFree = plan === 'free'
+
+  const langList = isFree
+    ? 'Hindi or Telugu'
+    : 'Telugu, Hindi, Tamil, Kannada, or Marathi'
+
+  const langRestriction = isFree ? `
+FREE PLAN LANGUAGE RESTRICTION — VERY IMPORTANT:
+Only Hindi and Telugu are available on the Free plan. If the user says Tamil, Kannada, or Marathi, do NOT output a [LANG:] tag. Instead, warmly explain in English (then repeat in the language they used if possible):
+"I'm sorry, [language] is only available on the Plus plan. On your current Free plan, I support Hindi and Telugu. Which of these is your home language?"
+Then wait for them to say Hindi or Telugu before outputting the tag.` : ''
+
+  const jobList = isFree
+    ? 'Driver or Construction worker'
+    : 'Driver, Plumber, Construction worker, Cleaner, Painter'
+
+  const jobRestriction = isFree ? `
+FREE PLAN JOB RESTRICTION — VERY IMPORTANT:
+Only Driver and Construction worker are available on the Free plan. If the user says Plumber, Cleaner, or Painter, do NOT output a [JOB:] tag. Instead, warmly say in their language:
+"I'm sorry, that job type is only available on the Plus plan. On your Free plan, I support Driver and Construction worker. Which one is your job?"
+Then wait for a valid answer before outputting the tag.` : ''
+
+  const countryList = isFree
+    ? 'Dubai or Russia'
+    : 'Dubai, Japan, UK, USA, Russia, China'
+
+  const countryRestriction = isFree ? `
+FREE PLAN DESTINATION RESTRICTION — VERY IMPORTANT:
+Only Dubai and Russia are available on the Free plan. If the user says Japan, UK, USA, or China, do NOT output a [COUNTRY:] tag. Instead, warmly say in their language:
+"I'm sorry, that destination is only available on the Plus plan. On your Free plan, I support Dubai and Russia. Which one is your destination?"
+Then wait for them to say Dubai or Russia before outputting the tag.` : ''
+
+  return `You are Sethu — a warm, friendly male voice assistant for ViswaSethu, an AI platform that helps Indian migrant workers learn job-specific language skills abroad.
 
 IMPORTANT: Begin speaking IMMEDIATELY when the session opens.
 
 STEP 1 — HOME LANGUAGE (speak in English):
-Greet warmly: "Namaste! I'm Sethu, your personal guide at ViswaSethu — The Bridge of Trust. I'm here to help you learn exactly the words you'll need on your working days abroad. To get started, please tell me your home language — Telugu, Hindi, Tamil, Kannada, or Marathi?"
+Greet warmly: "Namaste! I'm Sethu, your personal guide at ViswaSethu — The Bridge of Trust. I'm here to help you learn exactly the words you'll need on your working days abroad. To get started, please tell me your home language — ${langList}?"
 When the user responds, confirm warmly in THEIR detected language (e.g. if Telugu say "చాలా బాగుంది!"), then output EXACTLY one tag on its own line:
-[LANG:te] for Telugu | [LANG:hi] for Hindi | [LANG:ta] for Tamil | [LANG:kn] for Kannada | [LANG:mr] for Marathi
+[LANG:te] for Telugu | [LANG:hi] for Hindi${isFree ? '' : ' | [LANG:ta] for Tamil | [LANG:kn] for Kannada | [LANG:mr] for Marathi'}
+${langRestriction}
 
 STEP 2 — JOB TYPE (speak ENTIRELY in the user's detected language from now on):
 Immediately switch to speaking in the user's language. Ask what type of work they will be doing abroad.
-Job options: Driver, Plumber, Construction worker, Cleaner, Painter — say these naturally in the user's language.
+Job options: ${jobList} — say these naturally in the user's language.
 When detected, confirm warmly in their language, then output EXACTLY one tag on its own line:
-[JOB:driver] | [JOB:plumber] | [JOB:construction] | [JOB:cleaner] | [JOB:painter]
+[JOB:driver] | [JOB:construction]${isFree ? '' : ' | [JOB:plumber] | [JOB:cleaner] | [JOB:painter]'}
+${jobRestriction}
 
 STEP 3 — DESTINATION (continue in the user's language):
 Still in the user's language, ask where they are going to work.
-Country options: Dubai, Japan, UK, USA, Russia, China.
+Country options: ${countryList}.
 When detected, confirm warmly in their language, then output EXACTLY one tag on its own line:
-[COUNTRY:dubai] | [COUNTRY:japan] | [COUNTRY:uk] | [COUNTRY:usa] | [COUNTRY:russia] | [COUNTRY:china]
+[COUNTRY:dubai] | [COUNTRY:russia]${isFree ? '' : ' | [COUNTRY:japan] | [COUNTRY:uk] | [COUNTRY:usa] | [COUNTRY:china]'}
+${countryRestriction}
 
 CLOSING MESSAGE (speak in the user's language):
 After all 3 steps, give an encouraging closing message in the user's native language. Mention that you are now handing them over to the expert for the foreign language of their destination:
@@ -69,6 +105,7 @@ Rules:
 - All spoken words after step 1 must be in the user's native language
 - Keep responses warm, brief, and natural like a helpful friend
 - If unclear at any step, ask once more gently in the appropriate language`
+}
 
 // ── Main Component ──────────────────────────────────────────────────────────
 
@@ -78,19 +115,26 @@ interface Props {
   wordsLearned: number
   avgReadiness: string
   dayStreak: number
+  plan: string
+  monthlyUsed: number
+  monthlyLimit: number
 }
 
-export default function DashboardClient({ userName, totalSessions, wordsLearned, avgReadiness, dayStreak }: Props) {
+export default function DashboardClient({ userName, totalSessions, wordsLearned, avgReadiness, dayStreak, plan, monthlyUsed, monthlyLimit }: Props) {
   const router = useRouter()
   const [voiceStarted, setVoiceStarted] = useState(false)
   const [launching, setLaunching] = useState(false)
+  const [sessionError, setSessionError] = useState<string | null>(null)
 
   // AudioContext MUST be created inside onClick — Chrome blocks it otherwise
   const audioCtxsRef = useRef<{ input: AudioContext; output: AudioContext } | null>(null)
 
   const greeting = getGreeting()
+  const isFree = plan === 'free'
+  const atLimit = isFree && monthlyUsed >= monthlyLimit
 
   function handleStartVoice() {
+    setSessionError(null)
     audioCtxsRef.current = {
       input: new AudioContext({ sampleRate: 16000 }),
       output: new AudioContext({ sampleRate: 24000 }),
@@ -106,6 +150,12 @@ export default function DashboardClient({ userName, totalSessions, wordsLearned,
       body: JSON.stringify({ nativeLanguage: lang, jobType, country: dest }),
     })
     const data = await res.json()
+    if (!res.ok) {
+      setLaunching(false)
+      setVoiceStarted(false)
+      setSessionError(data.error ?? 'error')
+      return
+    }
     router.push(`/session/${data.sessionId}`)
   }
 
@@ -132,6 +182,78 @@ export default function DashboardClient({ userName, totalSessions, wordsLearned,
         <StatCard icon="🔥" label="Day Streak" value={dayStreak} color="#7C3AED" suffix={dayStreak !== 1 ? 'days' : 'day'} />
       </div>
 
+      {/* Free plan restriction banner */}
+      {isFree && (
+        <div style={{
+          marginBottom: 24,
+          borderRadius: 16,
+          border: '1px solid rgba(217,119,6,0.25)',
+          background: 'linear-gradient(135deg, #FFFBF0, #FFF3D6)',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #D97706, #EA580C)',
+            padding: '10px 20px',
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <span style={{ fontSize: 16 }}>🔒</span>
+            <span style={{ fontWeight: 700, fontSize: 13, color: '#fff', letterSpacing: '0.03em' }}>Free Plan — What&apos;s Included</span>
+            <span style={{
+              marginLeft: 'auto', fontSize: 11, fontWeight: 700,
+              background: 'rgba(255,255,255,0.22)', color: '#fff',
+              padding: '2px 10px', borderRadius: 12,
+            }}>
+              {monthlyUsed}/{monthlyLimit} sessions used this month
+            </span>
+          </div>
+          <div style={{ padding: '14px 20px', display: 'flex', flexWrap: 'wrap', gap: '8px 24px', alignItems: 'center' }}>
+            {[
+              { icon: '⏱', text: '5 min per session' },
+              { icon: '📅', text: '2 sessions / month' },
+              { icon: '🗣️', text: 'Hindi & Telugu only' },
+              { icon: '🌍', text: 'Dubai & Russia only' },
+              { icon: '💼', text: 'Driver & Construction only' },
+              { icon: '📊', text: 'Summary report only' },
+            ].map(({ icon, text }) => (
+              <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#78450F', fontWeight: 500 }}>
+                <span>{icon}</span>
+                <span>{text}</span>
+              </div>
+            ))}
+            <a href="/#pricing" style={{
+              marginLeft: 'auto', fontSize: 12, fontWeight: 700,
+              color: '#D97706', textDecoration: 'none',
+              display: 'flex', alignItems: 'center', gap: 4,
+              whiteSpace: 'nowrap',
+            }}>
+              Upgrade to Plus →
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* Session error: restriction messages */}
+      {sessionError && sessionError !== 'session_limit' && (
+        <div style={{
+          marginBottom: 20, padding: '14px 18px', borderRadius: 12,
+          background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.20)',
+          display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          <span style={{ fontSize: 22 }}>⚠️</span>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 13, color: '#B91C1C', marginBottom: 2 }}>
+              {sessionError === 'language_restricted' && 'Language not available on Free plan'}
+              {sessionError === 'country_restricted' && 'Destination not available on Free plan'}
+              {sessionError === 'job_restricted' && 'Job type not available on Free plan'}
+            </div>
+            <div style={{ fontSize: 12, color: '#5A4A2A' }}>
+              Free plan supports Hindi & Telugu · Dubai & Russia · Driver & Construction.{' '}
+              <a href="/#pricing" style={{ color: '#D97706', fontWeight: 700, textDecoration: 'none' }}>Upgrade to Plus</a> for all languages, countries and jobs.
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main 2-col grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, marginBottom: 24 }}>
         {/* Start Session card */}
@@ -151,11 +273,14 @@ export default function DashboardClient({ userName, totalSessions, wordsLearned,
                 <div style={{ fontSize: 16, fontWeight: 700, color: '#1C2B1A' }}>Launching your session…</div>
                 <div style={{ fontSize: 13, color: '#5A4A2A' }}>Setting up your personalised AI tutor</div>
               </div>
+            ) : (atLimit || sessionError === 'session_limit') ? (
+              <UpgradeWall monthlyUsed={monthlyUsed} monthlyLimit={monthlyLimit} />
             ) : voiceStarted && audioCtxsRef.current ? (
               <VoiceOnboardingFlow
                 onComplete={handleVoiceComplete}
                 inputCtx={audioCtxsRef.current.input}
                 outputCtx={audioCtxsRef.current.output}
+                plan={plan}
               />
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, padding: '40px 20px', background: 'linear-gradient(160deg, #FFFBF0 0%, #FFF6E0 55%, #FEF0C7 100%)', borderRadius: 14, border: '1px solid rgba(217,119,6,0.12)' }}>
@@ -236,9 +361,10 @@ interface VoiceOnboardingProps {
   onComplete: (lang: string, job: string, country: string) => void
   inputCtx: AudioContext   // pre-created in onClick (user gesture) — Chrome requires this
   outputCtx: AudioContext
+  plan: string
 }
 
-function VoiceOnboardingFlow({ onComplete, inputCtx, outputCtx }: VoiceOnboardingProps) {
+function VoiceOnboardingFlow({ onComplete, inputCtx, outputCtx, plan }: VoiceOnboardingProps) {
   const [status, setStatus] = useState<'idle' | 'connecting' | 'listening' | 'detected' | 'error'>('idle')
   const [statusText, setStatusText] = useState('Connecting to Sethu…')
   const [flowStep, setFlowStep] = useState<1 | 2 | 3>(1)
@@ -377,7 +503,7 @@ function VoiceOnboardingFlow({ onComplete, inputCtx, outputCtx }: VoiceOnboardin
           speechConfig: {
             voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Charon' } }, // male voice
           },
-          systemInstruction: { parts: [{ text: ONBOARDING_SYSTEM_PROMPT }] },
+          systemInstruction: { parts: [{ text: getOnboardingPrompt(plan) }] },
           inputAudioTranscription: {},
           outputAudioTranscription: {},
         } as any, // skill §1 — cast required, Gemini SDK types are loose
@@ -564,6 +690,82 @@ function VoiceOnboardingFlow({ onComplete, inputCtx, outputCtx }: VoiceOnboardin
           Cancel
         </button>
       )}
+    </div>
+  )
+}
+
+// ── Upgrade Wall ────────────────────────────────────────────────────────────
+
+function UpgradeWall({ monthlyUsed, monthlyLimit }: { monthlyUsed: number; monthlyLimit: number }) {
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20,
+      padding: '36px 24px',
+      background: 'linear-gradient(160deg, #0F0A02, #1C1206)',
+      borderRadius: 14,
+      border: '1px solid rgba(217,119,6,0.20)',
+      position: 'relative', overflow: 'hidden',
+    }}>
+      {/* Ambient glow */}
+      <div style={{ position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)', width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(217,119,6,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+      <div style={{ fontSize: 44 }}>🔓</div>
+
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontFamily: 'var(--font-playfair)', fontSize: 18, fontWeight: 700, color: '#FED97A', marginBottom: 6, lineHeight: 1.3 }}>
+          You&apos;ve used all {monthlyLimit} free session{monthlyLimit !== 1 ? 's' : ''} this month
+        </div>
+        <div style={{ fontSize: 13, color: '#A07040', lineHeight: 1.6, maxWidth: 300 }}>
+          Free plan includes {monthlyLimit} sessions per month. Upgrade to keep practising and reach your dream job abroad faster.
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <a
+          href="/#pricing"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '11px 22px', borderRadius: 50,
+            background: 'linear-gradient(135deg, #D97706, #EA580C)',
+            color: '#fff', fontWeight: 700, fontSize: 13,
+            textDecoration: 'none',
+            boxShadow: '0 4px 20px rgba(217,119,6,0.45)',
+          }}
+        >
+          ⚡ Upgrade to Plus — ₹199/mo
+        </a>
+        <a
+          href="/#pricing"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '11px 22px', borderRadius: 50,
+            background: 'linear-gradient(135deg, #059669, #047857)',
+            color: '#fff', fontWeight: 700, fontSize: 13,
+            textDecoration: 'none',
+            boxShadow: '0 4px 20px rgba(5,150,105,0.35)',
+          }}
+        >
+          🚀 Go Pro — ₹499/mo
+        </a>
+      </div>
+
+      <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center' }}>
+        {[
+          { icon: '⏱', plus: '20 min', label: 'per session' },
+          { icon: '📅', plus: '15 sessions', label: 'per month' },
+          { icon: '🌍', plus: 'All countries', label: 'inc. Japan, UK, USA' },
+        ].map(({ icon, plus, label }) => (
+          <div key={label} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 18, marginBottom: 3 }}>{icon}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#FED97A' }}>{plus}</div>
+            <div style={{ fontSize: 10, color: '#6B4A1A' }}>{label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ fontSize: 11, color: '#6B4A1A', textAlign: 'center' }}>
+        Sessions used this month: {monthlyUsed}/{monthlyLimit} · Resets on the 1st of next month
+      </div>
     </div>
   )
 }

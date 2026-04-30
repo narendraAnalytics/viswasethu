@@ -4,7 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser, useAuth, UserButton } from "@clerk/nextjs";
+import { getPlanFromHas, PLAN_BADGE } from "@/lib/plans";
 
 const TOTAL = 8;
 
@@ -26,17 +27,10 @@ const sectionVariants = {
 };
 
 // ── NAVBAR ──
-function Navbar({ current, goTo }: { current: number; goTo: (i: number) => void }) {
-  const [menuOpen, setMenuOpen] = useState(false);
+function Navbar({ current: _current, goTo: _goTo }: { current: number; goTo: (i: number) => void }) {
   const { isSignedIn } = useUser();
-  const links = [
-    { label: "Problem", idx: 1 },
-    { label: "Solution", idx: 2 },
-    { label: "Features", idx: 3 },
-    { label: "Who It's For", idx: 4 },
-    { label: "Tech", idx: 5 },
-    { label: "Pricing", idx: 6 },
-  ];
+  const { has } = useAuth();
+  const badge = PLAN_BADGE[getPlanFromHas(has)];
 
   return (
     <nav
@@ -50,6 +44,7 @@ function Navbar({ current, goTo }: { current: number; goTo: (i: number) => void 
         fontFamily: ff.jakarta,
       }}
     >
+      {/* Logo */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <Image
           src="/logo.png"
@@ -63,73 +58,27 @@ function Navbar({ current, goTo }: { current: number; goTo: (i: number) => void 
         </span>
       </div>
 
-      {/* Desktop links */}
-      <div className="nav-links-desktop" style={{ display: "flex", gap: 32, alignItems: "center" }}>
-        {links.map((l) => (
-          <a
-            key={l.idx}
-            href="#"
-            onClick={(e) => { e.preventDefault(); goTo(l.idx); }}
-            style={{ color: "#1C2B1A", textDecoration: "none", fontSize: "0.9rem", fontWeight: 500, opacity: current === l.idx ? 1 : 0.8, transition: "all 0.3s", letterSpacing: "0.03em" }}
-            onMouseEnter={(e) => { (e.target as HTMLElement).style.color = "#D97706"; (e.target as HTMLElement).style.opacity = "1"; }}
-            onMouseLeave={(e) => { (e.target as HTMLElement).style.color = "#1C2B1A"; (e.target as HTMLElement).style.opacity = current === l.idx ? "1" : "0.8"; }}
-          >
-            {l.label}
-          </a>
-        ))}
-        {isSignedIn && (
+      {/* Right side: plan badge + user avatar */}
+      {isSignedIn && (
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{
+            background: badge.bg, color: badge.color,
+            fontSize: "0.65rem", fontWeight: 800, letterSpacing: "0.12em",
+            padding: "4px 12px", borderRadius: 20,
+            border: badge.label === 'FREE' ? '1px solid rgba(5,150,105,0.28)' : 'none',
+            boxShadow: "0 2px 12px rgba(0,0,0,0.18)",
+          }}>
+            {badge.label}
+          </div>
           <UserButton
             appearance={{
               elements: {
-                avatarBox: {
-                  width: 38,
-                  height: 38,
-                  border: "2px solid #D97706",
-                  borderRadius: "50%",
-                },
+                avatarBox: { width: 38, height: 38, border: "2px solid #D97706", borderRadius: "50%" },
               },
             }}
           />
-        )}
-      </div>
-
-      {/* Mobile burger */}
-      <button
-        className="nav-burger"
-        onClick={() => setMenuOpen(!menuOpen)}
-        aria-label="Toggle navigation menu"
-        style={{ display: "none", flexDirection: "column", gap: 5, cursor: "pointer", background: "none", border: "none", padding: 4 }}
-      >
-        <span style={{ width: 24, height: 2, background: "#1C2B1A", borderRadius: 2, display: "block" }} />
-        <span style={{ width: 24, height: 2, background: "#1C2B1A", borderRadius: 2, display: "block" }} />
-        <span style={{ width: 24, height: 2, background: "#1C2B1A", borderRadius: 2, display: "block" }} />
-      </button>
-
-      {/* Mobile menu overlay */}
-      {menuOpen && (
-        <div
-          onClick={() => setMenuOpen(false)}
-          style={{
-            position: "fixed", inset: 0, background: "rgba(255,248,237,0.98)", zIndex: 800,
-            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            gap: 28, fontSize: "1.4rem",
-          }}
-        >
-          {links.map((l) => (
-            <a key={l.idx} href="#" onClick={(e) => { e.preventDefault(); goTo(l.idx); }}
-              style={{ color: "#1C2B1A", textDecoration: "none", fontWeight: 500 }}>
-              {l.label}
-            </a>
-          ))}
         </div>
       )}
-
-      <style>{`
-        @media (max-width: 900px) {
-          .nav-links-desktop { display: none !important; }
-          .nav-burger { display: flex !important; }
-        }
-      `}</style>
     </nav>
   );
 }

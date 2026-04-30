@@ -59,19 +59,19 @@ npx inngest-cli@latest dev
 
 | Area | Status |
 |---|---|
-| Landing page (7 sections, Framer Motion scroll) | ✅ Done |
+| Landing page (8 sections, Framer Motion scroll) | ✅ Done |
 | Clerk auth — provider, middleware, sign-in/sign-up pages | ✅ Done |
 | shadcn/ui primitives, GlobeCanvas (Three.js) | ✅ Done |
 | Neon DB — `users` + `sessions` + `session_reports` tables, Drizzle schema | ✅ Done |
 | `/dashboard` — voice-only onboarding via Sethu (no manual buttons) | ✅ Done |
 | Voice onboarding — Gemini Live, Sethu (male/Charon), detects lang+job+country | ✅ Done |
 | `/api/token` — serves `GOOGLE_API_KEY` to authenticated browser clients | ✅ Done |
-| `/api/session` — POST creates session + backfills `users.native_language` | ✅ Done |
+| `/api/session` — POST creates session + plan enforcement (language/country/job/limit gates) | ✅ Done |
 | `/api/agents` — POST returns NativeLingo system prompt for the session | ✅ Done |
 | `/session/[sessionId]` — live voice learning session page | ✅ Done |
-| `VoiceLearningSession` component — female AI tutor (Aoede), Gemini Live | ✅ Done |
+| `VoiceLearningSession` component — female AI tutor (Aoede), Gemini Live, 5-min timer | ✅ Done |
 | End Session flow — transcript capture → report generation → Sethu wrap-up | ✅ Done |
-| `/api/session/[sessionId]/complete` — marks session complete, generates report | ✅ Done |
+| `/api/session/[sessionId]/complete` — marks session complete, generates report, plan-aware trimming | ✅ Done |
 | `SessionWrapUp` component — Sethu (Charon) wrap-up voice session → redirect | ✅ Done |
 | `agents/steeringManager.ts` — ADK LlmAgent + `buildWrapUpSystemPrompt()` | ✅ Done |
 | `agents/sessionReport/reportAgent.ts` — generates JSON report via Gemini | ✅ Done |
@@ -80,6 +80,10 @@ npx inngest-cli@latest dev
 | `/sessions` page — lists all user sessions with report stats | ✅ Done |
 | `/reports` page — full session reports with vocabulary, fluency, readiness | ✅ Done |
 | Dashboard stats — real data: sessions, words learned, avg readiness, day streak | ✅ Done |
+| Pricing section (section 8) — Free/Plus/Pro cards, monthly/yearly toggle | ✅ Done |
+| `src/lib/plans.ts` — `PLAN_LIMITS`, `PLAN_BADGE`, `getPlanFromHas()` | ✅ Done |
+| Plan badge — dynamic in both Navbars (landing + dashboard) via Clerk `has()` | ✅ Done |
+| Free plan enforcement — voice-level (Sethu prompt), API gates, dashboard UI | ✅ Done |
 | Deployed to Vercel | ✅ Done |
 | GlobalVocation agents (Dubai-Driver, Japan-Construction, etc.) | ⏳ Next |
 | Tools (VocationalSearch, TechnicalDictionary, ContextCulture) | ⏳ Pending |
@@ -189,17 +193,18 @@ NODE_ENV=development
 `POST /api/session/[sessionId]/complete`:
 1. Verifies session belongs to authenticated user
 2. Calls `generateSessionReport(transcript, session)` → `SessionReport` JSON
-3. Updates `sessions.status = 'completed'`, `sessions.endedAt = now()`
-4. Inserts into `session_reports` table
-5. Calls `buildWrapUpSystemPrompt()` server-side → returns `{ report, wrapUpSystemPrompt }`
+3. **Free plan:** trims report to `{ fluencyPoints: 0, vocabularyLearned: [], stuckWords: [], readinessLevel, summary }` only
+4. **Free plan:** skips `session_reports` insert if the user already has ≥1 report this month (2nd session completes but is not saved)
+5. Updates `sessions.status = 'completed'`, `sessions.endedAt = now()`
+6. Inserts into `session_reports` (if allowed by plan check above)
+7. Calls `buildWrapUpSystemPrompt()` server-side → returns `{ report, wrapUpSystemPrompt }`
 
 `generateSessionReport` uses `GoogleGenAI.models.generateContent` directly (not ADK LlmAgent) — it's a one-shot text generation, not an interactive agent.
 
 ### NativeLingo Teaching Curriculum (all 5 agents follow this)
-1. **Stage 1** — Basic survival words (hello, thank you, yes, no, sorry, help, water, numbers 1–5)
-2. **Stage 2** — Workplace greetings (good morning sir, how are you, see you tomorrow)
-3. **Stage 3** — Job-specific words (tools, supervisor commands, safety phrases)
-4. **Stage 4** — Full sentences combining stages 1–3
+1. **Stage 1** — 4 core words only: Hello, Thank you, Yes, No
+2. **Stage 2** — Complete work sentences (greetings + daily workplace phrases as full sentences, not isolated words)
+3. **Stage 3** — Advanced job-specific sentences (tools, supervisor commands, safety phrases — all as complete sentences)
 
 **Per-word interactive loop:** introduce meaning → pronounce → user repeats word → feedback → build sentence → user repeats sentence → comprehension check → mini review every 4 words.
 
@@ -238,8 +243,10 @@ Module not found: Can't resolve 'async_hooks'
 ### AudioContext — Chrome User Gesture Requirement
 `new AudioContext()` **must** be created inside a click handler (`onClick`). All three voice components enforce this:
 - `DashboardClient.tsx` → `handleStartVoice()` creates AudioContext on button click
-- `VoiceLearningSession.tsx` → `startSession()` creates AudioContext on "Start Learning" click
-- `VoiceLearningSession.tsx` → `stopSession()` creates NEW AudioContexts for wrap-up session **before any `await`** — must still be inside the click handler synchronous stack
+- `VoiceLearningSession.tsx` → `startSession()` creates AudioContext on "Start Learning" click **and** pre-creates wrap-up AudioContexts (`wrapUpCtxsPreRef`) synchronously in the same click handler
+- `VoiceLearningSession.tsx` → `stopSession()` uses `wrapUpCtxsPreRef.current` (pre-created) rather than `new AudioContext()` — this allows the timer to trigger `stopSession()` without a user gesture
+
+The pre-create pattern is required because the 5-minute timer fires `stopSessionRef.current()` from a `setInterval` callback, which is not a user gesture. The AudioContexts must already exist from the earlier "Start Learning" click.
 
 Never create AudioContext in `useEffect` or outside a user gesture — Chrome will block it.
 
@@ -251,6 +258,26 @@ All voice components (`DashboardClient`, `VoiceLearningSession`, `SessionWrapUp`
 4. Send `{ text: 'begin' }` via `sendRealtimeInput` to trigger the AI's first speech turn
 5. Wire mic via AudioWorklet at `/worklets/capture-processor.js`
 6. Play output audio via `AudioQueue` (`src/lib/audioQueue.ts`)
+
+### Plan System — `src/lib/plans.ts`
+Single source of truth for plan config. Always import from here:
+```ts
+import { getPlanFromHas, PLAN_LIMITS, PLAN_BADGE } from '@/lib/plans'
+import type { PlanSlug } from '@/lib/plans'  // 'free' | 'plus' | 'pro'
+```
+
+- `PLAN_LIMITS[plan]` → `{ sessionSeconds, sessionsPerMonth }`
+- `PLAN_BADGE[plan]` → `{ label, bg, color }` — used in both Navbar components
+- `getPlanFromHas(has)` — reads plan from Clerk session token synchronously; call with `useAuth().has` in client, or `auth().has` in server. Always use this instead of reading `users.plan` directly for UI decisions.
+
+**Free plan restrictions (enforced at 3 layers):**
+1. **Voice** — `getOnboardingPrompt(plan)` in `DashboardClient.tsx` tells Sethu to redirect users away from restricted choices
+2. **API** — `POST /api/session` returns 403 with `{ error: 'language_restricted' | 'country_restricted' | 'job_restricted' | 'session_limit' }` — client catches these and shows nice UI, never raw error codes
+3. **UI** — `UpgradeWall` component replaces the Start button when `monthlyUsed >= monthlyLimit`
+
+Free plan limits: Hindi/Telugu only · Dubai/Russia only · Driver/Construction only · 2 sessions/month · first session report saved only · report trimmed to summary+readiness (no vocabulary/stuck words).
+
+Monthly session count uses `sessions.startedAt >= first day of current month` — counts all created sessions, not just completed ones.
 
 ### Tag Detection
 Sethu outputs structured tags that are detected client-side:

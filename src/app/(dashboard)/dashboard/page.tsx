@@ -2,8 +2,10 @@ import { getOrCreateUser } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { db } from '@/db'
 import { sessions, sessionReports } from '@/db/schema'
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, and, gte, count } from 'drizzle-orm'
 import DashboardClient from '@/components/dashboard/DashboardClient'
+import { PLAN_LIMITS } from '@/lib/plans'
+import type { PlanSlug } from '@/lib/plans'
 
 type Report = {
   fluencyPoints?: number
@@ -42,6 +44,18 @@ export default async function DashboardPage() {
     // Day streak — consecutive days from today with at least one report
     const dayStreak = calcDayStreak(rows.map(r => new Date(r.createdAt)))
 
+    const plan = (user.plan ?? 'free') as PlanSlug
+    const planLimit = PLAN_LIMITS[plan].sessionsPerMonth
+    const startOfMonth = new Date()
+    startOfMonth.setDate(1)
+    startOfMonth.setHours(0, 0, 0, 0)
+    const [{ value: monthlyUsedRaw }] = await db
+      .select({ value: count() })
+      .from(sessions)
+      .where(and(eq(sessions.userId, user.id), gte(sessions.startedAt, startOfMonth)))
+    const monthlyUsed = Number(monthlyUsedRaw)
+    const monthlyLimit = planLimit === Infinity ? 999 : planLimit
+
     return (
       <DashboardClient
         userName={user.name ?? user.email}
@@ -49,6 +63,9 @@ export default async function DashboardPage() {
         wordsLearned={wordsLearned}
         avgReadiness={avgReadiness}
         dayStreak={dayStreak}
+        plan={plan}
+        monthlyUsed={monthlyUsed}
+        monthlyLimit={monthlyLimit}
       />
     )
   } catch {

@@ -3,7 +3,9 @@ import { z } from 'zod'
 import { getOrCreateUser } from '@/lib/auth'
 import { db } from '@/db'
 import { sessions, users } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, and, gte, count } from 'drizzle-orm'
+import { PLAN_LIMITS } from '@/lib/plans'
+import type { PlanSlug } from '@/lib/plans'
 
 const createSchema = z.object({
   nativeLanguage: z.string().min(2).max(10),
@@ -16,6 +18,33 @@ export async function POST(req: Request) {
     const user = await getOrCreateUser()
     const body = await req.json()
     const { nativeLanguage, jobType, country } = createSchema.parse(body)
+
+    const plan = (user.plan ?? 'free') as PlanSlug
+    const limits = PLAN_LIMITS[plan]
+
+    if (plan === 'free') {
+      const FREE_LANGS = ['hi', 'te']
+      const FREE_COUNTRIES = ['dubai', 'russia']
+      const FREE_JOBS = ['driver', 'construction']
+      if (!FREE_LANGS.includes(nativeLanguage))
+        return NextResponse.json({ error: 'language_restricted' }, { status: 403 })
+      if (!FREE_COUNTRIES.includes(country))
+        return NextResponse.json({ error: 'country_restricted' }, { status: 403 })
+      if (!FREE_JOBS.includes(jobType))
+        return NextResponse.json({ error: 'job_restricted' }, { status: 403 })
+    }
+
+    const startOfMonth = new Date()
+    startOfMonth.setDate(1)
+    startOfMonth.setHours(0, 0, 0, 0)
+    const [{ value: monthlyUsed }] = await db
+      .select({ value: count() })
+      .from(sessions)
+      .where(and(eq(sessions.userId, user.id), gte(sessions.startedAt, startOfMonth)))
+
+    if (Number(monthlyUsed) >= limits.sessionsPerMonth) {
+      return NextResponse.json({ error: 'session_limit' }, { status: 403 })
+    }
 
     const [session] = await db
       .insert(sessions)
