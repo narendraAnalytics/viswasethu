@@ -4,6 +4,8 @@ import { sessions } from '@/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import VoiceLearningSession from '@/components/session/VoiceLearningSession'
+import { PLAN_LIMITS } from '@/lib/plans'
+import type { PlanSlug } from '@/lib/plans'
 
 const LANG_LABELS: Record<string, string> = {
   te: 'Telugu', hi: 'Hindi', ta: 'Tamil', kn: 'Kannada', mr: 'Marathi',
@@ -35,6 +37,8 @@ export default async function SessionPage({ params }: { params: Promise<{ sessio
     .where(and(eq(sessions.id, sessionId), eq(sessions.userId, user.id)))
 
   if (!session) notFound()
+
+  const totalSeconds = PLAN_LIMITS[(user.plan ?? 'free') as PlanSlug].sessionSeconds
 
   const lang = LANG_LABELS[session.nativeLanguage] ?? session.nativeLanguage
   const agentLabel = AGENT_LABELS[session.nativeLanguage] ?? `${lang} AI Tutor`
@@ -70,6 +74,7 @@ export default async function SessionPage({ params }: { params: Promise<{ sessio
         country={session.country}
         targetLang={dest.lang}
         agentLabel={agentLabel}
+        totalSeconds={totalSeconds}
       />
 
       {/* Back link */}

@@ -13,14 +13,13 @@ interface Props {
   country: string
   targetLang: string
   agentLabel: string
+  totalSeconds: number
 }
 
 type Phase = 'idle' | 'connecting' | 'active' | 'error' | 'completing' | 'wrapup'
 
-const TOTAL_SECONDS = 5 * 60
-
 export default function VoiceLearningSession({
-  sessionId, nativeLanguage, jobType, country, targetLang, agentLabel,
+  sessionId, nativeLanguage, jobType, country, targetLang, agentLabel, totalSeconds,
 }: Props) {
   const [phase, setPhase] = useState<Phase>('idle')
   const [statusText, setStatusText] = useState('')
@@ -28,7 +27,7 @@ export default function VoiceLearningSession({
   const [report, setReport] = useState<SessionReport | null>(null)
   const [wrapUpSystemPrompt, setWrapUpSystemPrompt] = useState('')
   const [wrapUpCtxs, setWrapUpCtxs] = useState<{ input: AudioContext; output: AudioContext } | null>(null)
-  const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS)
+  const [timeLeft, setTimeLeft] = useState(totalSeconds)
 
   const audioCtxsRef = useRef<{ input: AudioContext; output: AudioContext } | null>(null)
   const sessionRef = useRef<unknown>(null)
@@ -69,7 +68,7 @@ export default function VoiceLearningSession({
   // 5-minute countdown — starts when session becomes active
   useEffect(() => {
     if (phase !== 'active') return
-    setTimeLeft(TOTAL_SECONDS)
+    setTimeLeft(totalSeconds)
     timerIntervalRef.current = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -417,7 +416,7 @@ export default function VoiceLearningSession({
                 strokeWidth="4"
                 strokeLinecap="round"
                 strokeDasharray={circumference}
-                strokeDashoffset={circumference * (1 - timeLeft / TOTAL_SECONDS)}
+                strokeDashoffset={circumference * (1 - timeLeft / totalSeconds)}
                 style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.6s ease' }}
               />
             </svg>

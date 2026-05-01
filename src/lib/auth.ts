@@ -2,9 +2,10 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { getPlanFromHas } from '@/lib/plans'
 
 export async function getOrCreateUser() {
-  const { userId } = await auth()
+  const { userId, has } = await auth()
   if (!userId) throw new Error('Unauthorized')
 
   const clerkUser = await currentUser()
@@ -12,6 +13,7 @@ export async function getOrCreateUser() {
 
   const email = clerkUser.emailAddresses[0]?.emailAddress ?? ''
   const name = `${clerkUser.firstName ?? ''} ${clerkUser.lastName ?? ''}`.trim() || null
+  const clerkPlan = getPlanFromHas(has)
 
   const [existing] = await db.select().from(users).where(eq(users.id, userId))
 
@@ -20,15 +22,20 @@ export async function getOrCreateUser() {
       id: userId,
       email,
       name,
-      plan: 'free',
+      plan: clerkPlan,
     }).returning()
     return newUser
   }
 
-  // Backfill email/name if missing (e.g. created before this fix)
-  if (!existing.email || !existing.name) {
+  // Lazy plan sync + backfill email/name in one update if anything changed
+  const needsUpdate = existing.plan !== clerkPlan || !existing.email || !existing.name
+  if (needsUpdate) {
     const [updated] = await db.update(users)
-      .set({ email: existing.email || email, name: existing.name || name })
+      .set({
+        plan: clerkPlan,
+        email: existing.email || email,
+        name: existing.name || name,
+      })
       .where(eq(users.id, userId))
       .returning()
     return updated
