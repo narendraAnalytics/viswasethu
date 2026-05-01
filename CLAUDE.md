@@ -60,6 +60,7 @@ npx inngest-cli@latest dev
 | Area | Status |
 |---|---|
 | Landing page (8 sections, Framer Motion scroll) | ✅ Done |
+| Landing page hash navigation (`/#pricing`, `/#features`, etc.) | ✅ Done |
 | Clerk auth — provider, middleware, sign-in/sign-up pages | ✅ Done |
 | shadcn/ui primitives, GlobeCanvas (Three.js) | ✅ Done |
 | Neon DB — `users` + `sessions` + `session_reports` tables, Drizzle schema | ✅ Done |
@@ -69,10 +70,10 @@ npx inngest-cli@latest dev
 | `/api/session` — POST creates session + plan enforcement (language/country/job/limit gates) | ✅ Done |
 | `/api/agents` — POST returns NativeLingo system prompt for the session | ✅ Done |
 | `/session/[sessionId]` — live voice learning session page | ✅ Done |
-| `VoiceLearningSession` component — female AI tutor (Aoede), Gemini Live, 5-min timer | ✅ Done |
+| `VoiceLearningSession` component — female AI tutor (Aoede), Gemini Live, plan-aware timer | ✅ Done |
 | End Session flow — transcript capture → report generation → Sethu wrap-up | ✅ Done |
 | `/api/session/[sessionId]/complete` — marks session complete, generates report, plan-aware trimming | ✅ Done |
-| `SessionWrapUp` component — Sethu (Charon) wrap-up voice session → redirect | ✅ Done |
+| `SessionWrapUp` component — Sethu (Charon) wrap-up voice session → hard redirect to `/dashboard` | ✅ Done |
 | `agents/steeringManager.ts` — ADK LlmAgent + `buildWrapUpSystemPrompt()` | ✅ Done |
 | `agents/sessionReport/reportAgent.ts` — generates JSON report via Gemini | ✅ Done |
 | NativeLingo agents — Padma/Telugu, Priya/Hindi, Kavya/Tamil, Kaveri/Kannada, Gauri/Marathi | ✅ Done |
@@ -84,6 +85,8 @@ npx inngest-cli@latest dev
 | `src/lib/plans.ts` — `PLAN_LIMITS`, `PLAN_BADGE`, `getPlanFromHas()` | ✅ Done |
 | Plan badge — dynamic in both Navbars (landing + dashboard) via Clerk `has()` | ✅ Done |
 | Free plan enforcement — voice-level (Sethu prompt), API gates, dashboard UI | ✅ Done |
+| Lazy plan sync — `getOrCreateUser()` reads Clerk `has()` and writes to `users.plan` on every request | ✅ Done |
+| Plus/Pro plan timer — `totalSeconds` passed from session page via `PLAN_LIMITS[plan].sessionSeconds` | ✅ Done |
 | Deployed to Vercel | ✅ Done |
 | GlobalVocation agents (Dubai-Driver, Japan-Construction, etc.) | ⏳ Next |
 | Tools (VocationalSearch, TechnicalDictionary, ContextCulture) | ⏳ Pending |
@@ -181,13 +184,14 @@ NODE_ENV=development
 - Agent: `nativelingo_[lang]` | Voice: Female · **Aoede**
 - User clicks "Start Learning" → fetches system prompt from `POST /api/agents` → starts Gemini Live
 - Full AI transcript is accumulated in `transcriptRef` (array of turn strings) during the session
+- Timer duration comes from `totalSeconds` prop (set by session page from `PLAN_LIMITS[plan].sessionSeconds`)
 - User clicks "End Session" → `stopSession()` runs (creates new AudioContexts during user gesture) → calls `POST /api/session/[sessionId]/complete`
 
 **Phase 3 — Wrap-up** (`SessionWrapUp.tsx`):
 - Agent: `steering_manager` wrap-up mode | Voice: Male · **Charon**
 - System prompt generated server-side via `buildWrapUpSystemPrompt()` in `steeringManager.ts`
 - Sethu congratulates the user, shares report results, asks "learn more or end?"
-- Detects `[SESSION:END]` tag in output → redirects to `/dashboard`
+- Detects `[SESSION:END]` tag in output → **`window.location.href = '/dashboard'`** (hard navigation — bypasses Next.js router cache so dashboard always shows fresh `monthlyUsed` count)
 
 ### End Session API Flow
 `POST /api/session/[sessionId]/complete`:
@@ -246,7 +250,7 @@ Module not found: Can't resolve 'async_hooks'
 - `VoiceLearningSession.tsx` → `startSession()` creates AudioContext on "Start Learning" click **and** pre-creates wrap-up AudioContexts (`wrapUpCtxsPreRef`) synchronously in the same click handler
 - `VoiceLearningSession.tsx` → `stopSession()` uses `wrapUpCtxsPreRef.current` (pre-created) rather than `new AudioContext()` — this allows the timer to trigger `stopSession()` without a user gesture
 
-The pre-create pattern is required because the 5-minute timer fires `stopSessionRef.current()` from a `setInterval` callback, which is not a user gesture. The AudioContexts must already exist from the earlier "Start Learning" click.
+The pre-create pattern is required because the plan-based timer fires `stopSessionRef.current()` from a `setInterval` callback, which is not a user gesture. The AudioContexts must already exist from the earlier "Start Learning" click.
 
 Never create AudioContext in `useEffect` or outside a user gesture — Chrome will block it.
 
@@ -268,7 +272,11 @@ import type { PlanSlug } from '@/lib/plans'  // 'free' | 'plus' | 'pro'
 
 - `PLAN_LIMITS[plan]` → `{ sessionSeconds, sessionsPerMonth }`
 - `PLAN_BADGE[plan]` → `{ label, bg, color }` — used in both Navbar components
-- `getPlanFromHas(has)` — reads plan from Clerk session token synchronously; call with `useAuth().has` in client, or `auth().has` in server. Always use this instead of reading `users.plan` directly for UI decisions.
+- `getPlanFromHas(has)` — reads plan from Clerk session token; used inside `getOrCreateUser()` to sync plan to DB, and directly in Navbar client components via `useAuth().has`
+
+**Lazy plan sync — `src/lib/auth.ts`:** `getOrCreateUser()` calls `getPlanFromHas(has)` on every request. If `clerkPlan !== user.plan` in DB, it updates `users.plan` immediately in the same call. Clerk is the source of truth. To upgrade a user for testing: set `publicMetadata: { "plan": "plus" }` in Clerk Dashboard → the next request automatically syncs the DB.
+
+**Plan-aware session timer:** The session page (`src/app/(dashboard)/session/[sessionId]/page.tsx`) reads `user.plan` after the lazy sync, looks up `PLAN_LIMITS[plan].sessionSeconds`, and passes it as `totalSeconds` prop to `VoiceLearningSession`. Free = 300 s, Plus = 1200 s, Pro = 2700 s.
 
 **Free plan restrictions (enforced at 3 layers):**
 1. **Voice** — `getOnboardingPrompt(plan)` in `DashboardClient.tsx` tells Sethu to redirect users away from restricted choices
@@ -277,12 +285,18 @@ import type { PlanSlug } from '@/lib/plans'  // 'free' | 'plus' | 'pro'
 
 Free plan limits: Hindi/Telugu only · Dubai/Russia only · Driver/Construction only · 2 sessions/month · first session report saved only · report trimmed to summary+readiness (no vocabulary/stuck words).
 
-Monthly session count uses `sessions.startedAt >= first day of current month` — counts all created sessions, not just completed ones.
+Monthly session count uses `sessions.startedAt >= first day of current month` — counts **all** created sessions regardless of completion status. A session is "used" the moment `POST /api/session` inserts it — cancelling or abandoning doesn't free a slot.
+
+### Next.js Router Cache — Dashboard Staleness Fix
+`/dashboard` has `export const dynamic = 'force-dynamic'` to prevent server-side caching. All exits from `SessionWrapUp.tsx` use `window.location.href = '/dashboard'` (hard navigation) rather than `router.push('/dashboard')`. This is required because `router.push` can serve a stale RSC payload from the Next.js client-side router cache, causing `monthlyUsed` to appear unchanged after a session completes.
+
+### Landing Page Hash Navigation
+`LandingPage.tsx` uses a Framer Motion index-based section switcher (not scroll). Hash links like `/#pricing` work because a `useEffect` on mount reads `window.location.hash` and calls `goTo(index)`. Supported hashes: `#pricing` (6), `#features` (3), `#solution` (2), `#tech` (5).
 
 ### Tag Detection
 Sethu outputs structured tags that are detected client-side:
 - **Onboarding** (`DashboardClient.tsx`): `[LANG:te]`, `[JOB:driver]`, `[COUNTRY:dubai]` → `checkForTags()`
-- **Wrap-up** (`SessionWrapUp.tsx`): `[SESSION:END]` → triggers redirect to `/dashboard`
+- **Wrap-up** (`SessionWrapUp.tsx`): `[SESSION:END]` → triggers hard redirect to `/dashboard`
 
 After detecting a terminal tag, always wait for `turnComplete` before acting — Sethu finishes speaking first.
 
@@ -297,8 +311,10 @@ Call at the top of every protected Server Component or API route.
 
 ```ts
 import { getOrCreateUser } from '@/lib/auth'
-const user = await getOrCreateUser()  // throws if unauthenticated
+const user = await getOrCreateUser()  // throws if unauthenticated; also syncs plan from Clerk
 ```
+
+The returned `user.plan` is always up-to-date with Clerk — no separate sync call needed.
 
 ---
 
@@ -338,6 +354,7 @@ session_reports id (uuid PK), sessionId (uuid FK→sessions), report (jsonb), cr
 - `next.config.ts` must keep `serverExternalPackages: ['@google/adk', '@google/genai']` — ADK uses Node.js-specific APIs that break if Webpack bundles them
 - Never add `export const runtime = 'edge'` to any route using ADK agents — requires full Node.js runtime
 - `GOOGLE_GENAI_USE_VERTEXAI=FALSE` must be set in Vercel Dashboard
+- `src/app/(dashboard)/dashboard/page.tsx` has `export const dynamic = 'force-dynamic'` — do not remove it
 
 ---
 
@@ -354,3 +371,5 @@ session_reports id (uuid PK), sessionId (uuid FK→sessions), report (jsonb), cr
 - Do not add `&channel_binding=require` or `-pooler` to the Neon DATABASE_URL
 - Do not create `AudioContext` outside a click handler (or before any `await` in `stopSession`)
 - Do not add `export const runtime = 'edge'` to any route that imports ADK
+- Do not use `router.push('/dashboard')` in `SessionWrapUp.tsx` — use `window.location.href = '/dashboard'` to bypass the Next.js router cache and ensure fresh monthly session counts
+- Do not hardcode timer seconds in `VoiceLearningSession.tsx` — always pass `totalSeconds` from the session page via `PLAN_LIMITS[plan].sessionSeconds`
