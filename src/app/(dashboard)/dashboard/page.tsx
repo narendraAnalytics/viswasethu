@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getOrCreateUser } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { db } from '@/db'

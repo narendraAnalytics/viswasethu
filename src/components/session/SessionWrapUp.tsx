@@ -56,7 +56,7 @@ export default function SessionWrapUp({
       doneRef.current = true
       setTimeout(() => {
         cleanup()
-        router.push('/dashboard')
+        window.location.href = '/dashboard'
       }, 1500)
     }
   }
@@ -115,13 +115,13 @@ export default function SessionWrapUp({
           },
           onclose: () => {
             if (!intentionalCloseRef.current && !doneRef.current) {
-              router.push('/dashboard')
+              window.location.href = '/dashboard'
             }
           },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onerror: (e: any) => {
             console.error('WrapUp Gemini Live error', e)
-            if (!doneRef.current) router.push('/dashboard')
+            if (!doneRef.current) window.location.href = '/dashboard'
           },
         },
         config: {
@@ -160,7 +160,7 @@ export default function SessionWrapUp({
       }
     } catch (err) {
       console.error('WrapUp start error', err)
-      router.push('/dashboard')
+      window.location.href = '/dashboard'
     }
   }
 
