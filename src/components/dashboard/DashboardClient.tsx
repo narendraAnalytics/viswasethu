@@ -257,7 +257,7 @@ export default function DashboardClient({ userName, totalSessions, wordsLearned,
       {/* Main 2-col grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, marginBottom: 24 }}>
         {/* Start Session card */}
-        <div style={{ background: '#fff', borderRadius: 20, border: '1px solid rgba(217, 119, 6, 0.18)', boxShadow: '0 4px 32px rgba(217, 119, 6, 0.08)', overflow: 'hidden' }}>
+        <div style={{ background: 'linear-gradient(160deg, #FFFDF7 0%, #FFF8ED 60%, #FFF3E0 100%)', borderRadius: 20, border: '1px solid rgba(217, 119, 6, 0.18)', boxShadow: '0 4px 32px rgba(217, 119, 6, 0.08)', overflow: 'hidden' }}>
           {/* Card header */}
           <div style={{ background: 'linear-gradient(135deg, #FFF3E0 0%, #FFF8ED 100%)', borderBottom: '1px solid rgba(217, 119, 6, 0.15)', padding: '20px 24px' }}>
             <div style={{ fontWeight: 700, fontSize: 16, color: '#1C2B1A' }}>🎤 Start Your Learning Session</div>
@@ -324,22 +324,6 @@ export default function DashboardClient({ userName, totalSessions, wordsLearned,
 
         {/* Right column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ background: '#fff', borderRadius: 20, border: '1px solid rgba(217, 119, 6, 0.18)', boxShadow: '0 4px 32px rgba(217, 119, 6, 0.06)', overflow: 'hidden', flex: 1 }}>
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(217, 119, 6, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 700, fontSize: 15, color: '#1C2B1A' }}>📋 Recent Sessions</span>
-              {totalSessions > 0 && <a href="/sessions" style={{ fontSize: 12, color: '#D97706', fontWeight: 600, textDecoration: 'none' }}>View all →</a>}
-            </div>
-            <div style={{ padding: '16px 20px' }}>
-              {totalSessions === 0 && (
-                <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                  <div style={{ fontSize: 40, marginBottom: 10 }}>🌱</div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#1C2B1A', marginBottom: 4 }}>No sessions yet</div>
-                  <div style={{ fontSize: 12, color: '#5A4A2A' }}>Start your first session using the wizard!</div>
-                </div>
-              )}
-            </div>
-          </div>
-
           <div style={{ background: 'linear-gradient(135deg, #EAF6F1, #F0FDF4)', borderRadius: 16, border: '1px solid rgba(5, 150, 105, 0.20)', padding: '16px 18px' }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#059669', marginBottom: 6 }}>💡 Learning Tip</div>
             <div style={{ fontSize: 12, color: '#1C2B1A', lineHeight: 1.6 }}>
@@ -776,7 +760,7 @@ function StatCard({ icon, label, value, color, suffix = '' }: {
   icon: string; label: string; value: number | string; color: string; suffix?: string
 }) {
   return (
-    <div style={{ background: '#fff', borderRadius: 16, padding: '18px 20px', border: `1px solid ${color}22`, boxShadow: `0 2px 16px ${color}0F`, display: 'flex', alignItems: 'center', gap: 14 }}>
+    <div style={{ background: `linear-gradient(135deg, ${color}08 0%, ${color}14 100%)`, borderRadius: 16, padding: '18px 20px', border: `1px solid ${color}22`, boxShadow: `0 2px 16px ${color}0F`, display: 'flex', alignItems: 'center', gap: 14 }}>
       <div style={{ width: 44, height: 44, borderRadius: 12, background: `${color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
         {icon}
       </div>
@@ -792,47 +776,31 @@ function StatCard({ icon, label, value, color, suffix = '' }: {
 
 
 function AgentArchitectureCard() {
+  const [open, setOpen] = useState(false)
+  const IMG = 'https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1777618655/projectview_zrelbb.png'
   return (
-    <div style={{ background: '#fff', borderRadius: 20, border: '1px solid rgba(217, 119, 6, 0.18)', boxShadow: '0 4px 32px rgba(217, 119, 6, 0.06)', padding: '24px', overflow: 'hidden', position: 'relative' }}>
-      <div style={{ marginBottom: 20 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: '#1C2B1A' }}>🤖 Multi-Agent AI Architecture</div>
-        <div style={{ fontSize: 12, color: '#5A4A2A', marginTop: 2 }}>Your voice goes through 3 layers of AI intelligence</div>
+    <>
+      <div
+        onClick={() => setOpen(true)}
+        style={{ borderRadius: 20, border: '1px solid rgba(217, 119, 6, 0.18)', boxShadow: '0 4px 32px rgba(217, 119, 6, 0.06)', overflow: 'hidden', cursor: 'zoom-in' }}
+      >
+        <img src={IMG} alt="Multi-Agent AI Architecture" style={{ width: '100%', display: 'block', mixBlendMode: 'multiply' }} />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 0, overflowX: 'auto', paddingBottom: 4 }}>
-        <AgentNode icon="🎤" label="Your Voice" sub="Telugu / Hindi / Tamil…" color="#D97706" bg="#FFF3E0" />
-        <Arrow />
-        <AgentNode icon="🧠" label="Steering Manager" sub="Detects language + intent" color="#7C3AED" bg="#F5F3FF" featured />
-        <Arrow />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <AgentNode icon="🗣️" label="NativeLingo Agent" sub="Explains in your language" color="#059669" bg="#ECFDF5" small />
-          <AgentNode icon="🌍" label="GlobalVocation Agent" sub="Job + Country training" color="#EA580C" bg="#FFF7ED" small />
-        </div>
-        <Arrow />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <AgentNode icon="🔍" label="VocationalSearch" sub="Real job phrases" color="#0891B2" bg="#ECFEFF" small />
-          <AgentNode icon="📖" label="TechnicalDict" sub="Safety terms" color="#0891B2" bg="#ECFEFF" small />
-        </div>
-        <Arrow />
-        <AgentNode icon="📊" label="Session Report" sub="Fluency score + progress" color="#D97706" bg="#FFF3E0" />
-      </div>
-    </div>
-  )
-}
 
-function AgentNode({ icon, label, sub, color, bg, featured = false, small = false }: {
-  icon: string; label: string; sub: string; color: string; bg: string; featured?: boolean; small?: boolean
-}) {
-  return (
-    <div style={{ background: bg, border: `1.5px solid ${color}30`, borderRadius: featured ? 16 : 12, padding: small ? '8px 12px' : '12px 16px', minWidth: small ? 130 : 148, flexShrink: 0, boxShadow: featured ? `0 4px 20px ${color}20` : 'none', transform: featured ? 'scale(1.04)' : 'scale(1)' }}>
-      <div style={{ fontSize: small ? 18 : 22, marginBottom: 4 }}>{icon}</div>
-      <div style={{ fontSize: small ? 11 : 13, fontWeight: 700, color: '#1C2B1A', lineHeight: 1.2 }}>{label}</div>
-      <div style={{ fontSize: 10, color, fontWeight: 600, marginTop: 2, lineHeight: 1.3 }}>{sub}</div>
-    </div>
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, cursor: 'zoom-out' }}
+        >
+          <img
+            src={IMG}
+            alt="Multi-Agent AI Architecture"
+            style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: 16, boxShadow: '0 8px 64px rgba(0,0,0,0.5)', mixBlendMode: 'normal' }}
+          />
+        </div>
+      )}
+    </>
   )
-}
-
-function Arrow() {
-  return <div style={{ padding: '0 6px', color: '#D97706', fontSize: 18, flexShrink: 0, alignSelf: 'center' }}>→</div>
 }
 
 function getGreeting() {

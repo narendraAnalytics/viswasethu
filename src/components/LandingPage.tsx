@@ -85,24 +85,50 @@ function Navbar({ current: _current, goTo: _goTo }: { current: number; goTo: (i:
 
 // ── DOT NAV ──
 function DotNav({ current, goTo }: { current: number; goTo: (i: number) => void }) {
-  const labels = ["Hero", "Problem", "Solution", "Features", "Users", "Tech Stack", "Pricing", "Get Started"];
+  const labels = ["Home", "Problem", "Solution", "Features", "Who's It For", "Tech Stack", "Pricing", "Get Started"];
+  const [hovered, setHovered] = useState<number | null>(null);
   return (
     <div style={{ position: "fixed", right: 28, top: "50%", transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 14, zIndex: 1000 }}>
       {labels.map((label, i) => (
-        <button
-          key={i}
-          title={label}
-          onClick={() => goTo(i)}
-          style={{
-            width: 10, height: 10, borderRadius: "50%", cursor: "pointer", padding: 0,
-            background: current === i ? "#D97706" : "rgba(217,119,6,0.2)",
-            border: `1.5px solid ${current === i ? "#D97706" : "rgba(217,119,6,0.5)"}`,
-            boxShadow: current === i ? "0 0 12px rgba(217,119,6,0.5)" : "none",
-            transform: current === i ? "scale(1.4)" : "scale(1)",
-            transition: "all 0.4s ease",
-          } as React.CSSProperties}
-        />
+        <div key={i} style={{ position: "relative", display: "flex", alignItems: "center" }}>
+          {/* Tooltip */}
+          {hovered === i && (
+            <div style={{
+              position: "absolute", right: 22,
+              background: "linear-gradient(135deg, #FEF3C7, #FDE68A)", color: "#78450F",
+              fontSize: 11, fontWeight: 600, whiteSpace: "nowrap",
+              padding: "4px 10px", borderRadius: 6,
+              boxShadow: "0 2px 12px rgba(217,119,6,0.25)",
+              pointerEvents: "none",
+              animation: "vs-tooltip-in 0.15s ease",
+            }}>
+              {label}
+              {/* Arrow pointing right */}
+              <span style={{
+                position: "absolute", right: -5, top: "50%", transform: "translateY(-50%)",
+                width: 0, height: 0,
+                borderTop: "5px solid transparent",
+                borderBottom: "5px solid transparent",
+                borderLeft: "5px solid #FDE68A",
+              }} />
+            </div>
+          )}
+          <button
+            onClick={() => goTo(i)}
+            onMouseEnter={() => setHovered(i)}
+            onMouseLeave={() => setHovered(null)}
+            style={{
+              width: 10, height: 10, borderRadius: "50%", cursor: "pointer", padding: 0,
+              background: current === i ? "#D97706" : "rgba(217,119,6,0.2)",
+              border: `1.5px solid ${current === i ? "#D97706" : "rgba(217,119,6,0.5)"}`,
+              boxShadow: current === i ? "0 0 12px rgba(217,119,6,0.5)" : "none",
+              transform: current === i ? "scale(1.4)" : "scale(1)",
+              transition: "all 0.4s ease",
+            } as React.CSSProperties}
+          />
+        </div>
       ))}
+      <style>{`@keyframes vs-tooltip-in { from { opacity:0; transform:translateX(4px); } to { opacity:1; transform:translateX(0); } }`}</style>
     </div>
   );
 }
@@ -113,6 +139,43 @@ const HERO_IMAGES = [
   "https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1777292512/bannerimage1_uodots.png",
    "https://res.cloudinary.com/dkqbzwicr/image/upload/q_auto/f_auto/v1777462223/bannerimage4_snqfbb.png",
 ];
+
+const TRUST_WORDS = [
+  { word: "Trust",     color: "#D97706" },  // amber
+  { word: "विश्वास",   color: "#F472B6" },  // pink — Hindi
+  { word: "நம்பிக்கை", color: "#34D399" },  // emerald — Tamil
+  { word: "విశ్వాసం",  color: "#FBBF24" },  // golden — Telugu
+  { word: "ನಂಬಿಕೆ",    color: "#A78BFA" },  // violet — Kannada
+]
+
+function TrustWord() {
+  const [idx, setIdx] = useState(0)
+  const [visible, setVisible] = useState(true)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => {
+        setIdx(prev => (prev + 1) % TRUST_WORDS.length)
+        setVisible(true)
+      }, 350)
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const { word, color } = TRUST_WORDS[idx]
+  return (
+    <span style={{
+      color,
+      display: "inline-block",
+      opacity: visible ? 1 : 0,
+      transform: visible ? "translateY(0)" : "translateY(-8px)",
+      transition: "opacity 0.35s ease, transform 0.35s ease, color 0.35s ease",
+    }}>
+      {word}
+    </span>
+  )
+}
 
 // ── S1: HERO ──
 function HeroSection({ goTo }: { goTo: (i: number) => void }) {
@@ -229,10 +292,10 @@ function HeroSection({ goTo }: { goTo: (i: number) => void }) {
             textShadow: "0 0 60px rgba(245,158,11,0.35)",
             margin: 0,
           }}>
-            The Bridge<br />of <span style={{ color: "#D97706" }}>Trust</span>
+            The Bridge<br />of <TrustWord />
           </h1>
 
-          <p style={{ fontSize: "clamp(1rem,1.5vw,1.2rem)", color: "rgba(255,248,237,0.85)", lineHeight: 1.6, maxWidth: 500, margin: 0 }}>
+          <p style={{ fontSize: "clamp(1rem,1.5vw,1.2rem)", color: "#FDE68A", lineHeight: 1.6, maxWidth: 500, margin: 0 }}>
             AI-powered voice learning. Your language → Global opportunity. Learn exactly what you need to speak on your first day of work abroad.
           </p>
 
@@ -374,48 +437,75 @@ function ProblemSection({ isActive }: { isActive: boolean }) {
   };
 
   const statData = [
-    { icon: "⚠️", num: `${counts[0]}%`, label: "job loss due to\nmiscommunication abroad" },
-    { icon: "🗣️", num: `${counts[1]}`, label: "Indian languages spoken,\nzero job-specific training available" },
-    { icon: "🌏", num: `Day ${counts[2]}`, label: "abroad is the most critical —\nand the most unprepared" },
+    { icon: "⚠️", num: `${counts[0]}%`, label: "job loss due to\nmiscommunication abroad", accent: "#F472B6", glow: "rgba(244,114,182,0.25)" },
+    { icon: "🗣️", num: `${counts[1]}`, label: "Indian languages spoken,\nzero job-specific training available", accent: "#34D399", glow: "rgba(52,211,153,0.25)" },
+    { icon: "🌏", num: `Day ${counts[2]}`, label: "abroad is the most critical —\nand the most unprepared", accent: "#FBBF24", glow: "rgba(251,191,36,0.25)" },
   ];
 
   return (
     <section style={{
-      width: "100%", height: "100%", background: "#F3F7F0",
+      width: "100%", height: "100%",
+      background: "linear-gradient(145deg, #0D1F1A 0%, #111827 45%, #1A0F2E 100%)",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      gap: 60, padding: "80px 64px", position: "relative", overflow: "hidden",
+      gap: 52, padding: "80px 64px", position: "relative", overflow: "hidden",
       fontFamily: ff.jakarta,
     }}>
+      {/* Ambient glow orbs */}
+      <div style={{ position: "absolute", top: "10%", left: "8%", width: 320, height: 320, borderRadius: "50%", background: "radial-gradient(circle, rgba(217,119,6,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: "10%", right: "8%", width: 280, height: 280, borderRadius: "50%", background: "radial-gradient(circle, rgba(139,92,246,0.10) 0%, transparent 70%)", pointerEvents: "none" }} />
       <BgWave />
-      <div style={{ fontFamily: ff.space, fontSize: "0.72rem", letterSpacing: "0.15em", color: "#EA580C", textTransform: "uppercase", textAlign: "center" }}>
-        THE REAL PROBLEM
+
+      {/* Label */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 32, height: 1.5, background: "linear-gradient(90deg, transparent, #EA580C)" }} />
+        <span style={{ fontFamily: ff.space, fontSize: "0.72rem", letterSpacing: "0.18em", color: "#EA580C", textTransform: "uppercase" }}>The Real Problem</span>
+        <div style={{ width: 32, height: 1.5, background: "linear-gradient(90deg, #EA580C, transparent)" }} />
       </div>
+
+      {/* Headline */}
       <div style={{
         fontFamily: ff.playfair, fontSize: "clamp(2rem,3.5vw,3.2rem)", fontWeight: 700,
-        color: "#2A1A0A", textAlign: "center", lineHeight: 1.2, maxWidth: 800, margin: 0,
+        color: "#FDE68A", textAlign: "center", lineHeight: 1.25, maxWidth: 800, margin: 0,
       }}>
-        <span style={{ color: "#92400E" }}>1.8 Billion</span> migrant workers.<br />
-        Most can&apos;t ask for help on their <span style={{ color: "#D97706" }}>first day.</span>
+        <span style={{ color: "#F472B6" }}>1.8 Billion</span> migrant workers.<br />
+        Most can&apos;t ask for help on their <span style={{ color: "#FBBF24" }}>first day.</span>
       </div>
-      <div style={{ display: "flex", gap: 28, flexWrap: "wrap", justifyContent: "center" }}>
+
+      {/* Stat cards */}
+      <div style={{ display: "flex", gap: 24, flexWrap: "wrap", justifyContent: "center" }}>
         {statData.map((s, i) => (
           <div key={i}
             style={{
-              background: "rgba(255,255,255,0.70)", border: "1px solid rgba(217,119,6,0.30)",
-              borderRadius: 20, padding: "36px 32px", width: 280, backdropFilter: "blur(12px)",
+              background: "rgba(255,255,255,0.04)",
+              border: `1px solid ${s.accent}30`,
+              borderRadius: 24, padding: "36px 32px", width: 272,
+              backdropFilter: "blur(16px)",
               textAlign: "center", position: "relative", overflow: "hidden",
-              transition: "transform 0.4s,box-shadow 0.4s", cursor: "default",
+              transition: "transform 0.35s, box-shadow 0.35s, border-color 0.35s",
+              cursor: "default",
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-8px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 20px 60px rgba(245,158,11,0.15)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget as HTMLElement
+              el.style.transform = "translateY(-10px)"
+              el.style.boxShadow = `0 24px 64px ${s.glow}`
+              el.style.borderColor = `${s.accent}70`
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget as HTMLElement
+              el.style.transform = "translateY(0)"
+              el.style.boxShadow = "none"
+              el.style.borderColor = `${s.accent}30`
+            }}
           >
-            <div style={{ fontSize: "2rem", marginBottom: 12 }}>{s.icon}</div>
+            {/* Top accent line */}
+            <div style={{ position: "absolute", top: 0, left: "20%", right: "20%", height: 2, background: `linear-gradient(90deg, transparent, ${s.accent}, transparent)`, borderRadius: 2 }} />
+            <div style={{ fontSize: "2rem", marginBottom: 14 }}>{s.icon}</div>
             <div style={{
               fontFamily: ff.playfair, fontSize: "3.2rem", fontWeight: 900,
-              background: "linear-gradient(135deg,#D97706,#EA580C)",
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+              color: s.accent,
+              textShadow: `0 0 32px ${s.glow}`,
             }}>{s.num}</div>
-            <div style={{ fontSize: "0.95rem", color: "#5A4A2A", marginTop: 10, lineHeight: 1.5, whiteSpace: "pre-line" }}>{s.label}</div>
+            <div style={{ fontSize: "0.88rem", color: "rgba(253,230,138,0.70)", marginTop: 12, lineHeight: 1.6, whiteSpace: "pre-line" }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -534,54 +624,75 @@ function SolutionSection({ isActive }: { isActive: boolean }) {
 // ── S4: FEATURES ──
 function FeaturesSection() {
   const feats = [
-    { icon: "🎙️", title: "Voice First", desc: "No reading, no typing. Just speak and learn the way humans are meant to communicate." },
-    { icon: "🤖", title: "Multi-Agent AI", desc: "Specialized AI agents for each language and vocation, orchestrated intelligently by Gemini ADK." },
-    { icon: "🔧", title: "Job Specific", desc: "Driver phrases for Dubai, construction terms for Japan, hospitality scripts for UK." },
-    { icon: "🌺", title: "Native Language", desc: "Learn in your mother tongue first. Telugu, Hindi, Tamil, Kannada, Marathi — all supported." },
-    { icon: "⚡", title: "Live Feedback", desc: "Real-time pronunciation scoring, tone correction, and confidence building." },
-    { icon: "📊", title: "Progress Reports", desc: "Track readiness for Day 1 abroad. Share progress with family and employers." },
+    { icon: "🎙️", title: "Voice First", desc: "No reading, no typing. Just speak and learn the way humans are meant to communicate.", accent: "#FBBF24", glow: "rgba(251,191,36,0.22)" },
+    { icon: "🤖", title: "Multi-Agent AI", desc: "Specialized AI agents for each language and vocation, orchestrated intelligently by Gemini ADK.", accent: "#A78BFA", glow: "rgba(167,139,250,0.22)" },
+    { icon: "🔧", title: "Job Specific", desc: "Driver phrases for Dubai, construction terms for Japan, hospitality scripts for UK.", accent: "#34D399", glow: "rgba(52,211,153,0.22)" },
+    { icon: "🌺", title: "Native Language", desc: "Learn in your mother tongue first. Telugu, Hindi, Tamil, Kannada, Marathi — all supported.", accent: "#F472B6", glow: "rgba(244,114,182,0.22)" },
+    { icon: "⚡", title: "Live Feedback", desc: "Real-time pronunciation scoring, tone correction, and confidence building.", accent: "#38BDF8", glow: "rgba(56,189,248,0.22)" },
+    { icon: "📊", title: "Progress Reports", desc: "Track readiness for Day 1 abroad. Share progress with family and employers.", accent: "#FB923C", glow: "rgba(251,146,60,0.22)" },
   ];
 
   return (
     <section style={{
-      width: "100%", height: "100%", background: "#FFF3E0",
+      width: "100%", height: "100%",
+      background: "linear-gradient(135deg, #1E1040 0%, #2D1B69 40%, #1A2744 100%)",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      gap: 48, padding: "80px 64px", overflow: "auto", fontFamily: ff.jakarta,
+      gap: 44, padding: "80px 64px", overflow: "auto", fontFamily: ff.jakarta,
+      position: "relative",
     }}>
-      <div style={{ fontFamily: ff.space, fontSize: "0.72rem", letterSpacing: "0.15em", color: "#EA580C", textTransform: "uppercase", textAlign: "center" }}>
-        PLATFORM FEATURES
+      {/* Mesh glow blobs */}
+      <div style={{ position: "absolute", top: "-10%", right: "-5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 65%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: "-10%", left: "-5%", width: 380, height: 380, borderRadius: "50%", background: "radial-gradient(circle, rgba(56,189,248,0.14) 0%, transparent 65%)", pointerEvents: "none" }} />
+
+      {/* Label */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 32, height: 1.5, background: "linear-gradient(90deg, transparent, #A78BFA)" }} />
+        <span style={{ fontFamily: ff.space, fontSize: "0.72rem", letterSpacing: "0.18em", color: "#A78BFA", textTransform: "uppercase" }}>Platform Features</span>
+        <div style={{ width: 32, height: 1.5, background: "linear-gradient(90deg, #A78BFA, transparent)" }} />
       </div>
-      <div style={{ fontFamily: ff.playfair, fontSize: "clamp(1.8rem,3vw,2.8rem)", fontWeight: 700, color: "#2A1A0A", textAlign: "center", margin: 0 }}>
-        Built for Real Workers. Powered by Real AI.
+
+      {/* Headline */}
+      <div style={{ fontFamily: ff.playfair, fontSize: "clamp(1.8rem,3vw,2.8rem)", fontWeight: 700, color: "#E9D5FF", textAlign: "center", margin: 0 }}>
+        Built for Real Workers. <span style={{ color: "#FBBF24" }}>Powered by Real AI.</span>
       </div>
+
+      {/* Cards grid */}
       <div style={{
         display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20,
-        width: "100%", maxWidth: 1000, perspective: 1200,
+        width: "100%", maxWidth: 1000,
       }} className="features-grid">
         {feats.map((f, i) => (
           <div key={i}
             style={{
-              background: "rgba(255,255,255,0.70)", border: "1px solid rgba(217,119,6,0.30)",
-              borderRadius: 18, padding: "28px 24px",
-              transform: "rotateX(3deg) rotateY(-2deg)",
-              transition: "all 0.4s cubic-bezier(0.23,1,0.32,1)", cursor: "default", position: "relative", overflow: "hidden",
+              background: `linear-gradient(145deg, ${f.accent}12 0%, ${f.accent}06 100%)`,
+              border: `1px solid ${f.accent}45`,
+              borderRadius: 20, padding: "28px 24px",
+              backdropFilter: "blur(16px)",
+              transition: "all 0.35s cubic-bezier(0.23,1,0.32,1)",
+              cursor: "default", position: "relative", overflow: "hidden",
             }}
             onMouseEnter={(e) => {
               const el = e.currentTarget as HTMLElement;
-              el.style.transform = "rotateX(0deg) rotateY(0deg) translateY(-10px) translateZ(20px)";
-              el.style.borderColor = "#D97706";
-              el.style.boxShadow = "0 24px 60px rgba(245,158,11,0.2),0 0 0 1px rgba(245,158,11,0.15)";
+              el.style.transform = "translateY(-10px) scale(1.02)";
+              el.style.borderColor = `${f.accent}90`;
+              el.style.boxShadow = `0 24px 60px ${f.glow}, inset 0 1px 0 ${f.accent}30`;
             }}
             onMouseLeave={(e) => {
               const el = e.currentTarget as HTMLElement;
-              el.style.transform = "rotateX(3deg) rotateY(-2deg)";
-              el.style.borderColor = "rgba(217,119,6,0.30)";
+              el.style.transform = "translateY(0) scale(1)";
+              el.style.borderColor = `${f.accent}45`;
               el.style.boxShadow = "none";
             }}
           >
-            <div style={{ fontSize: "2.4rem", marginBottom: 16 }}>{f.icon}</div>
-            <div style={{ fontFamily: ff.playfair, fontSize: "1.2rem", fontWeight: 700, color: "#2A1A0A", marginBottom: 8 }}>{f.title}</div>
-            <div style={{ fontSize: "0.84rem", color: "#5A4A2A", lineHeight: 1.6 }}>{f.desc}</div>
+            <div style={{ position: "absolute", top: 0, left: "15%", right: "15%", height: 2, background: `linear-gradient(90deg, transparent, ${f.accent}, transparent)` }} />
+            <div style={{
+              width: 52, height: 52, borderRadius: 14, marginBottom: 18,
+              background: `${f.accent}22`, border: `1.5px solid ${f.accent}50`,
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.7rem",
+              boxShadow: `0 4px 20px ${f.glow}`,
+            }}>{f.icon}</div>
+            <div style={{ fontFamily: ff.playfair, fontSize: "1.15rem", fontWeight: 700, color: f.accent, marginBottom: 10 }}>{f.title}</div>
+            <div style={{ fontSize: "0.84rem", color: "rgba(233,213,255,0.70)", lineHeight: 1.65 }}>{f.desc}</div>
           </div>
         ))}
       </div>
@@ -596,59 +707,93 @@ function FeaturesSection() {
 // ── S5: PERSONAS ──
 function PersonasSection() {
   const personas = [
-    { icon: "🚗", name: "Raju", job: "Driver", from: "Telugu", to: "Arabic", origin: "🇮🇳 Andhra Pradesh", dest: "🇦🇪 Dubai" },
-    { icon: "🏠", name: "Priya", job: "Housekeeper", from: "Tamil", to: "English", origin: "🇮🇳 Tamil Nadu", dest: "🇬🇧 UK" },
-    { icon: "🏗️", name: "Arjun", job: "Construction", from: "Hindi", to: "Japanese", origin: "🇮🇳 Rajasthan", dest: "🇯🇵 Japan" },
-    { icon: "🔧", name: "Suresh", job: "Plumber", from: "Kannada", to: "Arabic", origin: "🇮🇳 Karnataka", dest: "🇦🇪 Dubai" },
+    { icon: "🚗", name: "Raju", job: "Driver", from: "Telugu", to: "Arabic", origin: "🇮🇳 Andhra Pradesh", dest: "🇦🇪 Dubai", accent: "#FBBF24", glow: "rgba(251,191,36,0.22)" },
+    { icon: "🏠", name: "Priya", job: "Housekeeper", from: "Tamil", to: "English", origin: "🇮🇳 Tamil Nadu", dest: "🇬🇧 UK", accent: "#F472B6", glow: "rgba(244,114,182,0.22)" },
+    { icon: "🏗️", name: "Arjun", job: "Construction", from: "Hindi", to: "Japanese", origin: "🇮🇳 Rajasthan", dest: "🇯🇵 Japan", accent: "#34D399", glow: "rgba(52,211,153,0.22)" },
+    { icon: "🔧", name: "Suresh", job: "Plumber", from: "Kannada", to: "Arabic", origin: "🇮🇳 Karnataka", dest: "🇦🇪 Dubai", accent: "#A78BFA", glow: "rgba(167,139,250,0.22)" },
   ];
 
   return (
     <section style={{
-      width: "100%", height: "100%", background: "#FFF8ED",
+      width: "100%", height: "100%",
+      background: "linear-gradient(140deg, #1A0A00 0%, #2D1200 45%, #1A1A00 100%)",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       gap: 48, padding: "80px 64px", overflow: "auto", fontFamily: ff.jakarta,
+      position: "relative",
     }}>
-      <div style={{ fontFamily: ff.space, fontSize: "0.72rem", letterSpacing: "0.15em", color: "#EA580C", textTransform: "uppercase", textAlign: "center" }}>
-        WHO IT&apos;S FOR
+      {/* Warm mesh glow blobs */}
+      <div style={{ position: "absolute", top: "-8%", left: "0%", width: 420, height: 420, borderRadius: "50%", background: "radial-gradient(circle, rgba(251,191,36,0.14) 0%, transparent 65%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: "-8%", right: "0%", width: 380, height: 380, borderRadius: "50%", background: "radial-gradient(circle, rgba(244,114,182,0.12) 0%, transparent 65%)", pointerEvents: "none" }} />
+
+      {/* Label */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 32, height: 1.5, background: "linear-gradient(90deg, transparent, #FBBF24)" }} />
+        <span style={{ fontFamily: ff.space, fontSize: "0.72rem", letterSpacing: "0.18em", color: "#FBBF24", textTransform: "uppercase" }}>Who It&apos;s For</span>
+        <div style={{ width: 32, height: 1.5, background: "linear-gradient(90deg, #FBBF24, transparent)" }} />
       </div>
-      <div style={{ fontFamily: ff.playfair, fontSize: "clamp(1.8rem,3vw,2.8rem)", fontWeight: 700, color: "#2A1A0A", textAlign: "center", margin: 0 }}>
-        Real People. Real Dreams. Real Journeys.
+
+      {/* Headline */}
+      <div style={{ fontFamily: ff.playfair, fontSize: "clamp(1.8rem,3vw,2.8rem)", fontWeight: 700, color: "#FDE68A", textAlign: "center", margin: 0, lineHeight: 1.25 }}>
+        Real People. Real Dreams. <span style={{ color: "#F472B6" }}>Real Journeys.</span>
       </div>
+
+      {/* Cards */}
       <div style={{ display: "flex", gap: 24, justifyContent: "center", flexWrap: "wrap" }}>
         {personas.map((p, i) => (
           <div key={i}
             style={{
-              background: "rgba(255,255,255,0.70)", border: "1px solid rgba(217,119,6,0.30)",
-              borderRadius: 24, padding: "36px 28px", width: 260, textAlign: "center",
-              transition: "all 0.4s ease", cursor: "default", position: "relative", overflow: "hidden",
+              background: `linear-gradient(160deg, ${p.accent}14 0%, ${p.accent}07 100%)`,
+              border: `1px solid ${p.accent}50`,
+              borderRadius: 24, padding: "36px 28px", width: 252,
+              textAlign: "center", backdropFilter: "blur(16px)",
+              transition: "all 0.35s ease", cursor: "default",
+              position: "relative", overflow: "hidden",
             }}
             onMouseEnter={(e) => {
               const el = e.currentTarget as HTMLElement;
-              el.style.transform = "translateY(-12px)";
-              el.style.borderColor = "#EA580C";
-              el.style.boxShadow = "0 24px 60px rgba(249,115,22,0.15)";
+              el.style.transform = "translateY(-12px) scale(1.02)";
+              el.style.borderColor = `${p.accent}90`;
+              el.style.boxShadow = `0 28px 64px ${p.glow}, inset 0 1px 0 ${p.accent}25`;
             }}
             onMouseLeave={(e) => {
               const el = e.currentTarget as HTMLElement;
-              el.style.transform = "translateY(0)";
-              el.style.borderColor = "rgba(217,119,6,0.30)";
+              el.style.transform = "translateY(0) scale(1)";
+              el.style.borderColor = `${p.accent}50`;
               el.style.boxShadow = "none";
             }}
           >
+            {/* Top accent line */}
+            <div style={{ position: "absolute", top: 0, left: "20%", right: "20%", height: 2, background: `linear-gradient(90deg, transparent, ${p.accent}, transparent)` }} />
+
+            {/* Avatar */}
             <div style={{
-              width: 80, height: 80, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-              margin: "0 auto 16px", fontSize: "2.4rem",
-              background: "linear-gradient(135deg,rgba(245,158,11,0.2),rgba(249,115,22,0.15))",
-              border: "2px solid rgba(245,158,11,0.3)",
+              width: 76, height: 76, borderRadius: "50%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              margin: "0 auto 18px", fontSize: "2.2rem",
+              background: `${p.accent}20`,
+              border: `2px solid ${p.accent}55`,
+              boxShadow: `0 0 28px ${p.glow}`,
             }}>{p.icon}</div>
-            <div style={{ fontFamily: ff.playfair, fontSize: "1.3rem", fontWeight: 700, color: "#1C2B1A" }}>{p.name}</div>
-            <div style={{ fontSize: "0.88rem", color: "#EA580C", fontWeight: 600, margin: "4px 0" }}>{p.job}</div>
-            <div style={{ margin: "14px 0", display: "flex", alignItems: "center", gap: 8, justifyContent: "center" }}>
-              <span style={{ background: "rgba(217,119,6,0.10)", border: "1px solid rgba(217,119,6,0.25)", borderRadius: 50, padding: "4px 12px", fontSize: "0.78rem", color: "#D97706", fontFamily: ff.space, fontWeight: 700 }}>{p.from}</span>
-              <span style={{ color: "#059669", fontSize: "1.1rem", animation: "vs-bridge-pulse 2s ease-in-out infinite" }}>⟶</span>
-              <span style={{ background: "rgba(234,88,12,0.08)", border: "1px solid rgba(234,88,12,0.25)", borderRadius: 50, padding: "4px 12px", fontSize: "0.78rem", color: "#EA580C", fontFamily: ff.space, fontWeight: 700 }}>{p.to}</span>
+
+            <div style={{ fontFamily: ff.playfair, fontSize: "1.25rem", fontWeight: 700, color: p.accent }}>{p.name}</div>
+            <div style={{ fontSize: "0.85rem", color: "rgba(253,230,138,0.80)", fontWeight: 600, margin: "6px 0 16px" }}>{p.job}</div>
+
+            {/* Language bridge */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 16 }}>
+              <span style={{
+                background: `${p.accent}20`, border: `1px solid ${p.accent}55`,
+                borderRadius: 50, padding: "4px 12px", fontSize: "0.76rem",
+                color: p.accent, fontFamily: ff.space, fontWeight: 700,
+              }}>{p.from}</span>
+              <span style={{ color: "#FBBF24", fontSize: "1rem" }}>⟶</span>
+              <span style={{
+                background: "rgba(251,191,36,0.15)", border: "1px solid rgba(251,191,36,0.40)",
+                borderRadius: 50, padding: "4px 12px", fontSize: "0.76rem",
+                color: "#FBBF24", fontFamily: ff.space, fontWeight: 700,
+              }}>{p.to}</span>
             </div>
-            <div style={{ fontSize: "0.82rem", color: "#5A4A2A" }}>{p.origin} → {p.dest}</div>
+
+            <div style={{ fontSize: "0.80rem", color: "rgba(253,230,138,0.55)", lineHeight: 1.6 }}>{p.origin} → {p.dest}</div>
           </div>
         ))}
       </div>
@@ -945,67 +1090,90 @@ function PricingSection() {
 // ── S7: TECH ──
 function TechSection() {
   const techs = [
-    { logo: "⚡", name: "Next.js", desc: "Full-stack React framework" },
-    { logo: "🤖", name: "Google ADK", desc: "Multi-agent orchestration" },
-    { logo: "🌟", name: "Gemini AI", desc: "Voice & language intelligence" },
-    { logo: "🔐", name: "Clerk", desc: "Auth & user management" },
-    { logo: "🗄️", name: "Neon DB", desc: "Serverless Postgres" },
-    { logo: "⚙️", name: "Inngest", desc: "Durable background workflows" },
+    { logo: "⚡", name: "Next.js", desc: "Full-stack React framework", accent: "#38BDF8", glow: "rgba(56,189,248,0.22)" },
+    { logo: "🤖", name: "Google ADK", desc: "Multi-agent orchestration", accent: "#A78BFA", glow: "rgba(167,139,250,0.22)" },
+    { logo: "🌟", name: "Gemini AI", desc: "Voice & language intelligence", accent: "#FBBF24", glow: "rgba(251,191,36,0.22)" },
+    { logo: "🔐", name: "Clerk", desc: "Auth & user management", accent: "#F472B6", glow: "rgba(244,114,182,0.22)" },
+    { logo: "🗄️", name: "Neon DB", desc: "Serverless Postgres", accent: "#34D399", glow: "rgba(52,211,153,0.22)" },
+    { logo: "⚙️", name: "Inngest", desc: "Durable background workflows", accent: "#FB923C", glow: "rgba(251,146,60,0.22)" },
   ];
 
   return (
     <section style={{
-      width: "100%", height: "100%", background: "#F3F7F0",
+      width: "100%", height: "100%",
+      background: "linear-gradient(145deg, #020817 0%, #0A1628 50%, #050D1A 100%)",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      gap: 48, padding: "80px 64px", position: "relative", overflow: "hidden",
+      gap: 44, padding: "80px 64px", position: "relative", overflow: "hidden",
       fontFamily: ff.jakarta,
     }}>
-      {/* Blueprint grid */}
+      {/* Circuit grid overlay */}
       <div style={{
         position: "absolute", inset: 0,
-        backgroundImage: "linear-gradient(rgba(217,119,6,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(217,119,6,0.07) 1px,transparent 1px)",
-        backgroundSize: "60px 60px",
+        backgroundImage: "linear-gradient(rgba(56,189,248,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.05) 1px, transparent 1px)",
+        backgroundSize: "48px 48px",
+        pointerEvents: "none",
       }} />
+      {/* Ambient glows */}
+      <div style={{ position: "absolute", top: "-10%", left: "15%", width: 360, height: 360, borderRadius: "50%", background: "radial-gradient(circle, rgba(56,189,248,0.10) 0%, transparent 65%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: "-10%", right: "15%", width: 320, height: 320, borderRadius: "50%", background: "radial-gradient(circle, rgba(167,139,250,0.10) 0%, transparent 65%)", pointerEvents: "none" }} />
 
-      <div style={{ fontFamily: ff.space, fontSize: "0.72rem", letterSpacing: "0.15em", color: "#EA580C", textTransform: "uppercase", textAlign: "center", position: "relative", zIndex: 1 }}>
-        BUILT WITH
-      </div>
-      <div style={{ fontFamily: ff.playfair, fontSize: "clamp(1.8rem,3vw,2.8rem)", fontWeight: 700, color: "#2A1A0A", textAlign: "center", margin: 0, position: "relative", zIndex: 1 }}>
-        Enterprise-Grade AI Infrastructure
+      {/* Label */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative", zIndex: 1 }}>
+        <div style={{ width: 32, height: 1.5, background: "linear-gradient(90deg, transparent, #38BDF8)" }} />
+        <span style={{ fontFamily: ff.space, fontSize: "0.72rem", letterSpacing: "0.18em", color: "#38BDF8", textTransform: "uppercase" }}>Built With</span>
+        <div style={{ width: 32, height: 1.5, background: "linear-gradient(90deg, #38BDF8, transparent)" }} />
       </div>
 
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, maxWidth: 780 }} className="tech-grid">
+      {/* Headline */}
+      <div style={{ fontFamily: ff.playfair, fontSize: "clamp(1.8rem,3vw,2.8rem)", fontWeight: 700, color: "#E0F2FE", textAlign: "center", margin: 0, position: "relative", zIndex: 1 }}>
+        Enterprise-Grade <span style={{ color: "#38BDF8" }}>AI Infrastructure</span>
+      </div>
+
+      {/* Cards */}
+      <div style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 780 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }} className="tech-grid">
           {techs.map((t, i) => (
             <div key={i}
               style={{
-                background: "rgba(255,255,255,0.85)", border: "1px solid rgba(217,119,6,0.18)",
-                borderRadius: 18, padding: "24px 20px", textAlign: "center",
-                boxShadow: "0 4px 20px rgba(217,119,6,0.07)", transition: "all 0.4s ease",
+                background: `linear-gradient(145deg, ${t.accent}10 0%, ${t.accent}05 100%)`,
+                border: `1px solid ${t.accent}40`,
+                borderRadius: 18, padding: "26px 20px", textAlign: "center",
+                backdropFilter: "blur(16px)",
+                transition: "all 0.35s ease",
                 animation: `vs-tech-float 4s ease-in-out ${i * 0.5}s infinite`,
+                position: "relative", overflow: "hidden",
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLElement;
-                el.style.borderColor = "#059669";
-                el.style.boxShadow = "0 0 30px rgba(5,150,105,0.15)";
-                el.style.transform = "translateY(-12px) scale(1.03)";
+                el.style.transform = "translateY(-12px) scale(1.04)";
+                el.style.borderColor = `${t.accent}90`;
+                el.style.boxShadow = `0 24px 60px ${t.glow}, inset 0 1px 0 ${t.accent}25`;
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement;
-                el.style.borderColor = "rgba(217,119,6,0.18)";
-                el.style.boxShadow = "0 4px 20px rgba(217,119,6,0.07)";
                 el.style.transform = "";
+                el.style.borderColor = `${t.accent}40`;
+                el.style.boxShadow = "none";
               }}
             >
-              <div style={{ fontSize: "2.2rem", marginBottom: 10 }}>{t.logo}</div>
-              <div style={{ fontFamily: ff.space, fontSize: "0.78rem", color: "#D97706", letterSpacing: "0.08em", fontWeight: 700 }}>{t.name}</div>
-              <div style={{ fontSize: "0.75rem", color: "#5A4A2A", marginTop: 4 }}>{t.desc}</div>
+              {/* Top accent line */}
+              <div style={{ position: "absolute", top: 0, left: "20%", right: "20%", height: 2, background: `linear-gradient(90deg, transparent, ${t.accent}, transparent)` }} />
+              {/* Icon */}
+              <div style={{
+                width: 52, height: 52, borderRadius: 14, margin: "0 auto 14px",
+                background: `${t.accent}18`, border: `1.5px solid ${t.accent}45`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "1.8rem", boxShadow: `0 4px 20px ${t.glow}`,
+              }}>{t.logo}</div>
+              <div style={{ fontFamily: ff.space, fontSize: "0.80rem", color: t.accent, letterSpacing: "0.08em", fontWeight: 700 }}>{t.name}</div>
+              <div style={{ fontSize: "0.74rem", color: "rgba(224,242,254,0.55)", marginTop: 6, lineHeight: 1.5 }}>{t.desc}</div>
             </div>
           ))}
         </div>
       </div>
 
-      <div style={{ fontFamily: ff.playfair, fontSize: "1.1rem", color: "#5A4A2A", textAlign: "center", fontStyle: "italic", position: "relative", zIndex: 1 }}>
+      {/* Quote */}
+      <div style={{ fontFamily: ff.playfair, fontSize: "1.05rem", color: "rgba(224,242,254,0.50)", textAlign: "center", fontStyle: "italic", position: "relative", zIndex: 1 }}>
         &ldquo;Built for scale. Designed for the world&apos;s hardest workers.&rdquo;
       </div>
 
