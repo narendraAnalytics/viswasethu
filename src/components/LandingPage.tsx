@@ -1094,6 +1094,16 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
+    const HASH_INDEX: Record<string, number> = {
+      pricing: 6, features: 3, solution: 2, tech: 5,
+    };
+    const hash = window.location.hash.replace('#', '')
+    if (hash && HASH_INDEX[hash] !== undefined) {
+      setTimeout(() => goTo(HASH_INDEX[hash]), 50)
+    }
+  }, [goTo]);
+
+  useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown" || e.key === "PageDown") goTo(currentRef.current + 1);
       if (e.key === "ArrowUp" || e.key === "PageUp") goTo(currentRef.current - 1);
