@@ -87,6 +87,7 @@ npx inngest-cli@latest dev
 | Free plan enforcement — voice-level (Sethu prompt), API gates, dashboard UI | ✅ Done |
 | Lazy plan sync — `getOrCreateUser()` reads Clerk `has()` and writes to `users.plan` on every request | ✅ Done |
 | Plus/Pro plan timer — `totalSeconds` passed from session page via `PLAN_LIMITS[plan].sessionSeconds` | ✅ Done |
+| `IntroCarousel` — full-screen magazine-style image carousel on first app open, auto-closes in 6 s, hover-to-pause, sessionStorage guard | ✅ Done |
 | Deployed to Vercel | ✅ Done |
 | GlobalVocation agents (Dubai-Driver, Japan-Construction, etc.) | ⏳ Next |
 | Tools (VocationalSearch, TechnicalDictionary, ContextCulture) | ⏳ Pending |
@@ -117,7 +118,7 @@ Create job + country specific agents:
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Language | TypeScript (strict mode) |
 | Styling | Tailwind CSS + inline styles |
 | Auth | Clerk |
@@ -289,6 +290,12 @@ Monthly session count uses `sessions.startedAt >= first day of current month` �
 
 ### Next.js Router Cache — Dashboard Staleness Fix
 `/dashboard` has `export const dynamic = 'force-dynamic'` to prevent server-side caching. All exits from `SessionWrapUp.tsx` use `window.location.href = '/dashboard'` (hard navigation) rather than `router.push('/dashboard')`. This is required because `router.push` can serve a stale RSC payload from the Next.js client-side router cache, causing `monthlyUsed` to appear unchanged after a session completes.
+
+### External Images — Use `<img>`, Not Next.js `Image`
+`next.config.ts` has no `images.remotePatterns` configured. Using Next.js `<Image>` with external URLs (e.g. Cloudinary) passes an empty `src` to the DOM and triggers a React warning. Always use a plain `<img>` tag for external image URLs and suppress the lint rule with `{/* eslint-disable-next-line @next/next/no-img-element */}`.
+
+### IntroCarousel — `src/components/IntroCarousel.tsx`
+Renders a full-screen overlay on first page load. Uses `sessionStorage` (`'intro_seen'` key) so it only shows once per browser session. Timer driven by `requestAnimationFrame` (not `setInterval`) so hover-to-pause works by storing accumulated elapsed time in a ref. Dismiss sets the sessionStorage flag and fades out via Framer Motion `AnimatePresence`.
 
 ### Landing Page Hash Navigation
 `LandingPage.tsx` uses a Framer Motion index-based section switcher (not scroll). Hash links like `/#pricing` work because a `useEffect` on mount reads `window.location.hash` and calls `goTo(index)`. Supported hashes: `#pricing` (6), `#features` (3), `#solution` (2), `#tech` (5).

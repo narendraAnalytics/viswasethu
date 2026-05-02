@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useUser, useAuth, UserButton } from "@clerk/nextjs";
 import { getPlanFromHas, PLAN_BADGE } from "@/lib/plans";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const TOTAL = 8;
 
@@ -183,6 +184,8 @@ function HeroSection({ goTo }: { goTo: (i: number) => void }) {
   const { isSignedIn, user } = useUser();
   const displayName = user?.username ?? user?.firstName ?? "there";
   const [bgIndex, setBgIndex] = useState(0);
+  const [videoOpen, setVideoOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Particle system
   useEffect(() => {
@@ -321,7 +324,7 @@ function HeroSection({ goTo }: { goTo: (i: number) => void }) {
             </Link>
             <a
               href="#"
-              onClick={(e) => { e.preventDefault(); goTo(2); }}
+              onClick={(e) => { e.preventDefault(); setVideoOpen(true); }}
               style={{
                 border: "2px solid #EA580C", color: "#EA580C", padding: "14px 32px", borderRadius: 50,
                 fontWeight: 700, fontSize: "1rem", textDecoration: "none", background: "transparent", transition: "all 0.3s",
@@ -396,6 +399,31 @@ function HeroSection({ goTo }: { goTo: (i: number) => void }) {
           .hero-inner { padding: 90px 28px 40px !important; height: auto !important; }
         }
       `}</style>
+
+      <Dialog
+        open={videoOpen}
+        onOpenChange={(open) => {
+          if (!open && videoRef.current) {
+            videoRef.current.pause();
+            videoRef.current.currentTime = 0;
+          }
+          setVideoOpen(open);
+        }}
+      >
+        <DialogContent
+          showCloseButton={true}
+          className="max-w-3xl w-full bg-[#0D1A0D] border border-amber-700/40 p-3 rounded-2xl shadow-[0_0_60px_rgba(217,119,6,0.25)]"
+        >
+          <video
+            ref={videoRef}
+            src="https://res.cloudinary.com/dkqbzwicr/video/upload/q_auto/f_auto/v1777704438/viswasethuvideo_qlhgui.webm"
+            autoPlay
+            controls
+            playsInline
+            className="w-full rounded-xl aspect-video bg-black"
+          />
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
